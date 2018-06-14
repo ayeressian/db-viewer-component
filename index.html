@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+  <title>DB designer</title>
+
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="./lib/normalize.css">
+  <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+
+<body>
+  <div class="side-menu">
+    <div class="command create-table"></div>
+    <div class="command create-view"></div>
+    <div class="command create-relation"></div>
+  </div>
+  <div id="designer-container">
+    <svg id="designer" version="2" baseProfile="full" xmlns="http://www.w3.org/2000/svg">
+    </svg>
+    <svg id="minimap" version="2" baseProfile="full" xmlns="http://www.w3.org/2000/svg">
+      <rect id="viewpoint"></rect>
+    </svg>
+    <button id="btn-zoom-in">+</button>
+    <button id="btn-zoom-out">-</button>
+  </div>
+  <script>
+    require('./App')
+  </script>
+</body>
+
+</html>
