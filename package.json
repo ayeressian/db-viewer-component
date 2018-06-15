@@ -2,12 +2,12 @@
   "name": "db_designer_core",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "directories": {
     "lib": "lib"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server -p 9999"
   },
   "author": "",
   "license": "ISC",
