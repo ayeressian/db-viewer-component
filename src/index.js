@@ -1,9 +1,26 @@
+
+function _getBaseUrl() {
+  const current = import.meta.url;
+  var to = current.lastIndexOf('/');
+  return current.substring(0,to);
+}
+
+function stringReplaceAll(str, find, replace) {
+  find = find.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+  return str.replace(new RegExp(find, 'g'), replace);
+}
+
 class DBDesigner extends HTMLElement {
   constructor() {
     super();
+    this._baseUrl = _getBaseUrl();
+    const shadowDom = this.attachShadow({mode: 'closed'});
 
-    fetch('../src/index.html').then((response) => {
-      console.log(response);
+    fetch(`${this._baseUrl}/index.html`).then((response) => {
+      response.text().then((html) => {
+        html = stringReplaceAll(html, '${base}', this._baseUrl);
+        shadowDom.innerHTML = html;
+      });
     }).catch((error) => {
       console.error(error);
     });
