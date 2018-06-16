@@ -1,6 +1,6 @@
-import Table from './Table';
+import Table from './Table.js';
 
-export function schemaParser(schema) {
+export default function schemaParser(schema) {
   const tablesFk = new Map();
   const tables = [];
   schema.tables.forEach((table) => {

@@ -1,4 +1,4 @@
-import constant from './const';
+import constant from './const.js';
 import {
   to3FixedNumber
 } from './util.js';

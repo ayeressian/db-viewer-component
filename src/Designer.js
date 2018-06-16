@@ -1,14 +1,15 @@
-import Relation from './Relation';
-import constant from './const';
+import Relation from './Relation.js';
+import constant from './const.js';
 
 export default class Designer {
-  constructor() {
-    this._container = document.getElementById('designer-container');
-    this._svgElem = document.getElementById('designer');
-    this._minimap = document.getElementById('minimap');
-    this._viewpoint = document.getElementById('viewpoint');
-    this._btnZoomIn = document.getElementById('btn-zoom-in');
-    this._btnZoomOut = document.getElementById('btn-zoom-out');
+  constructor(mainElem) {
+    this.mainElem = mainElem;
+    this._container = this.mainElem.getElementById('designer-container');
+    this._svgElem = this.mainElem.getElementById('designer');
+    this._minimap = this.mainElem.getElementById('minimap');
+    this._viewpoint = this.mainElem.getElementById('viewpoint');
+    this._btnZoomIn = this.mainElem.getElementById('btn-zoom-in');
+    this._btnZoomOut = this.mainElem.getElementById('btn-zoom-out');
 
     this._designerWidth = this._svgElem.scrollWidth;
     this._designerHeight = this._svgElem.scrollHeight;
@@ -359,7 +360,7 @@ export default class Designer {
     let prevMouseCordX;
     let prevMouseCordY;
 
-    const mouseMove = () => {
+    const mouseMove = (event) => {
       const deltaX = (event.clientX - prevMouseCordX) / this._zoom;
       const deltaY = (event.clientY - prevMouseCordY) / this._zoom;
 
@@ -380,11 +381,11 @@ export default class Designer {
     this._container.addEventListener('mousedown', (event) => {
       prevMouseCordX = event.clientX;
       prevMouseCordY = event.clientY;
-      document.addEventListener('mousemove', mouseMove);
+      this.mainElem.addEventListener('mousemove', mouseMove);
     });
 
-    document.addEventListener('mouseup', () => {
-      document.removeEventListener('mousemove', mouseMove);
+    this.mainElem.addEventListener('mouseup', () => {
+      this.mainElem.removeEventListener('mousemove', mouseMove);
     }, false);
 
     this._btnZoomIn.addEventListener('click', () => {

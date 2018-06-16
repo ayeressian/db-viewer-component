@@ -1,7 +1,7 @@
 import {
   segmentIntersection
-} from './util';
-import constant from './const';
+} from './util.js';
+import constant from './const.js';
 
 // export class MissingCountIndex extends Error {
 //   constructor() {
