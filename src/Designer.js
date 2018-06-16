@@ -289,17 +289,10 @@ export default class Designer {
       }
     });
 
-    this._designerOverallWidth = maxX - minX;
-    this._designerOverallHeight = maxY - minY;
-
-    // this._viewBoxVals.minY = (minY + maxY) / 2 - this._designerHeight / 2;
-    // this._viewBoxVals.minX = (minX + maxX) / 2 - this._designerWidth / 2;
-
-    this._viewBoxVals.minY = 0;
-    this._viewBoxVals.minX = 0;
-    this._setViewBox();
-
-    this._drawRelations();
+    setTimeout(() => {
+      this._windowResizeEvent();
+      this._drawRelations();
+    });
 
     // After draw happened
     setTimeout(() => {
@@ -342,20 +335,22 @@ export default class Designer {
     }
   }
 
+  _windowResizeEvent() {
+    this._designerWidth = this._svgElem.scrollWidth;
+    this._designerHeight = this._svgElem.scrollHeight;
+
+    this._viewBoxVals.width = this._designerWidth / this._zoom;
+    this._viewBoxVals.height = this._designerHeight / this._zoom;
+
+    this._viewportAddjustment();
+
+    this._setViewBox();
+  }
+
   _setUpEvents() {
     const ZOOM = 1.2;
 
-    window.addEventListener('resize', (event) => {
-      this._designerWidth = this._svgElem.scrollWidth;
-      this._designerHeight = this._svgElem.scrollHeight;
-
-      this._viewBoxVals.width = this._designerWidth / this._zoom;
-      this._viewBoxVals.height = this._designerHeight / this._zoom;
-
-      this._viewportAddjustment();
-
-      this._setViewBox();
-    });
+    window.addEventListener('resize', this._windowResizeEvent.bind(this));
 
     let prevMouseCordX;
     let prevMouseCordY;
