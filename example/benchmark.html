@@ -7,10 +7,19 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" type="text/css" href="../lib/normalize.css">
   <script type="module" src="../src/index.js"></script>
+  <style>
+    .designer {
+      width: 800px;
+      height: 600px;
+    }
+  </style>
 </head>
 
 <body>
-  <db-designer src="./schema/benchmark.json"></db-designer>
+  <div>
+    <h1>Benchmark</h1>
+  </div>
+  <db-designer class="designer" src="./schema/benchmark.json"></db-designer>
 </body>
 
 </html>
