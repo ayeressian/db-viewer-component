@@ -373,6 +373,10 @@ export default class Designer {
       this._setViewBox();
     };
 
+    this._container.addEventListener('mouseleave', () => {
+      this.mainElem.removeEventListener('mousemove', mouseMove);
+    });
+
     this._container.addEventListener('mousedown', (event) => {
       prevMouseCordX = event.clientX;
       prevMouseCordY = event.clientY;
