@@ -23,8 +23,10 @@ export default class Table {
 
     const mouseMove = (event) => {
       event.stopPropagation();
-      const normalizedClientX = event.clientX / this._designer.getZoom() + this._designer.getPan().x;
-      const normalizedClientY = event.clientY / this._designer.getZoom() + this._designer.getPan().y;
+      const mousePos = this._designer.getMousePosRelativeContainer(event);
+
+      const normalizedClientX = mousePos.x / this._designer.getZoom() + this._designer.getPan().x;
+      const normalizedClientY = mousePos.y / this._designer.getZoom() + this._designer.getPan().y;
       const deltaX = normalizedClientX - mouseDownInitialElemX;
       const deltaY = normalizedClientY - mouseDownInitialElemY;
       this._elem.setAttributeNS(null, 'transform', `translate(${deltaX},${deltaY})`);

@@ -420,4 +420,11 @@ export default class Designer {
       y: this._viewBoxVals.minY,
     };
   }
+
+  getMousePosRelativeContainer(event) {
+    return {
+      x: event.clientX - this._container.offsetLeft,
+      y: event.clientY - this._container.offsetTop
+    };
+  }
 }
