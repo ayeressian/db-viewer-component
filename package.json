@@ -6,7 +6,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "start": "./node_modules/http-server/bin/http-server -p 9999"
+    "start": "./node_modules/http-server/bin/http-server -p 9998"
   },
   "author": "",
   "license": "GNU 3",
