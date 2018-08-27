@@ -436,7 +436,15 @@ export default class Designer {
     this._tableDblClickCallback = callback;
   }
 
+  setTableClickCallback(callback) {
+    this._tableClickCallback = callback;
+  }
+
   tableDblClick(table) {
     this._tableDblClickCallback(table);
+  }
+
+  tableClick(table) {
+    this._tableClickCallback(table);
   }
 }

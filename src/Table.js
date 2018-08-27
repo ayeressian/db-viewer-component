@@ -162,13 +162,20 @@ export default class Table {
     });
     this._moveEvents();
     this._elem.addEventListener('dblclick', () => {
-      this._designer.tableDblClick({
-        name: this._name,
-        columns: this.columns,
-        pos: this._pos
-      });
+      this._designer.tableDblClick(this._tableDataCreator());
+    });
+    this._elem.addEventListener('click', () => {
+      this._designer.tableClick(this._tableDataCreator());
     });
     return this._elem;
+  }
+
+  _tableDataCreator() {
+    return {
+      name: this._name,
+      columns: this.columns,
+      pos: this._pos
+    };
   }
 
   setDesigner(designer) {
