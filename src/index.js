@@ -32,7 +32,12 @@ class DBDesigner extends HTMLElement {
       html = stringReplaceAll(html, '${base}', this._baseUrl);
       shadowDom.innerHTML = html;
       this.designer = new Designer(shadowDom);
+      this.designer.setTableDblClickCallback(onTableDblClick);
     });
+  }
+
+  onTableDblClick(table) {
+    this.dispatchEvent(new CustomEvent('tableDblClick', {detail: table}));
   }
 
   set src(src) {

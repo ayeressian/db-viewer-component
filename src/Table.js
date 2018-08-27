@@ -161,6 +161,13 @@ export default class Table {
       columnTr.appendChild(columnTypeTd);
     });
     this._moveEvents();
+    this._elem.addEventListener('dblclick', () => {
+      this._designer.tableDblClick({
+        name: this._name,
+        columns: this.columns,
+        pos: this._pos
+      });
+    });
     return this._elem;
   }
 

@@ -431,4 +431,12 @@ export default class Designer {
       y: event.clientY - this._container.offsetTop
     };
   }
+
+  setTableDblClickCallback(callback) {
+    this._tableDblClickCallback = callback;
+  }
+
+  tableDblClick(table) {
+    this._tableDblClickCallback(table);
+  }
 }
