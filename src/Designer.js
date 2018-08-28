@@ -1,5 +1,6 @@
 import Relation from './Relation.js';
 import constant from './const.js';
+import Table from './Table.js';
 
 export default class Designer {
   constructor(mainElem) {
@@ -57,7 +58,7 @@ export default class Designer {
     minimapTableElem.setAttributeNS(null, 'transform', `translate(${deltaX},${deltaY})`);
 
     if (this._tableMoveCallback) {
-      this._tableMoveCallback(table, deltaX, deltaY);
+      this._tableMoveCallback(Table.tableDataCreator(table));
     }
   }
 

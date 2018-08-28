@@ -46,8 +46,8 @@ class DBDesigner extends HTMLElement {
     this.dispatchEvent(new CustomEvent('tableClick', {detail: table}));
   }
 
-  onTableMove(table, x , y) {
-    this.dispatchEvent(new CustomEvent('tableMove', {detail: {table, x, y}}));
+  onTableMove(table) {
+    this.dispatchEvent(new CustomEvent('tableMove', {detail: table));
   }
 
   set src(src) {

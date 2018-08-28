@@ -164,18 +164,18 @@ export default class Table {
     });
     this._moveEvents();
     this._elem.addEventListener('dblclick', () => {
-      this._designer.tableDblClick(this._tableDataCreator());
+      this._designer.tableDblClick(Table.tableDataCreator(this));
     });
     this._elem.addEventListener('click', () => {
-      this._designer.tableClick(this._tableDataCreator());
+      this._designer.tableClick(Table.tableDataCreator(this));
     });
     return this._elem;
   }
 
-  _tableDataCreator() {
+  static tableDataCreator(table) {
     return {
-      name: this._name,
-      pos: this._pos
+      name: table._name,
+      pos: table._pos
     };
   }
 
