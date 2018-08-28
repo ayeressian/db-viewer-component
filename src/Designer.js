@@ -440,11 +440,19 @@ export default class Designer {
     this._tableClickCallback = callback;
   }
 
+  setTableMoveCallback(callback) {
+    this._tableMoveCallback = callback;
+  }
+
   tableDblClick(table) {
     this._tableDblClickCallback(table);
   }
 
   tableClick(table) {
     this._tableClickCallback(table);
+  }
+
+  tableMove(table, x, y) {
+    this._tableMoveCallback(table, x, y);
   }
 }

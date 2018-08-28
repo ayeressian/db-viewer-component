@@ -34,6 +34,7 @@ class DBDesigner extends HTMLElement {
       this.designer = new Designer(shadowDom);
       this.designer.setTableDblClickCallback(this.onTableDblClick.bind(this));
       this.designer.setTableClickCallback(this.onTableClick.bind(this));
+      this.designer.setTableMoveCallback(this.onTableMove.bind(this));
     });
   }
 
@@ -43,6 +44,10 @@ class DBDesigner extends HTMLElement {
 
   onTableClick(table) {
     this.dispatchEvent(new CustomEvent('tableClick', {detail: table}));
+  }
+
+  onTableMove(table, x , y) {
+    this.dispatchEvent(new CustomEvent('tableMove', {detail: {table, x, y}}));
   }
 
   set src(src) {
