@@ -30,6 +30,8 @@ export default class Table {
       const deltaX = normalizedClientX - mouseDownInitialElemX;
       const deltaY = normalizedClientY - mouseDownInitialElemY;
       this._elem.setAttributeNS(null, 'transform', `translate(${deltaX},${deltaY})`);
+      this._pos.x = deltaX;
+      this._pos.y = deltaY;
       this._onMove && this._onMove(this, deltaX, deltaY);
     };
 
@@ -173,7 +175,6 @@ export default class Table {
   _tableDataCreator() {
     return {
       name: this._name,
-      columns: this.columns,
       pos: this._pos
     };
   }
