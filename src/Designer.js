@@ -445,9 +445,7 @@ export default class Designer {
   }
 
   setTableMoveCallback(callback) {
-    if (this._tableMoveCallback) {
-      this._tableMoveCallback = callback;
-    }
+    this._tableMoveCallback = callback;
   }
 
   tableDblClick(table) {
