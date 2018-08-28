@@ -55,6 +55,10 @@ export default class Designer {
     const minimapTableElem = this._tableMinimap.get(table);
 
     minimapTableElem.setAttributeNS(null, 'transform', `translate(${deltaX},${deltaY})`);
+
+    if (this._tableMoveCallback) {
+      this._tableMoveCallback(table, deltaX, deltaY);
+    }
   }
 
   _drawRelations() {
@@ -441,18 +445,20 @@ export default class Designer {
   }
 
   setTableMoveCallback(callback) {
-    this._tableMoveCallback = callback;
+    if (this._tableMoveCallback) {
+      this._tableMoveCallback = callback;
+    }
   }
 
   tableDblClick(table) {
-    this._tableDblClickCallback(table);
+    if (this._tableDblClickCallback) {
+      this._tableDblClickCallback(table);
+    }
   }
 
   tableClick(table) {
-    this._tableClickCallback(table);
-  }
-
-  tableMove(table, x, y) {
-    this._tableMoveCallback(table, x, y);
+    if (this._tableClickCallback) {
+      this._tableClickCallback(table);
+    }
   }
 }
