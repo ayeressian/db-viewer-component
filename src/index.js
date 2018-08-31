@@ -4,21 +4,18 @@ import schemaParser from './schemaParser.js';
 function _getBaseUrl() {
   const current =
     import.meta.url;
-  var to = current.lastIndexOf('/');
+  const to = current.lastIndexOf('/');
   return current.substring(0, to);
 }
 
 function stringReplaceAll(str, find, replace) {
-  find = find.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+  find = find.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1');
   return str.replace(new RegExp(find, 'g'), replace);
 }
 
 const baseUrl = _getBaseUrl();
 
-const htmlPromise = fetch(`${baseUrl}/index.html`).then((response) => response.text()).
-catch((error) => {
-  console.error(error);
-});
+const htmlPromise = fetch(`${baseUrl}/index.html`).then((response) => response.text());
 
 class DBDesigner extends HTMLElement {
   constructor() {
@@ -28,7 +25,7 @@ class DBDesigner extends HTMLElement {
       mode: 'closed'
     });
 
-    htmlPromise.then(html => {
+    htmlPromise.then((html) => {
       html = stringReplaceAll(html, '${base}', this._baseUrl);
       shadowDom.innerHTML = html;
       this.designer = new Designer(shadowDom);
@@ -61,7 +58,7 @@ class DBDesigner extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     this._src = newValue;
     fetch(this._src).then((response) => response.json()).
-    then(response => {
+    then((response) => {
       const tables = schemaParser(response);
       this.designer.load(tables);
     });
