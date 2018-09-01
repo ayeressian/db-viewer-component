@@ -2,9 +2,6 @@
   "name": "db_designer_core",
   "version": "1.0.0",
   "description": "",
-  "directories": {
-    "lib": "lib"
-  },
   "scripts": {
     "start": "./node_modules/http-server/bin/http-server -p 9998"
   },
