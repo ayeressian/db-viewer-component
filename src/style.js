@@ -1,3 +1,4 @@
+export default /* css*/ `
 :host {
   display: block;
   overflow: hidden;
@@ -105,3 +106,4 @@ path {
     stroke-width: 12;
     stroke: transparent;
 }
+`;

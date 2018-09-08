@@ -1,6 +1,9 @@
+import css from './style.js';
 export default /* html*/ `
 <link rel="stylesheet" type="text/css" href="/node_modules/normalize.css/normalize.css">
-<link rel="stylesheet" type="text/css" href="$_{base}/style.css">
+<style>
+ ${css}
+</style>
 
 <div id="designer-container">
   <svg id="designer" version="2" baseProfile="full" xmlns="http://www.w3.org/2000/svg">

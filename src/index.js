@@ -2,28 +2,14 @@ import Designer from './Designer.js';
 import schemaParser from './schemaParser.js';
 import template from './template.js';
 
-function getBaseUrl() {
-  const current =
-    import.meta.url;
-  const to = current.lastIndexOf('/');
-  return current.substring(0, to);
-}
-
-function stringReplaceAll(str, find, replace) {
-  find = find.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1');
-  return str.replace(new RegExp(find, 'g'), replace);
-}
-
 class DBDesigner extends HTMLElement {
   constructor() {
     super();
-    this._baseUrl = getBaseUrl();
     const shadowDom = this.attachShadow({
       mode: 'closed'
     });
 
-    const html = stringReplaceAll(template, '$_{base}', this._baseUrl);
-    shadowDom.innerHTML = html;
+    shadowDom.innerHTML = template;
     this.designer = new Designer(shadowDom);
     this.designer.setTableDblClickCallback(this.onTableDblClick.bind(this));
     this.designer.setTableClickCallback(this.onTableClick.bind(this));
