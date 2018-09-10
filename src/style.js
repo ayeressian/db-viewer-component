@@ -7,6 +7,12 @@ export default /* css*/ `
 #designer-container {
     height: 100%;
     position: relative;
+
+    -moz-user-select: none !important;
+    -o-user-select: none !important;
+    -khtml-user-select: none !important;
+    -webkit-user-select: none !important;
+    -ms-user-select: none !important;
     user-select: none !important;
 }
 
