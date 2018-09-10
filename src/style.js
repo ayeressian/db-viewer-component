@@ -7,6 +7,7 @@ export default /* css*/ `
 #designer-container {
     height: 100%;
     position: relative;
+    user-select: none !important;
 }
 
 #designer-container #minimap {
@@ -64,7 +65,8 @@ export default /* css*/ `
     background-color: white;
     min-width: 100px;
     border-collapse: collapse;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15), 0px 0px 10px rgba(0, 0, 0, 0.15), 0px 0px 10px rgba(0, 0, 0, 0.15), 0px 0px 10px rgba(0, 0, 0, 0.15);
+
+    border: 1px solid #BBB;
 }
 
 .table tr {

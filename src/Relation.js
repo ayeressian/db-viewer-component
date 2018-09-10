@@ -1,6 +1,6 @@
 import {
   segmentIntersection
-} from './util.js';
+} from './mathUtil.js';
 import constant from './const.js';
 
 // export class MissingCountIndex extends Error {
