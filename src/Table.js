@@ -134,9 +134,12 @@ export default class Table {
   render() {
     this._elem = document.createElementNS(constant.nsSvg, 'foreignObject');
     this._elem.setAttributeNS(null, 'transform', `translate(${this._pos.x},${this._pos.y})`);
+
     if (!isChrome()) {
-      this._elem.setAttributeNS(null, 'width', '100%');
-      this._elem.setAttributeNS(null, 'height', '100%');
+      setTimeout(() => {
+        this._elem.setAttributeNS(null, 'width', this._table.scrollWidth);
+        this._elem.setAttributeNS(null, 'height', this._table.scrollHeight);
+      });
     }
 
     this._table = document.createElementNS(constant.nsHtml, 'table');
