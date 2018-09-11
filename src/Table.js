@@ -2,7 +2,7 @@ import constant from './const.js';
 import {
   to3FixedNumber
 } from './mathUtil.js';
-import {isSafari} from './util.js';
+import {isChrome} from './util.js';
 
 export default class Table {
   constructor({
@@ -134,7 +134,7 @@ export default class Table {
   render() {
     this._elem = document.createElementNS(constant.nsSvg, 'foreignObject');
     this._elem.setAttributeNS(null, 'transform', `translate(${this._pos.x},${this._pos.y})`);
-    if (isSafari()) {
+    if (!isChrome()) {
       this._elem.setAttributeNS(null, 'width', '100%');
       this._elem.setAttributeNS(null, 'height', '100%');
     }
