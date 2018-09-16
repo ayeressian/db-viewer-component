@@ -137,8 +137,9 @@ export default class Table {
 
     if (!isChrome()) {
       setTimeout(() => {
-        this._elem.setAttributeNS(null, 'width', this._table.scrollWidth);
-        this._elem.setAttributeNS(null, 'height', this._table.scrollHeight);
+        const borderWidth = getComputedStyle(this._table).borderWidth;
+        this._elem.setAttributeNS(null, 'width', this._table.scrollWidth + borderWidth);
+        this._elem.setAttributeNS(null, 'height', this._table.scrollHeight + borderWidth);
       });
     }
 
@@ -177,6 +178,7 @@ export default class Table {
     this._elem.addEventListener('click', () => {
       this._designer.tableClick(Table.tableDataCreator(this));
     });
+
     return this._elem;
   }
 
