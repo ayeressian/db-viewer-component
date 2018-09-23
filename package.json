@@ -1,12 +1,12 @@
 {
   "name": "db-viewer-component",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "scripts": {
     "start": "webpack-dev-server --mode development --open",
     "build-prod": "webpack --mode=production",
     "build-dev": "webpack --mode=development",
-    "publish-npm": "npm run build-prod && npm publish"
+    "publish-npm": "rm -r dist && npm run build-prod && npm publish"
   },
   "author": "",
   "license": "GNU 3",
