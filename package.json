@@ -1,6 +1,6 @@
 {
-  "name": "db_designer_core",
-  "version": "1.0.0",
+  "name": "db-viewer-component",
+  "version": "1.0.2",
   "description": "",
   "scripts": {
     "start": "webpack-dev-server --mode development --open",
