@@ -1,10 +1,12 @@
-# db_designer_core
+# db-viewer-component
 
-Implementation of db_designer web component.
+Implementation of DB viewer web component.
 
 To run (to see an example):
   1. npm i
-  2. npm start
-  3. In chrome browser navigate to http://localhost:9998/example (If it did not load properly refresh. I am looking into resolving that bug)
+  2. npm build-dev
+  3. npm start
+  4. In chrome browser navigate to http://localhost:9998
 
-This project only works on chrome browser right now.
+This project works on chrome and safari browsers right now. In Firefox there are some bugs.
+It doesn't work in Edge browser, since edge doesn't have native support for web component.
