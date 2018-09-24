@@ -1,6 +1,6 @@
 {
   "name": "db-viewer-component",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "scripts": {
     "start": "webpack-dev-server --mode development --open",
