@@ -5,7 +5,7 @@
   "scripts": {
     "start": "webpack-dev-server --mode development --open",
     "build-prod": "webpack --mode=production",
-    "build-dev": "webpack --mode=development",
+    "build-dev": "webpack --mode=development --watch",
     "publish-npm": "rm -r dist && npm run build-prod && npm publish"
   },
   "main": "dist/main.js",
@@ -13,14 +13,13 @@
   "license": "GNU 3",
   "devDependencies": {
     "babel-eslint": "^8.2.6",
+    "css-loader": "^1.0.0",
     "eslint": "^4.19.1",
     "eslint-config-google": "^0.9.1",
+    "html-loader": "^0.5.5",
     "http-server": "^0.11.1",
     "webpack": "^4.19.1",
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^3.1.8"
-  },
-  "dependencies": {
-    "normalize.css": "^8.0.0"
   }
 }
