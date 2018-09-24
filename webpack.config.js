@@ -3,7 +3,7 @@
 const path = require('path');
 
 module.exports = {
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
   devServer: {
     contentBase: './',
     port: 9998,
