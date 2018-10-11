@@ -245,6 +245,9 @@ export default class Designer {
     let minY = Number.MAX_SAFE_INTEGER;
     let maxY = Number.MIN_SAFE_INTEGER;
 
+    this._minimap.innerHTML = '';
+    this._tableMinimap = new Map();
+
     this.tables.forEach((table, i) => {
       const tableElm = table.render();
       tableElm.setAttribute('id', i + 'table');
