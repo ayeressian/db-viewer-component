@@ -3,12 +3,6 @@ import {
 } from './mathUtil.js';
 import constant from './const.js';
 
-// export class MissingCountIndex extends Error {
-//   constructor() {
-//     super('toPathIndex and fromPathCount must be defined before calling render');
-//   }
-// }
-
 const PATH_ARROW_LENGTH = 9;
 const PATH_ARROW_HEIGHT = 4;
 const PATH_START_PADDING = 7;
