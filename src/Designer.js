@@ -36,6 +36,8 @@ export default class Designer {
     this._zoom = 1;
 
     this._tableMinimap = new Map();
+
+    this._setViewBox();
   }
 
   load(tables) {
@@ -245,7 +247,6 @@ export default class Designer {
     let minY = Number.MAX_SAFE_INTEGER;
     let maxY = Number.MIN_SAFE_INTEGER;
 
-    this._minimap.innerHTML = '';
     this._tableMinimap = new Map();
 
     this.tables.forEach((table, i) => {

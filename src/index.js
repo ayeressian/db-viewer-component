@@ -6,7 +6,7 @@ class DBDesigner extends HTMLElement {
   constructor() {
     super();
     const shadowDom = this.attachShadow({
-      mode: 'closed'
+      mode: 'open'
     });
 
     shadowDom.innerHTML = template;
