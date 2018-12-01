@@ -12,8 +12,8 @@ export default class Designer {
     this._btnZoomIn = this.mainElem.getElementById('btn-zoom-in');
     this._btnZoomOut = this.mainElem.getElementById('btn-zoom-out');
 
-    this._designerWidth = this._container.scrollWidth;
-    this._designerHeight = this._container.scrollHeight;
+    this._designerWidth = this._container.offsetWidth;
+    this._designerHeight = this._container.offsetHeight;
 
     this._viewBoxVals = {
       minX: 0,
@@ -345,8 +345,8 @@ export default class Designer {
   }
 
   _windowResizeEvent() {
-    this._designerWidth = this._container.scrollWidth;
-    this._designerHeight = this._container.scrollHeight;
+    this._designerWidth = this._container.offsetWidth;
+    this._designerHeight = this._container.offsetHeight;
 
     this._viewBoxVals.width = this._designerWidth / this._zoom;
     this._viewBoxVals.height = this._designerHeight / this._zoom;
