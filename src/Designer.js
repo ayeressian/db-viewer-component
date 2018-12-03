@@ -6,14 +6,15 @@ export default class Designer {
   constructor(mainElem) {
     this.mainElem = mainElem;
     this._container = this.mainElem.getElementById('designer-container');
+
     this._svgElem = this.mainElem.getElementById('designer');
     this._minimap = this.mainElem.getElementById('minimap');
     this._viewpoint = this.mainElem.getElementById('viewpoint');
     this._btnZoomIn = this.mainElem.getElementById('btn-zoom-in');
     this._btnZoomOut = this.mainElem.getElementById('btn-zoom-out');
 
-    this._designerWidth = this._container.offsetWidth;
-    this._designerHeight = this._container.offsetHeight;
+    this._designerWidth = this._container.offsetWidth < constant.DESIGNER_PAN_WIDTH ? this._container.offsetWidth: constant.DESIGNER_PAN_WIDTH;
+    this._designerHeight = this._container.offsetHeight < constant.DESIGNER_PAN_HEIGHT ? this._container.offsetHeight: constant.DESIGNER_PAN_HEIGHT;
 
     this._viewBoxVals = {
       minX: 0,
@@ -336,17 +337,23 @@ export default class Designer {
     const offsetWidth = this._viewBoxVals.width + this._viewBoxVals.minX - constant.DESIGNER_PAN_WIDTH;
     if (offsetWidth > 0) {
       this._viewBoxVals.minX -= offsetWidth;
+      if (this._viewBoxVals.minX < 0) {
+        this._viewBoxVals.minX = 0;
+      }
     }
 
     const offsetHeight = this._viewBoxVals.height + this._viewBoxVals.minY - constant.DESIGNER_PAN_HEIGHT;
     if (offsetHeight > 0) {
       this._viewBoxVals.minY -= offsetHeight;
+      if (this._viewBoxVals.minY < 0) {
+        this._viewBoxVals.minY = 0;
+      }
     }
   }
 
   _windowResizeEvent() {
-    this._designerWidth = this._container.offsetWidth;
-    this._designerHeight = this._container.offsetHeight;
+    this._designerWidth = this._svgElem.clientWidth;
+    this._designerHeight = this._svgElem.clientHeight;
 
     this._viewBoxVals.width = this._designerWidth / this._zoom;
     this._viewBoxVals.height = this._designerHeight / this._zoom;
