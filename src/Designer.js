@@ -13,6 +13,17 @@ export default class Designer {
     this._btnZoomIn = this.mainElem.getElementById('btn-zoom-in');
     this._btnZoomOut = this.mainElem.getElementById('btn-zoom-out');
 
+    this._svgElem.style.setProperty('max-width', constant.DESIGNER_PAN_WIDTH + 'px');
+    this._svgElem.style.setProperty('max-height', constant.DESIGNER_PAN_HEIGHT + 'px');
+
+    this._reset();
+
+    this._setUpEvents();
+  }
+
+  _reset() {
+    this._zoom = 1;
+
     this._designerWidth = this._container.offsetWidth < constant.DESIGNER_PAN_WIDTH ? this._container.offsetWidth: constant.DESIGNER_PAN_WIDTH;
     this._designerHeight = this._container.offsetHeight < constant.DESIGNER_PAN_HEIGHT ? this._container.offsetHeight: constant.DESIGNER_PAN_HEIGHT;
 
@@ -23,20 +34,12 @@ export default class Designer {
       height: this._designerHeight,
     };
 
-    this._minimap.style.width = constant.DESIGNER_PAN_WIDTH * parseInt(this._minimap.style.height, 10) / constant.DESIGNER_PAN_HEIGHT + 'px';
-
-    this._svgElem.style.setProperty('max-width', constant.DESIGNER_PAN_WIDTH + 'px');
-    this._svgElem.style.setProperty('max-height', constant.DESIGNER_PAN_HEIGHT + 'px');
+    this._tableMinimap = new Map();
+    this._relationInfos = [];
 
     this._minimap.setAttribute('viewBox', `0 0 ${constant.DESIGNER_PAN_WIDTH} ${constant.DESIGNER_PAN_HEIGHT}`);
 
-    this._setUpEvents();
-
-    this._relationInfos = [];
-
-    this._zoom = 1;
-
-    this._tableMinimap = new Map();
+    this._minimap.querySelectorAll('.mini_table').forEach((miniTable) => miniTable.remove());
 
     this._setViewBox();
   }
@@ -49,6 +52,8 @@ export default class Designer {
       table.setDesigner(this);
       table.setMoveListener(this.onTableMove.bind(this));
     });
+
+    this._reset();
 
     this.draw();
   }
