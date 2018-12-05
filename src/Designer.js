@@ -25,8 +25,8 @@ export default class Designer {
 
     this._minimap.style.width = constant.DESIGNER_PAN_WIDTH * parseInt(this._minimap.style.height, 10) / constant.DESIGNER_PAN_HEIGHT + 'px';
 
-    this._svgElem.style['max-width'] = constant.DESIGNER_PAN_WIDTH;
-    this._svgElem.style['max-height'] = constant.DESIGNER_PAN_HEIGHT;
+    this._svgElem.style.setProperty('max-width', constant.DESIGNER_PAN_WIDTH + 'px');
+    this._svgElem.style.setProperty('max-height', constant.DESIGNER_PAN_HEIGHT + 'px');
 
     this._minimap.setAttribute('viewBox', `0 0 ${constant.DESIGNER_PAN_WIDTH} ${constant.DESIGNER_PAN_HEIGHT}`);
 
@@ -352,8 +352,8 @@ export default class Designer {
   }
 
   _windowResizeEvent() {
-    this._designerWidth = this._svgElem.clientWidth;
-    this._designerHeight = this._svgElem.clientHeight;
+    this._designerWidth = this._svgElem.width.baseVal.value;
+    this._designerHeight = this._svgElem.height.baseVal.value;
 
     this._viewBoxVals.width = this._designerWidth / this._zoom;
     this._viewBoxVals.height = this._designerHeight / this._zoom;
