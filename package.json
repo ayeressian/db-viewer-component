@@ -7,7 +7,8 @@
     "build-prod": "webpack --mode=production",
     "build-dev": "webpack --mode=development --watch",
     "publish-npm": "rm -r dist && npm run build-prod && npm publish",
-    "test": "karma start"
+    "test": "karma start",
+    "test-ee": "jasmine spec/main.spec.js"
   },
   "main": "dist/main.js",
   "author": "",
@@ -19,12 +20,14 @@
     "eslint-config-google": "^0.9.1",
     "html-loader": "^0.5.5",
     "http-server": "^0.11.1",
+    "jasmine": "^3.3.1",
     "jasmine-core": "^3.3.0",
     "karma": "^3.1.1",
     "karma-chrome-launcher": "^2.2.0",
     "karma-jasmine": "^1.1.2",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^3.0.5",
+    "puppeteer": "^1.11.0",
     "webpack": "^4.19.1",
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^3.1.8"
