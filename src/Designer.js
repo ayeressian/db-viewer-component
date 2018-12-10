@@ -406,7 +406,7 @@ export default class Designer {
 
     this.mainElem.addEventListener('mouseup', () => {
       this.mainElem.removeEventListener('mousemove', mouseMove);
-    }, false);
+    });
 
     this._btnZoomIn.addEventListener('click', () => {
       this._viewBoxVals.width = this._viewBoxVals.width / ZOOM;

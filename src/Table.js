@@ -42,10 +42,10 @@ export default class Table {
       mouseDownInitialElemX = (event.clientX - boundingRect.left) / this._designer.getZoom();
       mouseDownInitialElemY = (event.clientY - boundingRect.top) / this._designer.getZoom();
       document.addEventListener('mousemove', mouseMove);
-    }, false);
+    });
     document.addEventListener('mouseup', () => {
       document.removeEventListener('mousemove', mouseMove);
-    }, false);
+    });
   }
 
   setName(name) {
@@ -136,8 +136,9 @@ export default class Table {
     this._elem.setAttributeNS(null, 'transform', `translate(${this._pos.x},${this._pos.y})`);
 
     setTimeout(() => {
-      this._elem.setAttributeNS(null, 'width', this._table.scrollWidth);
-      this._elem.setAttributeNS(null, 'height', this._table.scrollHeight);
+      const borderWidth = getComputedStyle(this._table).borderWidth;
+      this._elem.setAttributeNS(null, 'width', this._table.scrollWidth + borderWidth);
+      this._elem.setAttributeNS(null, 'height', this._table.scrollHeight + borderWidth);
     });
 
     this._table = document.createElementNS(constant.nsHtml, 'table');
