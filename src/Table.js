@@ -2,7 +2,6 @@ import constant from './const.js';
 import {
   to3FixedNumber
 } from './mathUtil.js';
-import {isChrome} from './util.js';
 
 export default class Table {
   constructor({
@@ -16,6 +15,14 @@ export default class Table {
     this.columns = columns;
     this._name = name;
     this._pos = pos;
+  }
+
+  get pos() {
+    return this._pos;
+  }
+
+  get name() {
+    return this._name;
   }
 
   _moveEvents() {
@@ -36,12 +43,14 @@ export default class Table {
       this._onMove && this._onMove(this, deltaX, deltaY);
     };
 
-    this._table.addEventListener('mousedown', (event) => {
+    this._elem.addEventListener('mousedown', (event) => {
       event.stopPropagation();
       const boundingRect = this._table.getBoundingClientRect();
       mouseDownInitialElemX = (event.clientX - boundingRect.left) / this._designer.getZoom();
       mouseDownInitialElemY = (event.clientY - boundingRect.top) / this._designer.getZoom();
       document.addEventListener('mousemove', mouseMove);
+      this._elem.parentNode.appendChild(this._elem);
+      this._moveBottom();
     });
     document.addEventListener('mouseup', () => {
       document.removeEventListener('mousemove', mouseMove);
@@ -136,7 +145,8 @@ export default class Table {
     this._elem.setAttributeNS(null, 'transform', `translate(${this._pos.x},${this._pos.y})`);
 
     setTimeout(() => {
-      const borderWidth = getComputedStyle(this._table).borderWidth;
+      let borderWidth = parseInt(getComputedStyle(this._table).borderWidth, 10);
+      borderWidth = isNaN(borderWidth)? 0: borderWidth;
       this._elem.setAttributeNS(null, 'width', this._table.scrollWidth + borderWidth);
       this._elem.setAttributeNS(null, 'height', this._table.scrollHeight + borderWidth);
     });
