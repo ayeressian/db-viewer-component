@@ -50,7 +50,6 @@ export default class Table {
       mouseDownInitialElemY = (event.clientY - boundingRect.top) / this._designer.getZoom();
       document.addEventListener('mousemove', mouseMove);
       this._elem.parentNode.appendChild(this._elem);
-      this._moveBottom();
     });
     document.addEventListener('mouseup', () => {
       document.removeEventListener('mousemove', mouseMove);
