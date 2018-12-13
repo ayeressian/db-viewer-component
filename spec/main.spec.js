@@ -26,6 +26,10 @@ describe('db-designer', () => {
     await page.mouse.up();
   };
 
+  const getShadowRoot = () => {
+    return page.evaluateHandle(() => document.querySelector('db-designer').shadowRoot);
+  };
+
   before(async () => {
     browser = await puppeteer.launch({
       headless: false
@@ -41,10 +45,9 @@ describe('db-designer', () => {
 
   describe('in shadow root', () => {
     let shadowRoot;
+
     before(async () => {
-      shadowRoot = await page.evaluateHandle(() => {
-        return document.querySelector('db-designer').shadowRoot;
-      });
+      shadowRoot = await getShadowRoot();
     });
 
     it('#minimap needs to be rendered', async () => {
@@ -69,17 +72,49 @@ describe('db-designer', () => {
         expect(tables.length).to.equal(schoolSchema.tables.length);
       });
 
+      it('should show correct number of paths', async () => {
+        await mouseDragElement(tables[2], 50, 1050);
+        await mouseDragElement(tables[1], 550, 50);
+        await mouseDragElement(tables[0], 50, 50);
+
+        const count = schoolSchema.tables.reduce((result, table) => {
+          return result + table.columns.reduce((result, column) => column.fk? result + 1: result, 0);
+        }, 0);
+
+        const paths = await designer.$$('path:not(.highlight)');
+
+        expect(paths.length).equals(count);
+      });
+
       describe('#table', () => {
+        before(async () => {
+          await page.reload({waitUntil: 'load'});
+          shadowRoot = await getShadowRoot();
+          tables = await shadowRoot.$$('#designer foreignObject table');
+        });
+
         it('should move on click and drag by exact amount', async () => {
-          const clickedTable = tables[2];
+          const table = tables[2];
           const amountX = 100;
           const amountY = 100;
-          const beforeCord = await clickedTable.boundingBox();
-          await mouseDragElement(clickedTable, amountX, amountY);
-          const afterCord = await clickedTable.boundingBox();
+          const beforeCord = await table.boundingBox();
+          await mouseDragElement(table, amountX, amountY);
+          const afterCord = await table.boundingBox();
 
           expect(Math.round(afterCord.x - beforeCord.x)).to.equal(amountX);
           expect(Math.round(afterCord.y - beforeCord.y)).to.equal(amountY);
+        });
+
+        it('clicked one should be at the top of other tables', async () => {
+          const clickedTable = tables[1];
+          const amountX = 100;
+          const amountY = 100;
+          await mouseDragElement(clickedTable, amountX, amountY);
+
+          const afterClickThs = await shadowRoot.$$('#designer foreignObject table th');
+
+          const title = await getInnerHtml(afterClickThs[2]);
+          expect(title).equal(schoolSchema.tables[1].name);
         });
       });
     });
