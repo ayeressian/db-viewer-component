@@ -56,10 +56,6 @@ describe('db-designer', () => {
       let tables;
       let designer;
 
-      const getTables = () => {
-        return shadowRoot.$$('#designer foreignObject table');
-      };
-
       before(async () => {
         designer = await shadowRoot.$('#designer');
         tables = await shadowRoot.$$('#designer foreignObject table');
