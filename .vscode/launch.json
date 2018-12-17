@@ -15,7 +15,10 @@
         "${workspaceFolder}/spec"
       ],
       "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "PORT": "9998"
+      }
     },
     {
       "type": "node",

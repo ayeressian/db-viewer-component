@@ -9,7 +9,9 @@ module.exports = {
     port: 9998,
     historyApiFallback: {
       index: './example/index.html'
-    }
+    },
+    publicPath: '/dist',
+    watchContentBase: true
   },
   entry: './src/index.js',
   output: {

@@ -10,6 +10,8 @@ const wait = (time = 0) => {
   return new Promise((resolve) => setTimeout(resolve, 1000));
 };
 
+const DEFAULT_SERVER_PORT = 6001;
+
 describe('db-designer', () => {
   let page;
   let browser;
@@ -35,7 +37,11 @@ describe('db-designer', () => {
       headless: false
     });
     page = await browser.newPage();
-    await page.goto('http://localhost:9998', {waitUntil: 'load'});
+    let port = process.env.PORT;
+    if (port == null) {
+      port = DEFAULT_SERVER_PORT;
+    }
+    await page.goto(`http://localhost:${port}`, {waitUntil: 'load'});
   });
 
   it('should contain db-designer', async () => {
