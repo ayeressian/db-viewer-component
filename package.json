@@ -7,13 +7,18 @@
     "build-prod": "webpack --mode=production",
     "build-dev": "webpack --mode=development --watch",
     "publish-npm": "rm -r dist && npm run build-prod && npm publish",
-    "test": "mocha --timeout 15000 'spec/**/*.spec.js'"
+    "test": "mocha --timeout 15000 'spec/**/*.spec.js'",
+    "storybook": "start-storybook -p 9001 -c .storybook"
   },
   "main": "dist/main.js",
   "author": "",
   "license": "GNU 3",
   "devDependencies": {
+    "@storybook/html": "^4.1.1",
+    "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.6",
+    "babel-loader": "^7.1.5",
+    "babel-runtime": "^6.26.0",
     "chai": "^4.2.0",
     "css-loader": "^1.0.0",
     "eslint": "^4.19.1",
