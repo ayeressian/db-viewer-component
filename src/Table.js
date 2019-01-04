@@ -44,6 +44,7 @@ export default class Table {
     };
 
     this._elem.addEventListener('mousedown', (event) => {
+      this._table.classList.add('move');
       event.stopPropagation();
       const boundingRect = this._table.getBoundingClientRect();
       mouseDownInitialElemX = (event.clientX - boundingRect.left) / this._designer.getZoom();
@@ -53,6 +54,7 @@ export default class Table {
       this._elem.parentNode.appendChild(this._elem);
     });
     document.addEventListener('mouseup', () => {
+      this._table.classList.remove('move');
       document.removeEventListener('mousemove', mouseMove);
     });
   }

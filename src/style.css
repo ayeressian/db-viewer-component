@@ -70,6 +70,10 @@
   font: normal 10px Verdana, Arial, sans-serif;
 }
 
+#designer.pan {
+  cursor: grabbing;
+}
+
 .tableGroup {
   stroke: #707070;
 }
@@ -80,6 +84,10 @@
   border-collapse: collapse;
 
   border: 1px solid #bbb;
+}
+
+.table.move {
+  cursor: all-scroll;
 }
 
 .table tr {

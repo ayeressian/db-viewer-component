@@ -391,16 +391,19 @@ export default class Designer {
     };
 
     this._container.addEventListener('mouseleave', () => {
+      this._svgElem.classList.remove('pan');
       this.mainElem.removeEventListener('mousemove', mouseMove);
     });
 
     this._container.addEventListener('mousedown', (event) => {
+      this._svgElem.classList.add('pan');
       prevMouseCordX = event.clientX;
       prevMouseCordY = event.clientY;
       this.mainElem.addEventListener('mousemove', mouseMove);
     });
 
     this.mainElem.addEventListener('mouseup', () => {
+      this._svgElem.classList.remove('pan');
       this.mainElem.removeEventListener('mousemove', mouseMove);
     });
 
