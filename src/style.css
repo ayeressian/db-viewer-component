@@ -87,7 +87,7 @@
 }
 
 .table.move {
-  cursor: all-scroll;
+  cursor: move;
 }
 
 .table tr {
