@@ -2,6 +2,7 @@
   "name": "db-viewer-component",
   "version": "1.0.13",
   "description": "",
+  "url": "https://github.com/ayeressian/db-viewer-component",
   "scripts": {
     "start": "webpack-dev-server --mode development --open",
     "build-prod": "webpack --mode=production",
