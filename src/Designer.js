@@ -22,9 +22,6 @@ export default class Designer {
   _reset() {
     this._zoom = 1;
 
-    this._designerWidth = this._container.offsetWidth < constant.DESIGNER_PAN_WIDTH ? this._container.offsetWidth: constant.DESIGNER_PAN_WIDTH;
-    this._designerHeight = this._container.offsetHeight < constant.DESIGNER_PAN_HEIGHT ? this._container.offsetHeight: constant.DESIGNER_PAN_HEIGHT;
-
     this._viewBoxVals = {
       minX: 0,
       minY: 0,
@@ -43,7 +40,7 @@ export default class Designer {
 
     this._minimap.querySelectorAll('.mini_table').forEach((miniTable) => miniTable.remove());
 
-    this._setViewBox();
+    this._setViewPoint();
   }
 
   load(tables) {
@@ -323,7 +320,7 @@ export default class Designer {
     });
   }
 
-  _setViewBox() {
+  _setViewPoint() {
     this._viewpoint.setAttributeNS(null, 'x', this._viewBoxVals.minX);
     this._viewpoint.setAttributeNS(null, 'y', this._viewBoxVals.minY);
     this._viewpoint.setAttributeNS(null, 'width', this._viewBoxVals.width);
@@ -357,21 +354,18 @@ export default class Designer {
   }
 
   _windowResizeEvent() {
-    this._designerWidth = this._svgElem.width.baseVal.value;
-    this._designerHeight = this._svgElem.height.baseVal.value;
-
-    this._viewBoxVals.width = this._designerWidth / this._zoom;
-    this._viewBoxVals.height = this._designerHeight / this._zoom;
+    this._viewBoxVals.width = this._svgContainer.clientWidth / this._zoom;
+    this._viewBoxVals.height = this._svgContainer.clientHeight / this._zoom;
 
     this._viewportAddjustment();
 
-    this._setViewBox();
+    this._setViewPoint();
   }
 
   _setUpEvents() {
     const ZOOM = 1.2;
 
-    // window.addEventListener('resize', this._windowResizeEvent.bind(this));
+    window.addEventListener('resize', this._windowResizeEvent.bind(this));
 
     let prevMouseCordX;
     let prevMouseCordY;
@@ -383,15 +377,17 @@ export default class Designer {
       prevMouseCordY = event.clientY;
       prevMouseCordX = event.clientX;
 
-      if (this._viewBoxVals.minX - deltaX + this._designerWidth / this._zoom < constant.DESIGNER_PAN_WIDTH &&
-        this._viewBoxVals.minX - deltaX >= 0) {
+      if (this._svgContainer.scrollLeft - deltaX + this._svgContainer.clientWidth / this._zoom < constant.DESIGNER_PAN_WIDTH &&
+        this._svgContainer.scrollLeft - deltaX >= 0) {
         this._viewBoxVals.minX -= deltaX;
+        this._svgContainer.scrollLeft -= deltaX;
       }
-      if (this._viewBoxVals.minY - deltaY + this._designerHeight / this._zoom < constant.DESIGNER_PAN_HEIGHT &&
-        this._viewBoxVals.minY - deltaY >= 0) {
+      if (this._svgContainer.scrollTop - deltaY + this._svgContainer.clientHeight / this._zoom < constant.DESIGNER_PAN_HEIGHT &&
+        this._svgContainer.scrollTop - deltaY >= 0) {
         this._viewBoxVals.minY -= deltaY;
+        this._svgContainer.scrollTop -= deltaY;
       }
-      this._setViewBox();
+      this._setViewPoint();
     };
 
     this._container.addEventListener('mouseleave', () => {
@@ -417,7 +413,7 @@ export default class Designer {
       this._viewBoxVals.width = this._svgContainer.clientWidth / this._zoom;
       this._viewBoxVals.height = this._svgContainer.clientHeight / this._zoom;
 
-      this._setViewBox();
+      this._setViewPoint();
     });
 
     this._btnZoomOut.addEventListener('click', () => {
@@ -432,7 +428,7 @@ export default class Designer {
         this._viewBoxVals.width = this._svgContainer.clientWidth / this._zoom;
         this._viewBoxVals.height = this._svgContainer.clientHeight / this._zoom;
 
-        this._setViewBox();
+        this._setViewPoint();
       }
     });
 
@@ -445,7 +441,7 @@ export default class Designer {
     this._svgContainer.addEventListener('scroll', (event) => {
       this._viewBoxVals.minX = this._svgContainer.scrollLeft / this._zoom;
       this._viewBoxVals.minY = this._svgContainer.scrollTop / this._zoom;
-      this._setViewBox();
+      this._setViewPoint();
     });
   }
 
