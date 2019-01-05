@@ -25,6 +25,26 @@ export default class Table {
     return this._name;
   }
 
+  _moveToTop() {
+    const parentNode = this._elem.parentNode;
+    // The reason for not using append of this._elem instead of remaining element prepend
+    // is to keep event concistency. The following code is for making click and and double click to work.
+    Array.from(parentNode.children).forEach((childElem) => {
+      if (childElem !== this._elem) {
+        parentNode.prepend(childElem);
+      }
+    });
+  }
+
+  _clickEvents() {
+    this._elem.addEventListener('dblclick', () => {
+      this._designer.tableDblClick(Table.tableDataCreator(this));
+    });
+    this._elem.addEventListener('click', () => {
+      this._designer.tableClick(Table.tableDataCreator(this));
+    });
+  }
+
   _moveEvents() {
     let mouseDownInitialElemX;
     let mouseDownInitialElemY;
@@ -44,14 +64,15 @@ export default class Table {
     };
 
     this._elem.addEventListener('mousedown', (event) => {
-      this._table.classList.add('move');
       event.stopPropagation();
+      this._table.classList.add('move');
       const boundingRect = this._table.getBoundingClientRect();
       mouseDownInitialElemX = (event.clientX - boundingRect.left) / this._designer.getZoom();
       mouseDownInitialElemY = (event.clientY - boundingRect.top) / this._designer.getZoom();
 
       document.addEventListener('mousemove', mouseMove);
-      this._elem.parentNode.appendChild(this._elem);
+
+      this._moveToTop();
     });
     document.addEventListener('mouseup', () => {
       this._table.classList.remove('move');
@@ -181,13 +202,8 @@ export default class Table {
       }
       columnTr.appendChild(columnTypeTd);
     });
+    this._clickEvents();
     this._moveEvents();
-    this._elem.addEventListener('dblclick', () => {
-      this._designer.tableDblClick(Table.tableDataCreator(this));
-    });
-    this._elem.addEventListener('click', () => {
-      this._designer.tableClick(Table.tableDataCreator(this));
-    });
 
     return this._elem;
   }
