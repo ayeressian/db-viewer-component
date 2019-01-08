@@ -2,7 +2,9 @@
 
 Implementation of DB viewer web component.
 
-To run (to see an example):
+See the [demo](https://ayeressian.github.io/db-viewer-component/)
+
+To run:
   1. npm i
   2. npm start
   3. Navigate to http://localhost:9998
