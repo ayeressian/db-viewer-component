@@ -29,7 +29,7 @@ export default class Table {
     const parentNode = this._elem.parentNode;
     // The reason for not using append of this._elem instead of remaining element prepend
     // is to keep event concistency. The following code is for making click and and double click to work.
-    Array.from(parentNode.children).forEach((childElem) => {
+    Array.from(parentNode.children).reverse().forEach((childElem) => {
       if (childElem !== this._elem) {
         parentNode.prepend(childElem);
       }
@@ -57,7 +57,10 @@ export default class Table {
       const normalizedClientY = mousePos.y / this._designer.getZoom() + this._designer.getPan().y / this._designer.getZoom();
       const deltaX = normalizedClientX - mouseDownInitialElemX;
       const deltaY = normalizedClientY - mouseDownInitialElemY;
-      this._elem.setAttributeNS(null, 'transform', `translate(${deltaX},${deltaY})`);
+      // TODO: change to transform when chrome new versions star have resolved the issue.
+      // this._elem.setAttributeNS(null, 'transform', `translate(${deltaX},${deltaY})`);
+      this._elem.setAttributeNS(null, 'x', deltaX);
+      this._elem.setAttributeNS(null, 'y', deltaY);
       this._pos.x = deltaX;
       this._pos.y = deltaY;
       this._onMove && this._onMove(this, deltaX, deltaY);
@@ -165,7 +168,10 @@ export default class Table {
 
   render() {
     this._elem = document.createElementNS(constant.nsSvg, 'foreignObject');
-    this._elem.setAttributeNS(null, 'transform', `translate(${this._pos.x},${this._pos.y})`);
+    // TODO: change to transform when chrome new versions star have resolved the issue.
+    // this._elem.setAttributeNS(null, 'transform', `translate(${this._pos.x},${this._pos.y})`);
+    this._elem.setAttributeNS(null, 'x', this._pos.x);
+    this._elem.setAttributeNS(null, 'y', this._pos.y);
 
     setTimeout(() => {
       let borderWidth = parseInt(getComputedStyle(this._table).borderWidth, 10);
