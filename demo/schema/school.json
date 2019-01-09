@@ -2,6 +2,10 @@
   "tables": [
     {
       "name": "school",
+      "pos": {
+        "x": 522,
+        "y": 360
+      },
       "columns": [
         {
           "name": "id",
@@ -27,6 +31,10 @@
     },
     {
       "name": "class",
+      "pos": {
+        "x": 420,
+        "y": 106
+      },
       "columns": [
         {
           "name": "id",
@@ -50,6 +58,10 @@
     },
     {
       "name": "student",
+      "pos": {
+        "x": 171,
+        "y": 207
+      },
       "columns": [
         {
           "name": "id",
