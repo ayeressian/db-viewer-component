@@ -1,6 +1,6 @@
 {
   "name": "db-viewer-component",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "description": "A web component for showing db schemas",
   "repository": {
     "type": "git",
