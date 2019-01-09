@@ -50,7 +50,8 @@
   width: 30px;
   height: 30px;
   margin-bottom: 5px;
-  padding: 5px;
+  padding: 1px;
+  font-size: large;
 }
 
 #designer-container .svg-container {
