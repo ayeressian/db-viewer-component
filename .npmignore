@@ -1,5 +1,4 @@
 node_modules/
 .vscode/
 .DS_Store
-demo/node_modules
-demo/dist
+demo/

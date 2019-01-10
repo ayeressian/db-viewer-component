@@ -336,19 +336,21 @@ export default class Designer {
   }
 
   _viewportAddjustment() {
-    const offsetWidth = this._viewBoxVals.width + this._viewBoxVals.minX - constant.DESIGNER_PAN_WIDTH;
-    if (offsetWidth > 0) {
-      this._viewBoxVals.minX -= offsetWidth;
-      if (this._viewBoxVals.minX < 0) {
-        this._viewBoxVals.minX = 0;
+    if (this._viewBoxVals.minX < 0) {
+      this._viewBoxVals.minX = 0;
+    } else {
+      const offsetWidth = this._viewBoxVals.width + this._viewBoxVals.minX - constant.DESIGNER_PAN_WIDTH;
+      if (offsetWidth > 0) {
+        this._viewBoxVals.minX -= offsetWidth;
       }
     }
 
-    const offsetHeight = this._viewBoxVals.height + this._viewBoxVals.minY - constant.DESIGNER_PAN_HEIGHT;
-    if (offsetHeight > 0) {
-      this._viewBoxVals.minY -= offsetHeight;
-      if (this._viewBoxVals.minY < 0) {
-        this._viewBoxVals.minY = 0;
+    if (this._viewBoxVals.minY < 0) {
+      this._viewBoxVals.minY = 0;
+    } else {
+      const offsetHeight = this._viewBoxVals.height + this._viewBoxVals.minY - constant.DESIGNER_PAN_HEIGHT;
+      if (offsetHeight > 0) {
+        this._viewBoxVals.minY -= offsetHeight;
       }
     }
   }
@@ -446,6 +448,35 @@ export default class Designer {
       this._viewBoxVals.minY = this._svgContainer.scrollTop / this._zoom;
       this._setViewPoint();
     });
+
+    const minimapMouseMove = this._minimapPositionFromMouse.bind(this);
+
+    this._minimap.addEventListener('mousedown', (event) => {
+      this._minimapPositionFromMouse(event);
+      this._minimap.addEventListener('mousemove', minimapMouseMove);
+    });
+    this._container.addEventListener('mouseleave', () => {
+      this._minimap.removeEventListener('mousemove', minimapMouseMove);
+    });
+    this._container.addEventListener('mouseup', () => {
+      this._minimap.removeEventListener('mousemove', minimapMouseMove);
+    });
+  }
+
+  _minimapPositionFromMouse(event) {
+    event.stopPropagation();
+    const minimapBoundingClientRect = this._minimap.getBoundingClientRect();
+    const x = event.clientX - minimapBoundingClientRect.x;
+    const y = event.clientY - minimapBoundingClientRect.y;
+    const svgElemBoundingClientRect = this._svgElem.getBoundingClientRect();
+    const ratioX = svgElemBoundingClientRect.width / minimapBoundingClientRect.width;
+    const ratioY = svgElemBoundingClientRect.height / minimapBoundingClientRect.height;
+    const _viewpointBoundingClientRect = this._viewpoint.getBoundingClientRect();
+    this._viewBoxVals.minX = (x - _viewpointBoundingClientRect.width / 2) * ratioX;
+    this._viewBoxVals.minY = (y - _viewpointBoundingClientRect.height / 2) * ratioY;
+    this._viewportAddjustment();
+    this._svgContainer.scrollLeft = this._viewBoxVals.minX;
+    this._svgContainer.scrollTop = this._viewBoxVals.minY;
   }
 
   getZoom() {
