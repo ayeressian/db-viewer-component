@@ -24,6 +24,18 @@ class DBDesigner extends HTMLElement {
     this.dispatchEvent(new CustomEvent('tableClick', {detail: table}));
   }
 
+  onTableContextMenu(table) {
+    this.dispatchEvent(new CustomEvent('contextMenu', {detail: table}));
+  }
+
+  getTablePos(tableName) {
+    // TODO
+  }
+
+  getViewPortPos(tableName) {
+    // TODO
+  }
+
   onTableMove(table) {
     this.dispatchEvent(new CustomEvent('tableMove', {detail: table}));
   }
