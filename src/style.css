@@ -52,6 +52,11 @@
   margin-bottom: 5px;
   padding: 1px;
   font-size: large;
+  float: left;
+}
+
+#designer-container #minimap-container #btn-container #btn-zoom-in {
+  margin-right: 4px;
 }
 
 #designer-container .svg-container {
