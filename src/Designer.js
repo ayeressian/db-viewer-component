@@ -483,6 +483,10 @@ export default class Designer {
     return this._zoom;
   }
 
+  getTablePos(tableName) {
+    return this.tables.find((table) => table.name === tableName).pos;
+  }
+
   getPan() {
     return {
       x: this._svgContainer.scrollLeft,

@@ -29,11 +29,15 @@ class DBDesigner extends HTMLElement {
   }
 
   getTablePos(tableName) {
-    // TODO
+    return this.designer.getTablePos(tableName);
   }
 
-  getViewPortPos(tableName) {
-    // TODO
+  get scrollLeft() {
+    return this.designer.getPan().x;
+  }
+
+  get scrollTop() {
+    return this.designer.getPan().y;
   }
 
   onTableMove(table) {
