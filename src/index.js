@@ -13,19 +13,25 @@ class DBViewer extends HTMLElement {
     this.veiwer = new Viewer(shadowDom);
     this.veiwer.setTableDblClickCallback(this.onTableDblClick.bind(this));
     this.veiwer.setTableClickCallback(this.onTableClick.bind(this));
+    this.veiwer.setTableContextMenuCallback(this.onTableContextMenu.bind(this));
     this.veiwer.setTableMoveCallback(this.onTableMove.bind(this));
+  }
+
+  onTableClick(table, event) {
+    event.detail = table;
+    this.dispatchEvent(new CustomEvent('tableClick', {detail: table}));
   }
 
   onTableDblClick(table) {
     this.dispatchEvent(new CustomEvent('tableDblClick', {detail: table}));
   }
 
-  onTableClick(table) {
-    this.dispatchEvent(new CustomEvent('tableClick', {detail: table}));
-  }
-
   onTableContextMenu(table) {
     this.dispatchEvent(new CustomEvent('contextMenu', {detail: table}));
+  }
+
+  onTableMove(table) {
+    this.dispatchEvent(new CustomEvent('tableMove', {detail: table}));
   }
 
   getTablePos(tableName) {
@@ -38,10 +44,6 @@ class DBViewer extends HTMLElement {
 
   get scrollTop() {
     return this.veiwer.getPan().y;
-  }
-
-  onTableMove(table) {
-    this.dispatchEvent(new CustomEvent('tableMove', {detail: table}));
   }
 
   set src(src) {

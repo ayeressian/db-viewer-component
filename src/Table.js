@@ -38,10 +38,13 @@ export default class Table {
 
   _clickEvents() {
     this._elem.addEventListener('dblclick', () => {
-      this._veiwer.tableDblClick(Table.tableDataCreator(this));
+      this._veiwer.tableDblClick(this.tableDataCreator());
     });
     this._elem.addEventListener('click', () => {
-      this._veiwer.tableClick(Table.tableDataCreator(this));
+      this._veiwer.tableClick(this.tableDataCreator());
+    });
+    this._elem.addEventListener('contextmenu', () => {
+      this._veiwer.tableContextMenu(this.tableDataCreator());
     });
   }
 
@@ -214,10 +217,13 @@ export default class Table {
     return this._elem;
   }
 
-  static tableDataCreator(table) {
+  tableDataCreator() {
+    const boundingRect = this._table.getBoundingClientRect();
     return {
-      name: table._name,
-      pos: table._pos
+      name: this._name,
+      pos: this._pos,
+      width: boundingRect.width,
+      height: boundingRect.height
     };
   }
 

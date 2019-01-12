@@ -1,12 +1,51 @@
 # db-viewer-component
 
-Implementation of DB viewer web component.
+Implementation of database viewer web component.
+See the [demo](https://ayeressian.github.io/db-viewer-component/).
+Note: This component doesn't work in Edge browser, since Edge browser doesn't have native support for web component.
 
-See the [demo](https://ayeressian.github.io/db-viewer-component/)
+### Usage
+In the case of webpack, import the package in your main js file.
+```javascript
+import 'db-viewer-component';
+```
+in html:
+```html
+<db-viewer src="/awesome-schema.json"></db-viewer>
+```
+The schema for viewer can be specified either with src attribute as shown above or by schema attribute of db-viwer html object like this:
 
-To run:
+```javascript
+document.querySelector('db-viewer').src = awesomeSchema;
+```
+The json schema for db-veiwer schema can be find [here](https://github.com/ayeressian/db-designer/blob/master/src/renderer/validation-schema.js).
+
+### API
+#### Attributes
+Name | Description
+--- | ---
+`src` | Viewer-schema url. It should follow [this](https://github.com/ayeressian/db-designer/blob/master/src/renderer/validation-schema.js) json schema.
+#### Events
+Name | Description | event.detail
+--- | --- | ---
+`tableClick` | Clicking on a table. | {tableName, pos: {x, y}, width, height}
+`tableDblClick` | Double clicking on a table. | {tableName, pos: {x, y}, width, height}
+`tableContextMenu` | Right clicking on a table. | {tableName, pos: {x, y}, width, height}
+`tableMove` | Moving table. | {tableName, pos: {x, y}, width, height}
+#### Properties
+Name | Description
+--- | ---
+`schema` | get and set schema for viewer. This will override the html src attribute. Note: src attribute accepts the address of viewer-schema and schema property accepts javascript object as viewer-schema. The viwer-schema should follow [this](https://github.com/ayeressian/db-designer/blob/master/src/renderer/validation-schema.js) json schema.
+`src` | Viewer-schema url. It should follow [this](https://github.com/ayeressian/db-designer/blob/master/src/renderer/validation-schema.js) json schema. It has the same effect as the src attribute.
+`scrollLeft` | get and set scrolling position from left.
+`scrollTop` | get and set scrolling position from top.
+#### Methods
+Name | Description | Arguments
+--- | --- | ---
+`getTablePos` | get position of table. | table name
+`setTablePos` | set position of table. | table name, x cord, y cord
+
+### To run
   1. npm i
   2. npm start
   3. Navigate to http://localhost:9998
-
-It doesn't work in Edge browser, since edge doesn't have native support for web component.

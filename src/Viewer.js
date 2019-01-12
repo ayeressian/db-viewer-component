@@ -509,6 +509,10 @@ export default class Viewer {
     this._tableClickCallback = callback;
   }
 
+  setTableContextMenuCallback(callback) {
+    this._tableContextMenuCallback = callback;
+  }
+
   setTableMoveCallback(callback) {
     this._tableMoveCallback = callback;
   }
@@ -522,6 +526,12 @@ export default class Viewer {
   tableClick(table) {
     if (this._tableClickCallback) {
       this._tableClickCallback(table);
+    }
+  }
+
+  tableContextMenu(table) {
+    if (this._tableContextMenuCallback) {
+      this._tableContextMenuCallback(table);
     }
   }
 }
