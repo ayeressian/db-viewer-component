@@ -2,12 +2,12 @@ import Relation from './Relation.js';
 import constant from './const.js';
 import Table from './Table.js';
 
-export default class Designer {
+export default class Viewer {
   constructor(mainElem) {
     this.mainElem = mainElem;
-    this._container = this.mainElem.getElementById('designer-container');
+    this._container = this.mainElem.getElementById('veiwer-container');
 
-    this._svgElem = this.mainElem.getElementById('designer');
+    this._svgElem = this.mainElem.getElementById('veiwer');
     this._minimap = this.mainElem.getElementById('minimap');
     this._viewpoint = this.mainElem.getElementById('viewpoint');
     this._btnZoomIn = this.mainElem.getElementById('btn-zoom-in');
@@ -29,14 +29,14 @@ export default class Designer {
       height: this._svgContainer.clientHeight,
     };
 
-    this._svgElem.style.height = constant.DESIGNER_PAN_HEIGHT + 'px';
-    this._svgElem.style.width = constant.DESIGNER_PAN_WIDTH + 'px';
-    this._svgElem.setAttribute('viewBox', `0 0 ${constant.DESIGNER_PAN_WIDTH} ${constant.DESIGNER_PAN_HEIGHT}`);
+    this._svgElem.style.height = constant.VIEWER_PAN_HEIGHT + 'px';
+    this._svgElem.style.width = constant.VIEWER_PAN_WIDTH + 'px';
+    this._svgElem.setAttribute('viewBox', `0 0 ${constant.VIEWER_PAN_WIDTH} ${constant.VIEWER_PAN_HEIGHT}`);
 
     this._tableMinimap = new Map();
     this._relationInfos = [];
 
-    this._minimap.setAttribute('viewBox', `0 0 ${constant.DESIGNER_PAN_WIDTH} ${constant.DESIGNER_PAN_HEIGHT}`);
+    this._minimap.setAttribute('viewBox', `0 0 ${constant.VIEWER_PAN_WIDTH} ${constant.VIEWER_PAN_HEIGHT}`);
 
     this._minimap.querySelectorAll('.mini_table').forEach((miniTable) => miniTable.remove());
 
@@ -48,7 +48,7 @@ export default class Designer {
     this._svgElem.innerHTML = '';
     this.tables = tables;
     tables.forEach((table) => {
-      table.setDesigner(this);
+      table.setVeiwer(this);
       table.setMoveListener(this.onTableMove.bind(this));
     });
 
@@ -339,7 +339,7 @@ export default class Designer {
     if (this._viewBoxVals.minX < 0) {
       this._viewBoxVals.minX = 0;
     } else {
-      const offsetWidth = this._viewBoxVals.width + this._viewBoxVals.minX - constant.DESIGNER_PAN_WIDTH;
+      const offsetWidth = this._viewBoxVals.width + this._viewBoxVals.minX - constant.VIEWER_PAN_WIDTH;
       if (offsetWidth > 0) {
         this._viewBoxVals.minX -= offsetWidth;
       }
@@ -348,7 +348,7 @@ export default class Designer {
     if (this._viewBoxVals.minY < 0) {
       this._viewBoxVals.minY = 0;
     } else {
-      const offsetHeight = this._viewBoxVals.height + this._viewBoxVals.minY - constant.DESIGNER_PAN_HEIGHT;
+      const offsetHeight = this._viewBoxVals.height + this._viewBoxVals.minY - constant.VIEWER_PAN_HEIGHT;
       if (offsetHeight > 0) {
         this._viewBoxVals.minY -= offsetHeight;
       }
@@ -379,12 +379,12 @@ export default class Designer {
       prevMouseCordY = event.clientY;
       prevMouseCordX = event.clientX;
 
-      if (this._svgContainer.scrollLeft - deltaX + this._svgContainer.clientWidth / this._zoom < constant.DESIGNER_PAN_WIDTH &&
+      if (this._svgContainer.scrollLeft - deltaX + this._svgContainer.clientWidth / this._zoom < constant.VIEWER_PAN_WIDTH &&
         this._svgContainer.scrollLeft - deltaX >= 0) {
         this._viewBoxVals.minX -= deltaX;
         this._svgContainer.scrollLeft -= deltaX;
       }
-      if (this._svgContainer.scrollTop - deltaY + this._svgContainer.clientHeight / this._zoom < constant.DESIGNER_PAN_HEIGHT &&
+      if (this._svgContainer.scrollTop - deltaY + this._svgContainer.clientHeight / this._zoom < constant.VIEWER_PAN_HEIGHT &&
         this._svgContainer.scrollTop - deltaY >= 0) {
         this._viewBoxVals.minY -= deltaY;
         this._svgContainer.scrollTop -= deltaY;
@@ -412,8 +412,8 @@ export default class Designer {
     this._btnZoomIn.addEventListener('click', () => {
       this._zoom *= ZOOM;
 
-      this._svgElem.style.height = constant.DESIGNER_PAN_HEIGHT * this._zoom + 'px';
-      this._svgElem.style.width = constant.DESIGNER_PAN_WIDTH * this._zoom + 'px';
+      this._svgElem.style.height = constant.VIEWER_PAN_HEIGHT * this._zoom + 'px';
+      this._svgElem.style.width = constant.VIEWER_PAN_WIDTH * this._zoom + 'px';
 
       this._viewBoxVals.width = this._svgContainer.clientWidth / this._zoom;
       this._viewBoxVals.height = this._svgContainer.clientHeight / this._zoom;
@@ -422,13 +422,13 @@ export default class Designer {
     });
 
     this._btnZoomOut.addEventListener('click', () => {
-      if (this._viewBoxVals.height * ZOOM <= constant.DESIGNER_PAN_HEIGHT &&
-        this._viewBoxVals.width * ZOOM <= constant.DESIGNER_PAN_WIDTH) {
+      if (this._viewBoxVals.height * ZOOM <= constant.VIEWER_PAN_HEIGHT &&
+        this._viewBoxVals.width * ZOOM <= constant.VIEWER_PAN_WIDTH) {
         this._viewportAddjustment();
         this._zoom /= ZOOM;
 
-        this._svgElem.style.height = constant.DESIGNER_PAN_HEIGHT * this._zoom + 'px';
-        this._svgElem.style.width = constant.DESIGNER_PAN_WIDTH * this._zoom + 'px';
+        this._svgElem.style.height = constant.VIEWER_PAN_HEIGHT * this._zoom + 'px';
+        this._svgElem.style.width = constant.VIEWER_PAN_WIDTH * this._zoom + 'px';
 
         this._viewBoxVals.width = this._svgContainer.clientWidth / this._zoom;
         this._viewBoxVals.height = this._svgContainer.clientHeight / this._zoom;

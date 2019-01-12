@@ -38,10 +38,10 @@ export default class Table {
 
   _clickEvents() {
     this._elem.addEventListener('dblclick', () => {
-      this._designer.tableDblClick(Table.tableDataCreator(this));
+      this._veiwer.tableDblClick(Table.tableDataCreator(this));
     });
     this._elem.addEventListener('click', () => {
-      this._designer.tableClick(Table.tableDataCreator(this));
+      this._veiwer.tableClick(Table.tableDataCreator(this));
     });
   }
 
@@ -51,10 +51,10 @@ export default class Table {
 
     const mouseMove = (event) => {
       event.stopPropagation();
-      const mousePos = this._designer.getMousePosRelativeContainer(event);
+      const mousePos = this._veiwer.getMousePosRelativeContainer(event);
 
-      const normalizedClientX = mousePos.x / this._designer.getZoom() + this._designer.getPan().x / this._designer.getZoom();
-      const normalizedClientY = mousePos.y / this._designer.getZoom() + this._designer.getPan().y / this._designer.getZoom();
+      const normalizedClientX = mousePos.x / this._veiwer.getZoom() + this._veiwer.getPan().x / this._veiwer.getZoom();
+      const normalizedClientY = mousePos.y / this._veiwer.getZoom() + this._veiwer.getPan().y / this._veiwer.getZoom();
       const deltaX = normalizedClientX - mouseDownInitialElemX;
       const deltaY = normalizedClientY - mouseDownInitialElemY;
       // TODO: change to transform when chrome new versions star have resolved the issue.
@@ -70,8 +70,8 @@ export default class Table {
       event.stopPropagation();
       this._table.classList.add('move');
       const boundingRect = this._table.getBoundingClientRect();
-      mouseDownInitialElemX = (event.clientX - boundingRect.left) / this._designer.getZoom();
-      mouseDownInitialElemY = (event.clientY - boundingRect.top) / this._designer.getZoom();
+      mouseDownInitialElemX = (event.clientX - boundingRect.left) / this._veiwer.getZoom();
+      mouseDownInitialElemY = (event.clientY - boundingRect.top) / this._veiwer.getZoom();
 
       document.addEventListener('mousemove', mouseMove);
 
@@ -100,19 +100,19 @@ export default class Table {
   }
 
   _normalizeX(num) {
-    return to3FixedNumber(num / this._designer.getZoom() + this._designer.getPan().x);
+    return to3FixedNumber(num / this._veiwer.getZoom() + this._veiwer.getPan().x);
   }
 
   _normalizeY(num) {
-    return to3FixedNumber(num / this._designer.getZoom() + this._designer.getPan().y);
+    return to3FixedNumber(num / this._veiwer.getZoom() + this._veiwer.getPan().y);
   }
 
   getCenter() {
-    const designerCords = this._designer.getCords();
+    const veiwerCords = this._veiwer.getCords();
     const boundingRect = this._table.getBoundingClientRect();
 
-    const x = this._normalizeX(boundingRect.left - designerCords.x) + to3FixedNumber(boundingRect.width / this._designer.getZoom()) / 2;
-    const y = this._normalizeY(boundingRect.top - designerCords.y) + to3FixedNumber(boundingRect.height / this._designer.getZoom()) / 2;
+    const x = this._normalizeX(boundingRect.left - veiwerCords.x) + to3FixedNumber(boundingRect.width / this._veiwer.getZoom()) / 2;
+    const y = this._normalizeY(boundingRect.top - veiwerCords.y) + to3FixedNumber(boundingRect.height / this._veiwer.getZoom()) / 2;
     return {
       x,
       y,
@@ -120,47 +120,47 @@ export default class Table {
   }
 
   getSides() {
-    const designerCords = this._designer.getCords();
+    const veiwerCords = this._veiwer.getCords();
     const boundingRect = this._table.getBoundingClientRect();
     return {
       right: {
         p1: {
-          x: this._normalizeX(boundingRect.right - designerCords.x),
-          y: this._normalizeY(boundingRect.top - designerCords.y),
+          x: this._normalizeX(boundingRect.right - veiwerCords.x),
+          y: this._normalizeY(boundingRect.top - veiwerCords.y),
         },
         p2: {
-          x: this._normalizeX(boundingRect.right - designerCords.x),
-          y: this._normalizeY(boundingRect.bottom - designerCords.y),
+          x: this._normalizeX(boundingRect.right - veiwerCords.x),
+          y: this._normalizeY(boundingRect.bottom - veiwerCords.y),
         },
       },
       left: {
         p1: {
-          x: this._normalizeX(boundingRect.left - designerCords.x),
-          y: this._normalizeY(boundingRect.top - designerCords.y),
+          x: this._normalizeX(boundingRect.left - veiwerCords.x),
+          y: this._normalizeY(boundingRect.top - veiwerCords.y),
         },
         p2: {
-          x: this._normalizeX(boundingRect.left - designerCords.x),
-          y: this._normalizeY(boundingRect.bottom - designerCords.y),
+          x: this._normalizeX(boundingRect.left - veiwerCords.x),
+          y: this._normalizeY(boundingRect.bottom - veiwerCords.y),
         },
       },
       top: {
         p1: {
-          x: this._normalizeX(boundingRect.left - designerCords.x),
-          y: this._normalizeY(boundingRect.top - designerCords.y),
+          x: this._normalizeX(boundingRect.left - veiwerCords.x),
+          y: this._normalizeY(boundingRect.top - veiwerCords.y),
         },
         p2: {
-          x: this._normalizeX(boundingRect.right - designerCords.x),
-          y: this._normalizeY(boundingRect.top - designerCords.y),
+          x: this._normalizeX(boundingRect.right - veiwerCords.x),
+          y: this._normalizeY(boundingRect.top - veiwerCords.y),
         },
       },
       bottom: {
         p1: {
-          x: this._normalizeX(boundingRect.left - designerCords.x),
-          y: this._normalizeY(boundingRect.bottom - designerCords.y),
+          x: this._normalizeX(boundingRect.left - veiwerCords.x),
+          y: this._normalizeY(boundingRect.bottom - veiwerCords.y),
         },
         p2: {
-          x: this._normalizeX(boundingRect.right - designerCords.x),
-          y: this._normalizeY(boundingRect.bottom - designerCords.y),
+          x: this._normalizeX(boundingRect.right - veiwerCords.x),
+          y: this._normalizeY(boundingRect.bottom - veiwerCords.y),
         },
       },
     };
@@ -221,8 +221,8 @@ export default class Table {
     };
   }
 
-  setDesigner(designer) {
-    this._designer = designer;
+  setVeiwer(veiwer) {
+    this._veiwer = veiwer;
   }
 
   getElement() {

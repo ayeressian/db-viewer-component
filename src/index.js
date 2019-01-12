@@ -1,8 +1,8 @@
-import Designer from './Designer.js';
+import Viewer from './Viewer.js';
 import schemaParser from './schemaParser.js';
 import template from './template.js';
 
-class DBDesigner extends HTMLElement {
+class DBViewer extends HTMLElement {
   constructor() {
     super();
     const shadowDom = this.attachShadow({
@@ -10,10 +10,10 @@ class DBDesigner extends HTMLElement {
     });
 
     shadowDom.innerHTML = template;
-    this.designer = new Designer(shadowDom);
-    this.designer.setTableDblClickCallback(this.onTableDblClick.bind(this));
-    this.designer.setTableClickCallback(this.onTableClick.bind(this));
-    this.designer.setTableMoveCallback(this.onTableMove.bind(this));
+    this.veiwer = new Viewer(shadowDom);
+    this.veiwer.setTableDblClickCallback(this.onTableDblClick.bind(this));
+    this.veiwer.setTableClickCallback(this.onTableClick.bind(this));
+    this.veiwer.setTableMoveCallback(this.onTableMove.bind(this));
   }
 
   onTableDblClick(table) {
@@ -29,15 +29,15 @@ class DBDesigner extends HTMLElement {
   }
 
   getTablePos(tableName) {
-    return this.designer.getTablePos(tableName);
+    return this.veiwer.getTablePos(tableName);
   }
 
   get scrollLeft() {
-    return this.designer.getPan().x;
+    return this.veiwer.getPan().x;
   }
 
   get scrollTop() {
-    return this.designer.getPan().y;
+    return this.veiwer.getPan().y;
   }
 
   onTableMove(table) {
@@ -57,14 +57,14 @@ class DBDesigner extends HTMLElement {
     fetch(this._src).then((response) => response.json()).
     then((response) => {
       const tables = schemaParser(response);
-      this.designer.load(tables);
+      this.veiwer.load(tables);
     });
   }
 
   set schema(schema) {
     const tables = schemaParser(schema);
-    this.designer.load(tables);
+    this.veiwer.load(tables);
   }
 }
 
-customElements.define('db-designer', DBDesigner);
+customElements.define('db-viewer', DBViewer);
