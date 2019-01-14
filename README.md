@@ -35,15 +35,18 @@ Name | Description | event.detail
 #### Properties
 Name | Description
 --- | ---
-`schema` | get and set schema for viewer. This will override the html src attribute. Note: src attribute accepts the address of viewer-schema and schema property accepts javascript object as viewer-schema. The viwer-schema should follow [this](https://github.com/ayeressian/db-designer/blob/master/src/renderer/validation-schema.js) json schema.
-`src` | Viewer-schema url. It should follow [this](https://github.com/ayeressian/db-designer/blob/master/src/renderer/validation-schema.js) json schema. It has the same effect as the src attribute.
-`scrollLeft` | get and set scrolling position from left.
-`scrollTop` | get and set scrolling position from top.
+`schema` | Get and set schema for viewer. This will override the html src attribute. Note: src attribute accepts the address of viewer-schema and schema property accepts javascript object as viewer-schema. The viwer-schema should follow [this](https://github.com/ayeressian/db-designer/blob/master/src/renderer/validation-schema.js) json schema.
+`src` | Set viewer-schema url. It should follow [this](https://github.com/ayeressian/db-designer/blob/master/src/renderer/validation-schema.js) json schema. It has the same effect as the src attribute.
+`scrollLeft` | Get and set scrolling position from left.
+`scrollTop` | Get and set scrolling position from top.
 #### Methods
 Name | Description | Arguments
 --- | --- | ---
-`getTablePos` | get position of table. | table name
-`setTablePos` | set position of table. | table name, x cord, y cord
+`getTablePos` | Get position of table. | table name
+`setTablePos` | Set position of table. | table name, x cord, y cord
+`zoomIn` | Zoom in view. |
+`zoomOut` | Zoom out view. |
+`getZoom` | Get amount of zoom |
 
 ### To run
   1. npm i

@@ -17,21 +17,22 @@ class DBViewer extends HTMLElement {
     this.veiwer.setTableMoveCallback(this.onTableMove.bind(this));
   }
 
-  onTableClick(table, event) {
-    event.detail = table;
-    this.dispatchEvent(new CustomEvent('tableClick', {detail: table}));
+  onTableClick(tableData, event) {
+    // event.detail = tableData;
+    this.dispatchEvent(event);
   }
 
-  onTableDblClick(table) {
-    this.dispatchEvent(new CustomEvent('tableDblClick', {detail: table}));
+  onTableDblClick(tableData, event) {
+    this.dispatchEvent(new CustomEvent('tableDblClick', {detail: tableData}));
   }
 
-  onTableContextMenu(table) {
-    this.dispatchEvent(new CustomEvent('contextMenu', {detail: table}));
+  onTableContextMenu(tableData, event) {
+    this.dispatchEvent(new CustomEvent('contextMenu', {detail: tableData}));
   }
 
-  onTableMove(table) {
-    this.dispatchEvent(new CustomEvent('tableMove', {detail: table}));
+  onTableMove(tableData, event) {
+    event.$data = tableData;
+    this.dispatchEvent(new CustomEvent('tableMove', {detail: tableData}));
   }
 
   getTablePos(tableName) {
@@ -44,6 +45,26 @@ class DBViewer extends HTMLElement {
 
   get scrollTop() {
     return this.veiwer.getPan().y;
+  }
+
+  set scrollLeft(value) {
+    this.veiwer.setPanX(value);
+  }
+
+  set scrollTop(value) {
+    this.veiwer.setPanY(value);
+  }
+
+  getZoom() {
+    return this.veiwer.getZoom();
+  }
+
+  zoomIn() {
+    this.veiwer.zoomIn();
+  }
+
+  zoomOut() {
+    this.veiwer.zoomOut();
   }
 
   set src(src) {

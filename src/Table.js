@@ -70,15 +70,17 @@ export default class Table {
     };
 
     this._elem.addEventListener('mousedown', (event) => {
-      event.stopPropagation();
-      this._table.classList.add('move');
-      const boundingRect = this._table.getBoundingClientRect();
-      mouseDownInitialElemX = (event.clientX - boundingRect.left) / this._veiwer.getZoom();
-      mouseDownInitialElemY = (event.clientY - boundingRect.top) / this._veiwer.getZoom();
+      if (event.button === 0) {
+        event.stopPropagation();
+        this._table.classList.add('move');
+        const boundingRect = this._table.getBoundingClientRect();
+        mouseDownInitialElemX = (event.clientX - boundingRect.left) / this._veiwer.getZoom();
+        mouseDownInitialElemY = (event.clientY - boundingRect.top) / this._veiwer.getZoom();
 
-      document.addEventListener('mousemove', mouseMove);
+        document.addEventListener('mousemove', mouseMove);
 
-      this._moveToTop();
+        this._moveToTop();
+      }
     });
     document.addEventListener('mouseup', () => {
       this._table.classList.remove('move');

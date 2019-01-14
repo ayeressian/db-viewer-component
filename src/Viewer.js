@@ -1,6 +1,5 @@
 import Relation from './Relation.js';
 import constant from './const.js';
-import Table from './Table.js';
 
 export default class Viewer {
   constructor(mainElem) {
@@ -17,6 +16,8 @@ export default class Viewer {
     this._reset();
 
     this._setUpEvents();
+
+    this._ZOOM = 1.2;
   }
 
   _reset() {
@@ -65,7 +66,7 @@ export default class Viewer {
     minimapTableElem.setAttributeNS(null, 'transform', `translate(${deltaX},${deltaY})`);
 
     if (this._tableMoveCallback) {
-      this._tableMoveCallback(Table.tableDataCreator(table));
+      this._tableMoveCallback(table.tableDataCreator());
     }
   }
 
@@ -364,9 +365,35 @@ export default class Viewer {
     this._setViewPoint();
   }
 
-  _setUpEvents() {
-    const ZOOM = 1.2;
+  zoomIn() {
+    this._zoom *= this._ZOOM;
 
+    this._svgElem.style.height = constant.VIEWER_PAN_HEIGHT * this._zoom + 'px';
+    this._svgElem.style.width = constant.VIEWER_PAN_WIDTH * this._zoom + 'px';
+
+    this._viewBoxVals.width = this._svgContainer.clientWidth / this._zoom;
+    this._viewBoxVals.height = this._svgContainer.clientHeight / this._zoom;
+
+    this._setViewPoint();
+  }
+
+  zoomOut() {
+    if (this._viewBoxVals.height * this._ZOOM <= constant.VIEWER_PAN_HEIGHT &&
+      this._viewBoxVals.width * this._ZOOM <= constant.VIEWER_PAN_WIDTH) {
+      this._viewportAddjustment();
+      this._zoom /= this._ZOOM;
+
+      this._svgElem.style.height = constant.VIEWER_PAN_HEIGHT * this._zoom + 'px';
+      this._svgElem.style.width = constant.VIEWER_PAN_WIDTH * this._zoom + 'px';
+
+      this._viewBoxVals.width = this._svgContainer.clientWidth / this._zoom;
+      this._viewBoxVals.height = this._svgContainer.clientHeight / this._zoom;
+
+      this._setViewPoint();
+    }
+  }
+
+  _setUpEvents() {
     window.addEventListener('resize', this._windowResizeEvent.bind(this));
 
     let prevMouseCordX;
@@ -398,10 +425,12 @@ export default class Viewer {
     });
 
     this._container.addEventListener('mousedown', (event) => {
-      this._svgElem.classList.add('pan');
-      prevMouseCordX = event.clientX;
-      prevMouseCordY = event.clientY;
-      this.mainElem.addEventListener('mousemove', mouseMove);
+      if (event.button === 0) {
+        this._svgElem.classList.add('pan');
+        prevMouseCordX = event.clientX;
+        prevMouseCordY = event.clientY;
+        this.mainElem.addEventListener('mousemove', mouseMove);
+      }
     });
 
     this.mainElem.addEventListener('mouseup', () => {
@@ -409,33 +438,9 @@ export default class Viewer {
       this.mainElem.removeEventListener('mousemove', mouseMove);
     });
 
-    this._btnZoomIn.addEventListener('click', () => {
-      this._zoom *= ZOOM;
+    this._btnZoomIn.addEventListener('click', this.zoomIn.bind(this));
 
-      this._svgElem.style.height = constant.VIEWER_PAN_HEIGHT * this._zoom + 'px';
-      this._svgElem.style.width = constant.VIEWER_PAN_WIDTH * this._zoom + 'px';
-
-      this._viewBoxVals.width = this._svgContainer.clientWidth / this._zoom;
-      this._viewBoxVals.height = this._svgContainer.clientHeight / this._zoom;
-
-      this._setViewPoint();
-    });
-
-    this._btnZoomOut.addEventListener('click', () => {
-      if (this._viewBoxVals.height * ZOOM <= constant.VIEWER_PAN_HEIGHT &&
-        this._viewBoxVals.width * ZOOM <= constant.VIEWER_PAN_WIDTH) {
-        this._viewportAddjustment();
-        this._zoom /= ZOOM;
-
-        this._svgElem.style.height = constant.VIEWER_PAN_HEIGHT * this._zoom + 'px';
-        this._svgElem.style.width = constant.VIEWER_PAN_WIDTH * this._zoom + 'px';
-
-        this._viewBoxVals.width = this._svgContainer.clientWidth / this._zoom;
-        this._viewBoxVals.height = this._svgContainer.clientHeight / this._zoom;
-
-        this._setViewPoint();
-      }
-    });
+    this._btnZoomOut.addEventListener('click', this.zoomOut.bind(this));
 
     if (this.tables) {
       this.tables.forEach((table) => {
@@ -452,8 +457,10 @@ export default class Viewer {
     const minimapMouseMove = this._minimapPositionFromMouse.bind(this);
 
     this._minimap.addEventListener('mousedown', (event) => {
-      this._minimapPositionFromMouse(event);
-      this._minimap.addEventListener('mousemove', minimapMouseMove);
+      if (event.button === 0) {
+        this._minimapPositionFromMouse(event);
+        this._minimap.addEventListener('mousemove', minimapMouseMove);
+      }
     });
     this._container.addEventListener('mouseleave', () => {
       this._minimap.removeEventListener('mousemove', minimapMouseMove);
@@ -492,6 +499,14 @@ export default class Viewer {
       x: this._svgContainer.scrollLeft,
       y: this._svgContainer.scrollTop,
     };
+  }
+
+  setPanX(value) {
+    this._svgContainer.scrollLeft = value;
+  }
+
+  setPanY(value) {
+    this._svgContainer.scrollTop = value;
   }
 
   getMousePosRelativeContainer(event) {
