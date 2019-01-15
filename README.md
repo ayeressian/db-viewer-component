@@ -18,7 +18,7 @@ The schema for viewer can be specified either with src attribute as shown above 
 ```javascript
 document.querySelector('db-viewer').src = awesomeSchema;
 ```
-The json schema for db-veiwer schema can be find [here](https://github.com/ayeressian/db-designer/blob/master/src/renderer/validation-schema.js).
+The json schema for db-veiwer schema can be found [here](https://github.com/ayeressian/db-designer/blob/master/src/renderer/validation-schema.js).
 
 ### API
 #### Attributes
@@ -28,10 +28,13 @@ Name | Description
 #### Events
 Name | Description | event.detail
 --- | --- | ---
+`ready` | db-viewer is ready |
 `tableClick` | Clicking on a table. | {tableName, pos: {x, y}, width, height}
 `tableDblClick` | Double clicking on a table. | {tableName, pos: {x, y}, width, height}
 `tableContextMenu` | Right clicking on a table. | {tableName, pos: {x, y}, width, height}
 `tableMove` | Moving table. | {tableName, pos: {x, y}, width, height}
+`zoomIn` | Zooming in view |
+`zoomOut` | Zooming out view |
 #### Properties
 Name | Description
 --- | ---

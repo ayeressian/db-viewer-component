@@ -3,15 +3,15 @@ import constant from './const.js';
 
 export default class Viewer {
   constructor(mainElem) {
-    this.mainElem = mainElem;
-    this._container = this.mainElem.getElementById('veiwer-container');
+    this._mainElem = mainElem;
+    this._container = this._mainElem.getElementById('veiwer-container');
 
-    this._svgElem = this.mainElem.getElementById('veiwer');
-    this._minimap = this.mainElem.getElementById('minimap');
-    this._viewpoint = this.mainElem.getElementById('viewpoint');
-    this._btnZoomIn = this.mainElem.getElementById('btn-zoom-in');
-    this._btnZoomOut = this.mainElem.getElementById('btn-zoom-out');
-    this._svgContainer = this.mainElem.querySelector('.svg-container');
+    this._svgElem = this._mainElem.getElementById('veiwer');
+    this._minimap = this._mainElem.getElementById('minimap');
+    this._viewpoint = this._mainElem.getElementById('viewpoint');
+    this._btnZoomIn = this._mainElem.getElementById('btn-zoom-in');
+    this._btnZoomOut = this._mainElem.getElementById('btn-zoom-out');
+    this._svgContainer = this._mainElem.querySelector('.svg-container');
 
     this._reset();
 
@@ -375,6 +375,10 @@ export default class Viewer {
     this._viewBoxVals.height = this._svgContainer.clientHeight / this._zoom;
 
     this._setViewPoint();
+
+    if (this._zoomInCallback()) {
+      this._zoomInCallback();
+    }
   }
 
   zoomOut() {
@@ -390,6 +394,10 @@ export default class Viewer {
       this._viewBoxVals.height = this._svgContainer.clientHeight / this._zoom;
 
       this._setViewPoint();
+
+      if (this._zoomOutCallback()) {
+        this._zoomOutCallback();
+      }
     }
   }
 
@@ -421,7 +429,7 @@ export default class Viewer {
 
     this._container.addEventListener('mouseleave', () => {
       this._svgElem.classList.remove('pan');
-      this.mainElem.removeEventListener('mousemove', mouseMove);
+      this._mainElem.removeEventListener('mousemove', mouseMove);
     });
 
     this._container.addEventListener('mousedown', (event) => {
@@ -429,13 +437,13 @@ export default class Viewer {
         this._svgElem.classList.add('pan');
         prevMouseCordX = event.clientX;
         prevMouseCordY = event.clientY;
-        this.mainElem.addEventListener('mousemove', mouseMove);
+        this._mainElem.addEventListener('mousemove', mouseMove);
       }
     });
 
-    this.mainElem.addEventListener('mouseup', () => {
+    this._mainElem.addEventListener('mouseup', () => {
       this._svgElem.classList.remove('pan');
-      this.mainElem.removeEventListener('mousemove', mouseMove);
+      this._mainElem.removeEventListener('mousemove', mouseMove);
     });
 
     this._btnZoomIn.addEventListener('click', this.zoomIn.bind(this));
@@ -530,6 +538,14 @@ export default class Viewer {
 
   setTableMoveCallback(callback) {
     this._tableMoveCallback = callback;
+  }
+
+  setZoomInCallback(callback) {
+    this._zoomInCallback = callback;
+  }
+
+  setZoomOutCallback(callback) {
+    this._zoomOutCallback = callback;
   }
 
   tableDblClick(table) {
