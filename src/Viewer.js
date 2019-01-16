@@ -66,7 +66,7 @@ export default class Viewer {
     minimapTableElem.setAttributeNS(null, 'transform', `translate(${deltaX},${deltaY})`);
 
     if (this._tableMoveCallback) {
-      this._tableMoveCallback(table.tableDataCreator());
+      this._tableMoveCallback(table.formatData());
     }
   }
 

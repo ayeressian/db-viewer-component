@@ -1,6 +1,7 @@
 import Viewer from './Viewer.js';
 import schemaParser from './schemaParser.js';
 import template from './template.js';
+import validateJson from './validate-schema';
 
 const NOT_READY_ERROR = new Error('Component isn\'t ready yet. Please use \'ready\' event of db-veiwer component.');
 
@@ -19,6 +20,11 @@ class DBViewer extends HTMLElement {
     this.veiwer.setTableMoveCallback(this.onTableMove.bind(this));
     this.veiwer.setZoomInCallback(this.onZoomIn.bind(this));
     this.veiwer.setZoomOutCallback(this.onZoomOut.bind(this));
+
+    this._readyPromise = new Promise((resolve, reject) => {
+      this._readyPromiseResolve = resolve;
+      this._readyPromiseReject = reject;
+    });
   }
 
   onTableClick(tableData) {
@@ -43,10 +49,6 @@ class DBViewer extends HTMLElement {
 
   onZoomOut() {
     this.dispatchEvent(new CustomEvent('zoomOut'));
-  }
-
-  getTablePos(tableName) {
-    return this.veiwer.getTablePos(tableName);
   }
 
   get scrollLeft() {
@@ -105,14 +107,19 @@ class DBViewer extends HTMLElement {
     this.setAttribute('src', src);
   }
 
-  getTablePos(name) {
+  getTableInfo(name) {
     const table = this._tables.find((table) => table.name === name);
-    debugger;
-    console.log(table);
+    return table.formatData();
   }
 
   setTablePos(name, xCord, yCord) {
+    const table = this._tables.find((table) => table.name === name);
+    table.setPanX = xCord;
+    table.setPanY = yCord;
+  }
 
+  get ready() {
+    return this._readyPromise;
   }
 
   static get observedAttributes() {
@@ -123,6 +130,9 @@ class DBViewer extends HTMLElement {
     this._src = newValue;
     fetch(this._src).then((response) => response.json()).
     then((response) => {
+      if (!validateJson(response)) {
+        throw new Error('Invalid file format.');
+      }
       this._tables = schemaParser(response);
       this.veiwer.load(this._tables);
     });
@@ -131,13 +141,16 @@ class DBViewer extends HTMLElement {
   connectedCallback() {
     setTimeout(() => {
       this._ready = true;
-      this.dispatchEvent(new CustomEvent('ready'));
+      this._readyPromiseResolve();
     });
   }
 
   set schema(schema) {
     if (!this._ready) {
       throw NOT_READY_ERROR;
+    }
+    if (!validateJson(schema)) {
+      throw new Error('Invalid file format.');
     }
     this._tables = schemaParser(schema);
     this.veiwer.load(this._tables);

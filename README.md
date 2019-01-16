@@ -13,10 +13,10 @@ in html:
 ```html
 <db-viewer src="/awesome-schema.json"></db-viewer>
 ```
-The schema for viewer can be specified either with src attribute as shown above or by schema attribute of db-viwer html object like this:
+The schema for viewer can be specified either with src attribute as shown above or by schema property of db-viwer html object like this:
 
 ```javascript
-document.querySelector('db-viewer').src = awesomeSchema;
+document.querySelector('db-viewer').schema = awesomeSchema;
 ```
 The json schema for db-veiwer schema can be found [here](https://github.com/ayeressian/db-designer/blob/master/src/renderer/validation-schema.js).
 
@@ -28,7 +28,6 @@ Name | Description
 #### Events
 Name | Description | event.detail
 --- | --- | ---
-`ready` | db-viewer is ready |
 `tableClick` | Clicking on a table. | {tableName, pos: {x, y}, width, height}
 `tableDblClick` | Double clicking on a table. | {tableName, pos: {x, y}, width, height}
 `tableContextMenu` | Right clicking on a table. | {tableName, pos: {x, y}, width, height}
@@ -42,6 +41,7 @@ Name | Description
 `src` | Set viewer-schema url. It should follow [this](https://github.com/ayeressian/db-designer/blob/master/src/renderer/validation-schema.js) json schema. It has the same effect as the src attribute.
 `scrollLeft` | Get and set scrolling position from left.
 `scrollTop` | Get and set scrolling position from top.
+`ready` | Get ready state promise.
 #### Methods
 Name | Description | Arguments
 --- | --- | ---

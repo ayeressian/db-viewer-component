@@ -1,0 +1,79 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "The Root Schema",
+  "required": [
+    "tables"
+  ],
+  "properties": {
+    "tables": {
+      "$id": "#/properties/tables",
+      "type": "array",
+      "title": "The Tables Schema",
+      "items": {
+        "$id": "#/properties/tables/items",
+        "type": "object",
+        "title": "The Items Schema",
+        "required": [
+          "name",
+          "columns"
+        ],
+        "properties": {
+          "name": {
+            "$id": "#/properties/tables/items/properties/name",
+            "type": "string",
+            "title": "The Name Schema",
+            "default": "",
+            "examples": [
+              "school"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "columns": {
+            "$id": "#/properties/tables/items/properties/columns",
+            "type": "array",
+            "title": "The Columns Schema",
+            "items": {
+              "$id": "#/properties/tables/items/properties/columns/items",
+              "type": "object",
+              "title": "The Items Schema",
+              "required": [
+                "name"
+              ],
+              "properties": {
+                "name": {
+                  "$id": "#/properties/tables/items/properties/columns/items/properties/name",
+                  "type": "string",
+                  "title": "The Name Schema",
+                  "examples": [
+                    "id"
+                  ],
+                  "pattern": "^(.*)$"
+                },
+                "pk": {
+                  "$id": "#/properties/tables/items/properties/columns/items/properties/pk",
+                  "type": "boolean",
+                  "title": "The Pk Schema",
+                  "default": false,
+                  "examples": [
+                    true
+                  ]
+                },
+                "type": {
+                  "$id": "#/properties/tables/items/properties/columns/items/properties/type",
+                  "type": "string",
+                  "title": "The Type Schema",
+                  "examples": [
+                    "int"
+                  ],
+                  "pattern": "^(.*)$"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
