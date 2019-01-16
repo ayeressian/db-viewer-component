@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   dbViewerElem.addEventListener('tableClick', (event) => console.log('tableClick', event.detail));
   dbViewerElem.addEventListener('tableDblClick', (event) => console.log('tableDblClick', event.detail));
-  dbViewerElem.addEventListener('contextMenu', (event) => console.log('tableContextMenu', event.detail));
+  dbViewerElem.addEventListener('tableContextMenu', (event) => console.log('tableContextMenu', event.detail));
   dbViewerElem.addEventListener('tableMove', (event) => console.log('tableMove', event.detail));
   dbViewerElem.addEventListener('zoomIn', (event) => console.log('zoomIn'));
   dbViewerElem.addEventListener('zoomOut', (event) => console.log('zoomOut'));
