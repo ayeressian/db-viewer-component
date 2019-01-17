@@ -12,7 +12,7 @@ const wait = (time = 0) => {
 
 const DEFAULT_SERVER_PORT = 6001;
 
-describe('db-designer', () => {
+describe('db-viewer', () => {
   let page;
   let browser;
 
@@ -29,7 +29,7 @@ describe('db-designer', () => {
   };
 
   const getShadowRoot = () => {
-    return page.evaluateHandle(() => document.querySelector('db-designer').shadowRoot);
+    return page.evaluateHandle(() => document.querySelector('db-viewer').shadowRoot);
   };
 
   before(async () => {
@@ -44,8 +44,8 @@ describe('db-designer', () => {
     await page.goto(`http://localhost:${port}`, {waitUntil: 'load'});
   });
 
-  it('should contain db-designer', async () => {
-    const result = await page.$('db-designer');
+  it('should contain db-viewer', async () => {
+    const result = await page.$('db-viewer');
     expect(result).to.not.be.null;
   });
 
@@ -61,17 +61,17 @@ describe('db-designer', () => {
       expect(result).to.not.be.null;
     });
 
-    describe('#designer', () => {
+    describe('#viewer', () => {
       let tables;
-      let designer;
+      let viewer;
 
       before(async () => {
-        designer = await shadowRoot.$('#designer');
-        tables = await shadowRoot.$$('#designer foreignObject table');
+        viewer = await shadowRoot.$('#viewer');
+        tables = await shadowRoot.$$('#viewer foreignObject table');
       });
 
       it('needs to be rendered', () => {
-        expect(designer).to.not.be.null;
+        expect(viewer).to.not.be.null;
       });
 
       it('should have correct number of tables', () => {
@@ -87,7 +87,7 @@ describe('db-designer', () => {
           return result + table.columns.reduce((result, column) => column.fk? result + 1: result, 0);
         }, 0);
 
-        const paths = await designer.$$('path:not(.highlight)');
+        const paths = await viewer.$$('path:not(.highlight)');
 
         expect(paths.length).equals(count);
       });
@@ -96,7 +96,7 @@ describe('db-designer', () => {
         before(async () => {
           await page.reload({waitUntil: 'load'});
           shadowRoot = await getShadowRoot();
-          tables = await shadowRoot.$$('#designer foreignObject table');
+          tables = await shadowRoot.$$('#viewer foreignObject table');
         });
 
         it('should move on click and drag by exact amount', async () => {
@@ -117,7 +117,7 @@ describe('db-designer', () => {
           const amountY = 100;
           await mouseDragElement(clickedTable, amountX, amountY);
 
-          const afterClickThs = await shadowRoot.$$('#designer foreignObject table th');
+          const afterClickThs = await shadowRoot.$$('#viewer foreignObject table th');
 
           const title = await getInnerHtml(afterClickThs[2]);
           expect(title).equal(schoolSchema.tables[1].name);
