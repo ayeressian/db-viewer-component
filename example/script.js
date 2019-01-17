@@ -1,17 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
   const dbViewerElem = document.querySelector('db-viewer');
-  // dbViewerElem.ready.then(() => {
-    
-  // });
+  dbViewerElem.fileDownload.then(() => {
+    dbViewerElem.scrollLeft = 50;
+    dbViewerElem.scrollTop = 200;
 
-  dbViewerElem.scrollLeft = 50;
-  dbViewerElem.scrollTop = 200;
+    dbViewerElem.zoomIn();
+    dbViewerElem.zoomIn();
 
-  dbViewerElem.zoomIn();
-  dbViewerElem.zoomIn();
+    dbViewerElem.setTablePos('school', 0, 0);
+    console.log(dbViewerElem.getTableInfo('school'));
 
-  dbViewerElem.setTablePos('school', 0, 0);
-  console.log(dbViewerElem.getTableInfo('school'));
+    console.log(dbViewerElem.schema);
+  });
 
   dbViewerElem.addEventListener('tableClick', (event) => console.log('tableClick', event.detail));
   dbViewerElem.addEventListener('tableDblClick', (event) => console.log('tableDblClick', event.detail));

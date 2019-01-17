@@ -3,8 +3,8 @@ import schemaParser from './schemaParser.js';
 import template from './template.js';
 import validateJson from './validate-schema';
 
-const FILE_NOT_LOADED = new Error(`No schema has been set or loaded yet. 
-  If you are using 'src' attribute please use 'fileLoaded' method returned
+const FILE_NOT_LOADED = new Error(`No schema has been set or loaded yet.
+  If you are using 'src' attribute please use 'fileDownload' method returned
   promise to know when the async file fetching has been finished.`);
 
 class DBViewer extends HTMLElement {
@@ -13,15 +13,15 @@ class DBViewer extends HTMLElement {
     const shadowDom = this.attachShadow({
       mode: 'open'
     });
-    this._fileLoaded = true;
+    this._fileDownload = true;
     shadowDom.innerHTML = template;
-    this.veiwer = new Viewer(shadowDom);
-    this.veiwer.setTableDblClickCallback(this.onTableDblClick.bind(this));
-    this.veiwer.setTableClickCallback(this.onTableClick.bind(this));
-    this.veiwer.setTableContextMenuCallback(this.onTableContextMenu.bind(this));
-    this.veiwer.setTableMoveCallback(this.onTableMove.bind(this));
-    this.veiwer.setZoomInCallback(this.onZoomIn.bind(this));
-    this.veiwer.setZoomOutCallback(this.onZoomOut.bind(this));
+    this.viewer = new Viewer(shadowDom);
+    this.viewer.setTableDblClickCallback(this.onTableDblClick.bind(this));
+    this.viewer.setTableClickCallback(this.onTableClick.bind(this));
+    this.viewer.setTableContextMenuCallback(this.onTableContextMenu.bind(this));
+    this.viewer.setTableMoveCallback(this.onTableMove.bind(this));
+    this.viewer.setZoomInCallback(this.onZoomIn.bind(this));
+    this.viewer.setZoomOutCallback(this.onZoomOut.bind(this));
 
     this._fileLoadPromise = new Promise((resolve, reject) => {
       this._fileLoadPromiseResolve = resolve;
@@ -54,31 +54,31 @@ class DBViewer extends HTMLElement {
   }
 
   get scrollLeft() {
-    return this.veiwer.getPan().x;
+    return this.viewer.getPan().x;
   }
 
   get scrollTop() {
-    return this.veiwer.getPan().y;
+    return this.viewer.getPan().y;
   }
 
   set scrollLeft(value) {
-    this.veiwer.setPanX(value);
+    this.viewer.setPanX(value);
   }
 
   set scrollTop(value) {
-    this.veiwer.setPanY(value);
+    this.viewer.setPanY(value);
   }
 
   getZoom() {
-    return this.veiwer.getZoom();
+    return this.viewer.getZoom();
   }
 
   zoomIn() {
-    this.veiwer.zoomIn();
+    this.viewer.zoomIn();
   }
 
   zoomOut() {
-    this.veiwer.zoomOut();
+    this.viewer.zoomOut();
   }
 
   set src(src) {
@@ -86,7 +86,7 @@ class DBViewer extends HTMLElement {
   }
 
   getTableInfo(name) {
-    if (!this._fileLoaded) {
+    if (!this._fileDownload) {
       throw FILE_NOT_LOADED;
     }
     const table = this._tables.find((table) => table.name === name);
@@ -99,7 +99,7 @@ class DBViewer extends HTMLElement {
     table.setPanY = yCord;
   }
 
-  get ready() {
+  get fileDownload() {
     return this._fileLoadPromise;
   }
 
@@ -109,19 +109,17 @@ class DBViewer extends HTMLElement {
 
   attributeChangedCallback(name, oldValue, newValue) {
     this._src = newValue;
-    this._fileLoaded = false;
+    this._fileDownload = false;
     fetch(this._src).then((response) => response.json()).
     then((response) => {
       if (!validateJson(response)) {
         throw new Error('Invalid file format.');
       }
+      this._notParsedSchema = JSON.parse(JSON.stringify(response));
       this._tables = schemaParser(response);
       this.viewer.load(this._tables);
-      this._fileLoaded = true;
+      this._fileDownload = true;
       this._fileLoadPromiseResolve();
-    }).catch((error) => {
-      this._fileLoadPromiseReject(error);
-      this._fileLoaded = false;
     });
   }
 
@@ -129,9 +127,19 @@ class DBViewer extends HTMLElement {
     if (!validateJson(schema)) {
       throw new Error('Invalid file format.');
     }
+    this._notParsedSchema = JSON.parse(JSON.stringify(schema));
+    schema = JSON.parse(JSON.stringify(schema));
     this._tables = schemaParser(schema);
-    this.veiwer.load(this._tables);
-    this._fileLoaded = true;
+    this.viewer.load(this._tables);
+    this._fileDownload = true;
+    this._fileLoadPromiseResolve();
+  }
+
+  get schema() {
+    this._notParsedSchema.tables.forEach((notParsedTable) => {
+      notParsedTable.pos = this._tables.find((table) => table.name === notParsedTable.name).pos;
+    });
+    return this._notParsedSchema;
   }
 }
 

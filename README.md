@@ -37,11 +37,11 @@ Name | Description | event.detail
 #### Properties
 Name | Description
 --- | ---
-`schema` | Get and set schema for viewer. This will override the html src attribute. Note: src attribute accepts the address of viewer-schema and schema property accepts javascript object as viewer-schema. The viwer-schema should follow [this](https://github.com/ayeressian/db-viewer-component/blob/new-events-methods/src/validation-schema.json) json schema.
+`schema` | Get and set schema for viewer. This will override the html src attribute. Note: src attribute accepts the address of viewer-schema and schema property accepts javascript object as viewer-schema. The viwer-schema should follow [this](https://github.com/ayeressian/db-viewer-component/blob/new-events-methods/src/validation-schema.json) json schema. Note the only way that db-viewer can alter the schema is by adding position of tables.
 `src` | Set viewer-schema url. It should follow [this](https://github.com/ayeressian/db-viewer-component/blob/new-events-methods/src/validation-schema.json) json schema. It has the same effect as the src attribute.
 `scrollLeft` | Get and set scrolling position from left.
 `scrollTop` | Get and set scrolling position from top.
-`ready` | Get ready state promise.
+`fileLoaded` | Whenever resource is being load throw src attribute. There need to be certain time for schema to be downloaded throw network. This is promise that represents the status of download.
 #### Methods
 Name | Description | Arguments
 --- | --- | ---
