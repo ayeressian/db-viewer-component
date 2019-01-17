@@ -3,7 +3,9 @@ import schemaParser from './schemaParser.js';
 import template from './template.js';
 import validateJson from './validate-schema';
 
-const NOT_READY_ERROR = new Error('Component isn\'t ready yet. Please use \'ready\' event of db-veiwer component.');
+const FILE_NOT_LOADED = new Error(`No schema has been set or loaded yet. 
+  If you are using 'src' attribute please use 'fileLoaded' method returned
+  promise to know when the async file fetching has been finished.`);
 
 class DBViewer extends HTMLElement {
   constructor() {
@@ -11,7 +13,7 @@ class DBViewer extends HTMLElement {
     const shadowDom = this.attachShadow({
       mode: 'open'
     });
-    this._ready = false;
+    this._fileLoaded = true;
     shadowDom.innerHTML = template;
     this.veiwer = new Viewer(shadowDom);
     this.veiwer.setTableDblClickCallback(this.onTableDblClick.bind(this));
@@ -21,9 +23,9 @@ class DBViewer extends HTMLElement {
     this.veiwer.setZoomInCallback(this.onZoomIn.bind(this));
     this.veiwer.setZoomOutCallback(this.onZoomOut.bind(this));
 
-    this._readyPromise = new Promise((resolve, reject) => {
-      this._readyPromiseResolve = resolve;
-      this._readyPromiseReject = reject;
+    this._fileLoadPromise = new Promise((resolve, reject) => {
+      this._fileLoadPromiseResolve = resolve;
+      this._fileLoadPromiseReject = reject;
     });
   }
 
@@ -52,62 +54,41 @@ class DBViewer extends HTMLElement {
   }
 
   get scrollLeft() {
-    if (!this._ready) {
-      throw NOT_READY_ERROR;
-    }
     return this.veiwer.getPan().x;
   }
 
   get scrollTop() {
-    if (!this._ready) {
-      throw NOT_READY_ERROR;
-    }
     return this.veiwer.getPan().y;
   }
 
   set scrollLeft(value) {
-    if (!this._ready) {
-      throw NOT_READY_ERROR;
-    }
     this.veiwer.setPanX(value);
   }
 
   set scrollTop(value) {
-    if (!this._ready) {
-      throw NOT_READY_ERROR;
-    }
     this.veiwer.setPanY(value);
   }
 
   getZoom() {
-    if (!this._ready) {
-      throw NOT_READY_ERROR;
-    }
     return this.veiwer.getZoom();
   }
 
   zoomIn() {
-    if (!this._ready) {
-      throw NOT_READY_ERROR;
-    }
     this.veiwer.zoomIn();
   }
 
   zoomOut() {
-    if (!this._ready) {
-      throw NOT_READY_ERROR;
-    }
     this.veiwer.zoomOut();
   }
 
   set src(src) {
-    if (!this._ready) {
-      throw NOT_READY_ERROR;
-    }
     this.setAttribute('src', src);
   }
 
   getTableInfo(name) {
+    if (!this._fileLoaded) {
+      throw FILE_NOT_LOADED;
+    }
     const table = this._tables.find((table) => table.name === name);
     return table.formatData();
   }
@@ -119,7 +100,7 @@ class DBViewer extends HTMLElement {
   }
 
   get ready() {
-    return this._readyPromise;
+    return this._fileLoadPromise;
   }
 
   static get observedAttributes() {
@@ -128,32 +109,29 @@ class DBViewer extends HTMLElement {
 
   attributeChangedCallback(name, oldValue, newValue) {
     this._src = newValue;
+    this._fileLoaded = false;
     fetch(this._src).then((response) => response.json()).
     then((response) => {
       if (!validateJson(response)) {
         throw new Error('Invalid file format.');
       }
       this._tables = schemaParser(response);
-      this.veiwer.load(this._tables);
-    });
-  }
-
-  connectedCallback() {
-    setTimeout(() => {
-      this._ready = true;
-      this._readyPromiseResolve();
+      this.viewer.load(this._tables);
+      this._fileLoaded = true;
+      this._fileLoadPromiseResolve();
+    }).catch((error) => {
+      this._fileLoadPromiseReject(error);
+      this._fileLoaded = false;
     });
   }
 
   set schema(schema) {
-    if (!this._ready) {
-      throw NOT_READY_ERROR;
-    }
     if (!validateJson(schema)) {
       throw new Error('Invalid file format.');
     }
     this._tables = schemaParser(schema);
     this.veiwer.load(this._tables);
+    this._fileLoaded = true;
   }
 }
 
