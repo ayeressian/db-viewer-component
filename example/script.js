@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     dbViewerElem.scrollLeft = 50;
     dbViewerElem.scrollTop = 200;
 
-    dbViewerElem.zoomIn();
-    dbViewerElem.zoomIn();
+    // dbViewerElem.zoomIn();
+    // dbViewerElem.zoomIn();
 
     // dbViewerElem.setTablePos('school', 0, 0);
     // console.log(dbViewerElem.getTableInfo('school'));

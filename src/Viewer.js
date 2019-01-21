@@ -366,8 +366,19 @@ export default class Viewer {
     this._setViewPoint();
   }
 
-  zoomIn() {
-    this._zoom *= this._ZOOM;
+  _setZoom(zoom) {
+    if (this._svgContainer.offsetWidth > this._svgContainer.offsetHeight) {
+      console.log(zoom);
+      console.log(this._svgContainer.offsetWidth / constant.VIEWER_PAN_WIDTH);
+      if (this._svgContainer.offsetWidth / constant.VIEWER_PAN_WIDTH < zoom) {
+        zoom = constant.VIEWER_PAN_WIDTH / this._svgContainer.offsetWidth;
+      }
+    } else {
+      if (constant.VIEWER_PAN_HEIGHT / this._svgContainer.clientHeight < zoom) {
+        zoom = constant.VIEWER_PAN_HEIGHT / this._svgContainer.clientHeight;
+      }
+    }
+    this._zoom = zoom;
 
     this._svgElem.style.height = constant.VIEWER_PAN_HEIGHT * this._zoom + 'px';
     this._svgElem.style.width = constant.VIEWER_PAN_WIDTH * this._zoom + 'px';
@@ -380,26 +391,16 @@ export default class Viewer {
     if (this._zoomInCallback()) {
       this._zoomInCallback();
     }
+
+    return true;
+  }
+
+  zoomIn() {
+    this._setZoom(this._zoom * this._ZOOM);
   }
 
   zoomOut() {
-    if (this._viewBoxVals.height * this._ZOOM <= constant.VIEWER_PAN_HEIGHT &&
-      this._viewBoxVals.width * this._ZOOM <= constant.VIEWER_PAN_WIDTH) {
-      this._viewportAddjustment();
-      this._zoom /= this._ZOOM;
-
-      this._svgElem.style.height = constant.VIEWER_PAN_HEIGHT * this._zoom + 'px';
-      this._svgElem.style.width = constant.VIEWER_PAN_WIDTH * this._zoom + 'px';
-
-      this._viewBoxVals.width = this._svgContainer.clientWidth / this._zoom;
-      this._viewBoxVals.height = this._svgContainer.clientHeight / this._zoom;
-
-      this._setViewPoint();
-
-      if (this._zoomOutCallback()) {
-        this._zoomOutCallback();
-      }
-    }
+    this._setZoom(this._zoom / this._ZOOM);
   }
 
   _setUpEvents() {
@@ -476,6 +477,15 @@ export default class Viewer {
     });
     this._container.addEventListener('mouseup', () => {
       this._minimap.removeEventListener('mousemove', minimapMouseMove);
+    });
+
+    this._container.addEventListener('wheel', (event) => {
+      if (event.ctrlKey) {
+        if (this._setZoom(this._zoom - event.deltaY * 0.01)) {
+
+        }
+        event.preventDefault();
+      }
     });
   }
 
