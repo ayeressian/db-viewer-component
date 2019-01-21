@@ -3,6 +3,8 @@ import {
   to3FixedNumber
 } from './mathUtil.js';
 
+const OUT_OF_VIEW_CORD = -1000;
+
 export default class Table {
   constructor({
     name,
@@ -173,10 +175,6 @@ export default class Table {
 
   render() {
     this._elem = document.createElementNS(constant.nsSvg, 'foreignObject');
-    // TODO: change to transform when chrome new versions star have resolved the issue.
-    // this._elem.setAttributeNS(null, 'transform', `translate(${this._pos.x},${this._pos.y})`);
-    this._elem.setAttributeNS(null, 'x', this._pos.x);
-    this._elem.setAttributeNS(null, 'y', this._pos.y);
 
     setTimeout(() => {
       let borderWidth = parseInt(getComputedStyle(this._table).borderWidth, 10);
@@ -216,7 +214,30 @@ export default class Table {
     this._clickEvents();
     this._moveEvents();
 
+    if (this._pos === 'center') {
+      this._elem.setAttributeNS(null, 'x', OUT_OF_VIEW_CORD);
+      this._elem.setAttributeNS(null, 'y', OUT_OF_VIEW_CORD);
+
+      setTimeout(this._center.bind(this));
+    } else {
+      // TODO: change to transform when chrome new versions star have resolved the issue.
+      // this._elem.setAttributeNS(null, 'transform', `translate(${this._pos.x},${this._pos.y})`);
+      this._elem.setAttributeNS(null, 'x', this._pos.x);
+      this._elem.setAttributeNS(null, 'y', this._pos.y);
+    }
+
     return this._elem;
+  }
+
+  _center() {
+    const boundingRect = this._elem.getBoundingClientRect();
+    const viewPort = this._veiwer.getViewPort();
+    this._pos = {
+      x: (viewPort.x + viewPort.width) / 2 - boundingRect.width / 2,
+      y: (viewPort.y + viewPort.height) / 2 - boundingRect.height / 2
+    };
+    this._elem.setAttributeNS(null, 'x', this._pos.x);
+    this._elem.setAttributeNS(null, 'y', this._pos.y);
   }
 
   formatData() {

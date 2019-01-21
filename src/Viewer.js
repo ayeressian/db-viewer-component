@@ -13,22 +13,15 @@ export default class Viewer {
     this._btnZoomOut = this._mainElem.getElementById('btn-zoom-out');
     this._svgContainer = this._mainElem.querySelector('.svg-container');
 
-    this._reset();
-
     this._setUpEvents();
 
     this._ZOOM = 1.2;
+
+    this._reset();
   }
 
   _reset() {
     this._zoom = 1;
-
-    this._viewBoxVals = {
-      minX: 0,
-      minY: 0,
-      width: this._svgContainer.clientWidth,
-      height: this._svgContainer.clientHeight,
-    };
 
     this._svgElem.style.height = constant.VIEWER_PAN_HEIGHT + 'px';
     this._svgElem.style.width = constant.VIEWER_PAN_WIDTH + 'px';
@@ -41,7 +34,15 @@ export default class Viewer {
 
     this._minimap.querySelectorAll('.mini_table').forEach((miniTable) => miniTable.remove());
 
-    this._setViewPoint();
+    setTimeout(() => {
+      this._viewBoxVals = {
+        x: 0,
+        y: 0,
+        width: this._svgContainer.clientWidth,
+        height: this._svgContainer.clientHeight,
+      };
+      this._setViewPoint();
+    });
   }
 
   load(tables) {
@@ -322,8 +323,8 @@ export default class Viewer {
   }
 
   _setViewPoint() {
-    this._viewpoint.setAttributeNS(null, 'x', this._viewBoxVals.minX);
-    this._viewpoint.setAttributeNS(null, 'y', this._viewBoxVals.minY);
+    this._viewpoint.setAttributeNS(null, 'x', this._viewBoxVals.x);
+    this._viewpoint.setAttributeNS(null, 'y', this._viewBoxVals.y);
     this._viewpoint.setAttributeNS(null, 'width', this._viewBoxVals.width);
     this._viewpoint.setAttributeNS(null, 'height', this._viewBoxVals.height);
   }
@@ -337,21 +338,21 @@ export default class Viewer {
   }
 
   _viewportAddjustment() {
-    if (this._viewBoxVals.minX < 0) {
-      this._viewBoxVals.minX = 0;
+    if (this._viewBoxVals.x < 0) {
+      this._viewBoxVals.x = 0;
     } else {
-      const offsetWidth = this._viewBoxVals.width + this._viewBoxVals.minX - constant.VIEWER_PAN_WIDTH;
+      const offsetWidth = this._viewBoxVals.width + this._viewBoxVals.x - constant.VIEWER_PAN_WIDTH;
       if (offsetWidth > 0) {
-        this._viewBoxVals.minX -= offsetWidth;
+        this._viewBoxVals.x -= offsetWidth;
       }
     }
 
-    if (this._viewBoxVals.minY < 0) {
-      this._viewBoxVals.minY = 0;
+    if (this._viewBoxVals.y < 0) {
+      this._viewBoxVals.y = 0;
     } else {
-      const offsetHeight = this._viewBoxVals.height + this._viewBoxVals.minY - constant.VIEWER_PAN_HEIGHT;
+      const offsetHeight = this._viewBoxVals.height + this._viewBoxVals.y - constant.VIEWER_PAN_HEIGHT;
       if (offsetHeight > 0) {
-        this._viewBoxVals.minY -= offsetHeight;
+        this._viewBoxVals.y -= offsetHeight;
       }
     }
   }
@@ -416,12 +417,12 @@ export default class Viewer {
 
       if (this._svgContainer.scrollLeft - deltaX + this._svgContainer.clientWidth / this._zoom < constant.VIEWER_PAN_WIDTH &&
         this._svgContainer.scrollLeft - deltaX >= 0) {
-        this._viewBoxVals.minX -= deltaX;
+        this._viewBoxVals.x -= deltaX;
         this._svgContainer.scrollLeft -= deltaX;
       }
       if (this._svgContainer.scrollTop - deltaY + this._svgContainer.clientHeight / this._zoom < constant.VIEWER_PAN_HEIGHT &&
         this._svgContainer.scrollTop - deltaY >= 0) {
-        this._viewBoxVals.minY -= deltaY;
+        this._viewBoxVals.y -= deltaY;
         this._svgContainer.scrollTop -= deltaY;
       }
       this._setViewPoint();
@@ -457,8 +458,8 @@ export default class Viewer {
     }
 
     this._svgContainer.addEventListener('scroll', (event) => {
-      this._viewBoxVals.minX = this._svgContainer.scrollLeft / this._zoom;
-      this._viewBoxVals.minY = this._svgContainer.scrollTop / this._zoom;
+      this._viewBoxVals.x = this._svgContainer.scrollLeft / this._zoom;
+      this._viewBoxVals.y = this._svgContainer.scrollTop / this._zoom;
       this._setViewPoint();
     });
 
@@ -487,11 +488,11 @@ export default class Viewer {
     const ratioX = svgElemBoundingClientRect.width / minimapBoundingClientRect.width;
     const ratioY = svgElemBoundingClientRect.height / minimapBoundingClientRect.height;
     const _viewpointBoundingClientRect = this._viewpoint.getBoundingClientRect();
-    this._viewBoxVals.minX = (x - _viewpointBoundingClientRect.width / 2) * ratioX;
-    this._viewBoxVals.minY = (y - _viewpointBoundingClientRect.height / 2) * ratioY;
+    this._viewBoxVals.x = (x - _viewpointBoundingClientRect.width / 2) * ratioX;
+    this._viewBoxVals.y = (y - _viewpointBoundingClientRect.height / 2) * ratioY;
     this._viewportAddjustment();
-    this._svgContainer.scrollLeft = this._viewBoxVals.minX;
-    this._svgContainer.scrollTop = this._viewBoxVals.minY;
+    this._svgContainer.scrollLeft = this._viewBoxVals.x;
+    this._svgContainer.scrollTop = this._viewBoxVals.y;
   }
 
   getZoom() {
@@ -507,6 +508,10 @@ export default class Viewer {
       x: this._svgContainer.scrollLeft,
       y: this._svgContainer.scrollTop,
     };
+  }
+
+  getViewPort() {
+    return this._viewBoxVals;
   }
 
   setPanX(value) {

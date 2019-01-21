@@ -2,6 +2,7 @@
   "tables": [
     {
       "name": "table1",
+      "pos": "center",
       "columns": [
         {
           "name": "id",
