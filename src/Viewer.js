@@ -16,6 +16,7 @@ export default class Viewer {
     this._setUpEvents();
 
     this._ZOOM = 1.2;
+    this._PINCH_TO_ZOOM_MULTIPLIER = 0.01;
 
     this._reset();
   }
@@ -367,16 +368,14 @@ export default class Viewer {
   }
 
   _setZoom(zoom) {
+    let minZoomValue;
     if (this._svgContainer.offsetWidth > this._svgContainer.offsetHeight) {
-      console.log(zoom);
-      console.log(this._svgContainer.offsetWidth / constant.VIEWER_PAN_WIDTH);
-      if (this._svgContainer.offsetWidth / constant.VIEWER_PAN_WIDTH < zoom) {
-        zoom = constant.VIEWER_PAN_WIDTH / this._svgContainer.offsetWidth;
-      }
+      minZoomValue = this._svgContainer.clientWidth / constant.VIEWER_PAN_WIDTH;
     } else {
-      if (constant.VIEWER_PAN_HEIGHT / this._svgContainer.clientHeight < zoom) {
-        zoom = constant.VIEWER_PAN_HEIGHT / this._svgContainer.clientHeight;
-      }
+      minZoomValue = this._svgContainer.clientHeight / constant.VIEWER_PAN_HEIGHT;
+    }
+    if (minZoomValue != null && minZoomValue > zoom) {
+      zoom = minZoomValue;
     }
     this._zoom = zoom;
 
@@ -391,8 +390,6 @@ export default class Viewer {
     if (this._zoomInCallback()) {
       this._zoomInCallback();
     }
-
-    return true;
   }
 
   zoomIn() {
@@ -481,9 +478,7 @@ export default class Viewer {
 
     this._container.addEventListener('wheel', (event) => {
       if (event.ctrlKey) {
-        if (this._setZoom(this._zoom - event.deltaY * 0.01)) {
-
-        }
+        this._setZoom(this._zoom - event.deltaY * this._PINCH_TO_ZOOM_MULTIPLIER);
         event.preventDefault();
       }
     });
