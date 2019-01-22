@@ -35,15 +35,13 @@ export default class Viewer {
 
     this._minimap.querySelectorAll('.mini_table').forEach((miniTable) => miniTable.remove());
 
-    setTimeout(() => {
-      this._viewBoxVals = {
-        x: 0,
-        y: 0,
-        width: this._svgContainer.clientWidth,
-        height: this._svgContainer.clientHeight,
-      };
-      this._setViewPoint();
-    });
+    this._viewBoxVals = {
+      x: 0,
+      y: 0,
+      width: this._svgContainer.clientWidth,
+      height: this._svgContainer.clientHeight,
+    };
+    this._setViewPoint();
   }
 
   load(tables) {
@@ -65,8 +63,10 @@ export default class Viewer {
 
     const minimapTableElem = this._tableMinimap.get(table);
 
-    minimapTableElem.setAttributeNS(null, 'transform', `translate(${deltaX},${deltaY})`);
-
+    if (minimapTableElem) {
+      minimapTableElem.setAttributeNS(null, 'x', deltaX);
+      minimapTableElem.setAttributeNS(null, 'y', deltaY);
+    }
     if (this._tableMoveCallback) {
       this._tableMoveCallback(table.formatData());
     }
@@ -266,7 +266,6 @@ export default class Viewer {
 
       const tableMini = document.createElementNS(constant.nsSvg, 'rect');
       tableMini.setAttributeNS(null, 'class', 'mini_table');
-      tableMini.setAttributeNS(null, 'transform', `translate(${sides.left.p1.x}, ${sides.left.p1.y})`);
       tableMini.setAttributeNS(null, 'width', sides.top.p2.x - sides.top.p1.x);
       tableMini.setAttributeNS(null, 'height', sides.left.p2.y - sides.left.p1.y);
       this._tableMinimap.set(table, tableMini);

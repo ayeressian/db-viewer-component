@@ -45,12 +45,12 @@ class DBViewer extends HTMLElement {
     this.dispatchEvent(new CustomEvent('tableMove', {detail: tableData}));
   }
 
-  onZoomIn() {
-    this.dispatchEvent(new CustomEvent('zoomIn'));
+  onZoomIn(zoom) {
+    this.dispatchEvent(new CustomEvent('zoomIn', {detail: {zoom}}));
   }
 
-  onZoomOut() {
-    this.dispatchEvent(new CustomEvent('zoomOut'));
+  onZoomOut(zoom) {
+    this.dispatchEvent(new CustomEvent('zoomOut', {detail: {zoom}}));
   }
 
   get scrollLeft() {

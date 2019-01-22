@@ -62,12 +62,9 @@ export default class Table {
       const normalizedClientY = mousePos.y / this._veiwer.getZoom() + this._veiwer.getPan().y / this._veiwer.getZoom();
       const deltaX = normalizedClientX - mouseDownInitialElemX;
       const deltaY = normalizedClientY - mouseDownInitialElemY;
-      // TODO: change to transform when chrome new versions star have resolved the issue.
-      // this._elem.setAttributeNS(null, 'transform', `translate(${deltaX},${deltaY})`);
-      this._elem.setAttributeNS(null, 'x', deltaX);
-      this._elem.setAttributeNS(null, 'y', deltaY);
       this._pos.x = deltaX;
       this._pos.y = deltaY;
+      this._setTablePos(deltaX, deltaY);
       this._onMove && this._onMove(this, deltaX, deltaY);
     };
 
@@ -215,18 +212,18 @@ export default class Table {
     this._moveEvents();
 
     if (this._pos === 'center') {
-      this._elem.setAttributeNS(null, 'x', OUT_OF_VIEW_CORD);
-      this._elem.setAttributeNS(null, 'y', OUT_OF_VIEW_CORD);
-
+      this._setTablePos(OUT_OF_VIEW_CORD, OUT_OF_VIEW_CORD);
       setTimeout(this._center.bind(this));
     } else {
-      // TODO: change to transform when chrome new versions star have resolved the issue.
-      // this._elem.setAttributeNS(null, 'transform', `translate(${this._pos.x},${this._pos.y})`);
-      this._elem.setAttributeNS(null, 'x', this._pos.x);
-      this._elem.setAttributeNS(null, 'y', this._pos.y);
+      this._setTablePos(this._pos.x, this._pos.y);
     }
-
     return this._elem;
+  }
+
+  _setTablePos(x, y) {
+    this._elem.setAttributeNS(null, 'x', x);
+    this._elem.setAttributeNS(null, 'y', y);
+    this._onMove && this._onMove(this, x, y);
   }
 
   _center() {
@@ -236,8 +233,7 @@ export default class Table {
       x: (viewPort.x + viewPort.width) / 2 - boundingRect.width / 2,
       y: (viewPort.y + viewPort.height) / 2 - boundingRect.height / 2
     };
-    this._elem.setAttributeNS(null, 'x', this._pos.x);
-    this._elem.setAttributeNS(null, 'y', this._pos.y);
+    this._setTablePos(this._pos.x, this._pos.y);
   }
 
   formatData() {
