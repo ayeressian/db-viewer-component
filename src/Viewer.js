@@ -377,19 +377,21 @@ export default class Viewer {
     if (minZoomValue != null && minZoomValue > zoom) {
       zoom = minZoomValue;
     }
-    this._zoom = zoom;
 
-    this._svgElem.style.height = constant.VIEWER_PAN_HEIGHT * this._zoom + 'px';
-    this._svgElem.style.width = constant.VIEWER_PAN_WIDTH * this._zoom + 'px';
+    this._svgElem.style.height = constant.VIEWER_PAN_HEIGHT * zoom + 'px';
+    this._svgElem.style.width = constant.VIEWER_PAN_WIDTH * zoom + 'px';
 
-    this._viewBoxVals.width = this._svgContainer.clientWidth / this._zoom;
-    this._viewBoxVals.height = this._svgContainer.clientHeight / this._zoom;
+    this._viewBoxVals.width = this._svgContainer.clientWidth / zoom;
+    this._viewBoxVals.height = this._svgContainer.clientHeight / zoom;
 
     this._setViewPoint();
 
-    if (this._zoomInCallback()) {
-      this._zoomInCallback();
+    if (this._zoom < zoom && this._zoomInCallback) {
+      this._zoomInCallback(zoom);
+    } else if (this._zoomOutCallback) {
+      this._zoomOutCallback(zoom);
     }
+    this._zoom = zoom;
   }
 
   zoomIn() {
