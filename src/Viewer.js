@@ -17,6 +17,7 @@ export default class Viewer {
 
     this._ZOOM = 1.2;
     this._PINCH_TO_ZOOM_MULTIPLIER = 0.01;
+    this._MAX_ZOOM_VALUE = 2;
 
     this._reset();
   }
@@ -63,10 +64,9 @@ export default class Viewer {
 
     const minimapTableElem = this._tableMinimap.get(table);
 
-    if (minimapTableElem) {
-      minimapTableElem.setAttributeNS(null, 'x', deltaX);
-      minimapTableElem.setAttributeNS(null, 'y', deltaY);
-    }
+    minimapTableElem.setAttributeNS(null, 'x', deltaX);
+    minimapTableElem.setAttributeNS(null, 'y', deltaY);
+
     if (this._tableMoveCallback) {
       this._tableMoveCallback(table.formatData());
     }
@@ -258,18 +258,19 @@ export default class Viewer {
     this._tableMinimap = new Map();
 
     this.tables.forEach((table, i) => {
+      const tableMini = document.createElementNS(constant.nsSvg, 'rect');
+      tableMini.setAttributeNS(null, 'class', 'mini_table');
+      this._tableMinimap.set(table, tableMini);
+      this._minimap.appendChild(tableMini);
+
       const tableElm = table.render();
       tableElm.setAttribute('id', i + 'table');
       this._svgElem.appendChild(tableElm);
 
       const sides = table.getSides();
 
-      const tableMini = document.createElementNS(constant.nsSvg, 'rect');
-      tableMini.setAttributeNS(null, 'class', 'mini_table');
       tableMini.setAttributeNS(null, 'width', sides.top.p2.x - sides.top.p1.x);
       tableMini.setAttributeNS(null, 'height', sides.left.p2.y - sides.left.p1.y);
-      this._tableMinimap.set(table, tableMini);
-      this._minimap.appendChild(tableMini);
 
       table.columns.forEach((column) => {
         if (column.fk) {
@@ -375,6 +376,10 @@ export default class Viewer {
     }
     if (minZoomValue != null && minZoomValue > zoom) {
       zoom = minZoomValue;
+    }
+
+    if (zoom > this._MAX_ZOOM_VALUE) {
+      zoom = this._MAX_ZOOM_VALUE;
     }
 
     if (zoom !== this._zoom) {
