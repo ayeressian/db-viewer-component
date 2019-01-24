@@ -367,7 +367,7 @@ export default class Viewer {
     this._setViewPoint();
   }
 
-  _setZoom(zoom) {
+  _setZoom(zoom, targetX, targetY) {
     let minZoomValue;
     if (this._svgContainer.offsetWidth > this._svgContainer.offsetHeight) {
       minZoomValue = this._svgContainer.clientWidth / constant.VIEWER_PAN_WIDTH;
@@ -383,11 +383,20 @@ export default class Viewer {
     }
 
     if (zoom !== this._zoom) {
+      if (targetX == null) targetX = this._svgContainer.clientWidth / 2;
+      if (targetY == null) targetY = this._svgContainer.clientHeight / 2;
+
       this._svgElem.style.height = constant.VIEWER_PAN_HEIGHT * zoom + 'px';
       this._svgElem.style.width = constant.VIEWER_PAN_WIDTH * zoom + 'px';
 
       this._viewBoxVals.width = this._svgContainer.clientWidth / zoom;
       this._viewBoxVals.height = this._svgContainer.clientHeight / zoom;
+
+      const shiftX = targetX / this._svgContainer.clientWidth;
+      const shiftY = targetY / this._svgContainer.clientHeight;
+      const deltaZoom = zoom - this._zoom;
+      this._viewBoxVals.x = this._viewBoxVals.x - this._viewBoxVals.x * shiftX * deltaZoom;
+      this._viewBoxVals.y = this._viewBoxVals.y - this._viewBoxVals.y * shiftY * deltaZoom;
 
       this._setViewPoint();
 
