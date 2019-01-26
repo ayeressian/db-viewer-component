@@ -19,6 +19,8 @@ export default class Viewer {
     this._PINCH_TO_ZOOM_MULTIPLIER = 0.01;
     this._MAX_ZOOM_VALUE = 2;
 
+    this._disble_scroll_event = false;
+
     this._reset();
   }
 
@@ -42,7 +44,7 @@ export default class Viewer {
       width: this._svgContainer.clientWidth,
       height: this._svgContainer.clientHeight,
     };
-    this._setViewPoint();
+    this._setMinimapViewPoint();
   }
 
   load(tables) {
@@ -323,7 +325,7 @@ export default class Viewer {
     });
   }
 
-  _setViewPoint() {
+  _setMinimapViewPoint() {
     this._viewpoint.setAttributeNS(null, 'x', this._viewBoxVals.x);
     this._viewpoint.setAttributeNS(null, 'y', this._viewBoxVals.y);
     this._viewpoint.setAttributeNS(null, 'width', this._viewBoxVals.width);
@@ -364,7 +366,7 @@ export default class Viewer {
 
     this._viewportAddjustment();
 
-    this._setViewPoint();
+    this._setMinimapViewPoint();
   }
 
   _setZoom(zoom, targetX, targetY) {
@@ -389,16 +391,28 @@ export default class Viewer {
       this._svgElem.style.height = constant.VIEWER_PAN_HEIGHT * zoom + 'px';
       this._svgElem.style.width = constant.VIEWER_PAN_WIDTH * zoom + 'px';
 
-      this._viewBoxVals.width = this._svgContainer.clientWidth / zoom;
-      this._viewBoxVals.height = this._svgContainer.clientHeight / zoom;
+      const newWidth = this._svgContainer.clientWidth / zoom;
+      const newHeight = this._svgContainer.clientHeight / zoom;
 
-      const shiftX = targetX / this._svgContainer.clientWidth;
-      const shiftY = targetY / this._svgContainer.clientHeight;
-      const deltaZoom = zoom - this._zoom;
-      this._viewBoxVals.x = this._viewBoxVals.x - this._viewBoxVals.x * shiftX * deltaZoom;
-      this._viewBoxVals.y = this._viewBoxVals.y - this._viewBoxVals.y * shiftY * deltaZoom;
+      const resizeWidth = newWidth - this._viewBoxVals.width;
+      const resizeHeight = newHeight - this._viewBoxVals.height;
 
-      this._setViewPoint();
+      const shiftX = this._svgContainer.clientWidth / targetX;
+      const shiftY = this._svgContainer.clientHeight / targetY;
+
+      this._viewBoxVals.width = newWidth;
+      this._viewBoxVals.height = newHeight;
+
+      this._viewBoxVals.x -= resizeWidth / shiftX;
+      if (this._viewBoxVals.x < 0) this._viewBoxVals.x = 0;
+      this._viewBoxVals.y -= resizeHeight / shiftY;
+      if (this._viewBoxVals.y < 0) this._viewBoxVals.y = 0;
+
+      this._disble_scroll_event = true;
+      this._svgContainer.scrollLeft = this._viewBoxVals.x * zoom;
+      this._svgContainer.scrollTop = this._viewBoxVals.y * zoom;
+
+      this._setMinimapViewPoint();
 
       if (this._zoom < zoom && this._zoomInCallback) {
         this._zoomInCallback(zoom);
@@ -424,6 +438,7 @@ export default class Viewer {
     let prevMouseCordY;
 
     const mouseMove = (event) => {
+      console.log('hit');
       const deltaX = (event.clientX - prevMouseCordX) / this._zoom;
       const deltaY = (event.clientY - prevMouseCordY) / this._zoom;
 
@@ -440,7 +455,7 @@ export default class Viewer {
         this._viewBoxVals.y -= deltaY;
         this._svgContainer.scrollTop -= deltaY;
       }
-      this._setViewPoint();
+      this._setMinimapViewPoint();
     };
 
     this._container.addEventListener('mouseleave', () => {
@@ -473,9 +488,12 @@ export default class Viewer {
     }
 
     this._svgContainer.addEventListener('scroll', (event) => {
-      this._viewBoxVals.x = this._svgContainer.scrollLeft / this._zoom;
-      this._viewBoxVals.y = this._svgContainer.scrollTop / this._zoom;
-      this._setViewPoint();
+      if (!this._disble_scroll_event) {
+        this._viewBoxVals.x = this._svgContainer.scrollLeft / this._zoom;
+        this._viewBoxVals.y = this._svgContainer.scrollTop / this._zoom;
+        this._setMinimapViewPoint();
+      }
+      this._disble_scroll_event = false;
     });
 
     const minimapMouseMove = this._minimapPositionFromMouse.bind(this);
@@ -495,7 +513,7 @@ export default class Viewer {
 
     this._container.addEventListener('wheel', (event) => {
       if (event.ctrlKey) {
-        this._setZoom(this._zoom - event.deltaY * this._PINCH_TO_ZOOM_MULTIPLIER);
+        this._setZoom(this._zoom - event.deltaY * this._PINCH_TO_ZOOM_MULTIPLIER, event.offsetX, event.offsetY);
         event.preventDefault();
       }
     });
@@ -513,6 +531,7 @@ export default class Viewer {
     this._viewBoxVals.x = (x - _viewpointBoundingClientRect.width / 2) * ratioX;
     this._viewBoxVals.y = (y - _viewpointBoundingClientRect.height / 2) * ratioY;
     this._viewportAddjustment();
+    console.log('hit2');
     this._svgContainer.scrollLeft = this._viewBoxVals.x;
     this._svgContainer.scrollTop = this._viewBoxVals.y;
   }
