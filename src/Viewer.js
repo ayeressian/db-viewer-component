@@ -532,7 +532,7 @@ export default class Viewer {
     const _viewpointBoundingClientRect = this._viewpoint.getBoundingClientRect();
     this._viewBoxVals.x = (x - _viewpointBoundingClientRect.width / 2) * ratioX;
     this._viewBoxVals.y = (y - _viewpointBoundingClientRect.height / 2) * ratioY;
-    this._viewportAddjustment();
+
     this._svgContainer.scrollLeft = this._viewBoxVals.x;
     this._svgContainer.scrollTop = this._viewBoxVals.y;
   }
