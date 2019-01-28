@@ -438,7 +438,6 @@ export default class Viewer {
     let prevMouseCordY;
 
     const mouseMove = (event) => {
-      console.log('hit');
       const deltaX = (event.clientX - prevMouseCordX) / this._zoom;
       const deltaY = (event.clientY - prevMouseCordY) / this._zoom;
 
@@ -513,7 +512,10 @@ export default class Viewer {
 
     this._container.addEventListener('wheel', (event) => {
       if (event.ctrlKey) {
-        this._setZoom(this._zoom - event.deltaY * this._PINCH_TO_ZOOM_MULTIPLIER, event.offsetX, event.offsetY);
+        const clientRect = this._svgContainer.getBoundingClientRect();
+        const targetX = event.clientX - clientRect.left;
+        const targetY = event.clientY - clientRect.top;
+        this._setZoom(this._zoom - event.deltaY * this._PINCH_TO_ZOOM_MULTIPLIER, targetX, targetY);
         event.preventDefault();
       }
     });
@@ -531,7 +533,6 @@ export default class Viewer {
     this._viewBoxVals.x = (x - _viewpointBoundingClientRect.width / 2) * ratioX;
     this._viewBoxVals.y = (y - _viewpointBoundingClientRect.height / 2) * ratioY;
     this._viewportAddjustment();
-    console.log('hit2');
     this._svgContainer.scrollLeft = this._viewBoxVals.x;
     this._svgContainer.scrollTop = this._viewBoxVals.y;
   }
