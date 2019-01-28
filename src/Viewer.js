@@ -17,6 +17,8 @@ export default class Viewer {
 
     this._ZOOM = 1.2;
     this._PINCH_TO_ZOOM_MULTIPLIER = 0.01;
+    this._SAFARI_PINCH_TO_ZOOM_MULTIPLIER = 50;
+    this._SAFARI_PINCH_TO_ZOOM_OUT_FINGER_DISTANCE = 1;
     this._MAX_ZOOM_VALUE = 2;
 
     this._disble_scroll_event = false;
@@ -397,14 +399,14 @@ export default class Viewer {
       const resizeWidth = newWidth - this._viewBoxVals.width;
       const resizeHeight = newHeight - this._viewBoxVals.height;
 
-      const shiftX = this._svgContainer.clientWidth / targetX;
-      const shiftY = this._svgContainer.clientHeight / targetY;
+      const dividerX = this._svgContainer.clientWidth / targetX;
+      const dividerY = this._svgContainer.clientHeight / targetY;
 
       this._viewBoxVals.width = newWidth;
       this._viewBoxVals.height = newHeight;
 
-      this._viewBoxVals.x -= resizeWidth / shiftX;
-      this._viewBoxVals.y -= resizeHeight / shiftY;
+      this._viewBoxVals.x -= resizeWidth / dividerX;
+      this._viewBoxVals.y -= resizeHeight / dividerY;
 
       this._viewportAddjustment();
 
@@ -519,6 +521,23 @@ export default class Viewer {
         event.preventDefault();
       }
     });
+
+    // safari
+    this._container.addEventListener('gesturestart', (event) => {
+      if (event.scale != null) {
+        this._safariScale = event.scale;
+      }
+      event.preventDefault();
+    });
+    this._container.addEventListener('gesturechange', (event) => {
+      event.preventDefault();
+      const clientRect = this._svgContainer.getBoundingClientRect();
+      const targetX = event.clientX - clientRect.left;
+      const targetY = event.clientY - clientRect.top;
+      const scaleChange = event.scale - this._safariScale;
+      this._setZoom(this._zoom + scaleChange, targetX, targetY);
+      this._safariScale = event.scale;
+    }, true);
   }
 
   _minimapPositionFromMouse(event) {
