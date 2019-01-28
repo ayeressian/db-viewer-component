@@ -404,9 +404,9 @@ export default class Viewer {
       this._viewBoxVals.height = newHeight;
 
       this._viewBoxVals.x -= resizeWidth / shiftX;
-      if (this._viewBoxVals.x < 0) this._viewBoxVals.x = 0;
       this._viewBoxVals.y -= resizeHeight / shiftY;
-      if (this._viewBoxVals.y < 0) this._viewBoxVals.y = 0;
+
+      this._viewportAddjustment();
 
       this._disble_scroll_event = true;
       this._svgContainer.scrollLeft = this._viewBoxVals.x * zoom;
