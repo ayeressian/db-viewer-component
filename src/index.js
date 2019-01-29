@@ -4,8 +4,11 @@ import template from './template.js';
 import validateJson from './validate-schema';
 
 const FILE_NOT_LOADED = new Error(`No schema has been set or loaded yet.
-  If you are using 'src' attribute please use 'fileDownload' method returned
-  promise to know when the async file fetching has been finished.`);
+  If you are using 'src' attribute please use 'load' event
+  to know when the async file fetching has been finished.`);
+
+const NO_TABLE = new Error(`No table exist with the given name.`);
+const INVALID_FILE_FORMAT = new Error('Invalid file format.');
 
 class DBViewer extends HTMLElement {
   constructor() {
@@ -23,9 +26,8 @@ class DBViewer extends HTMLElement {
     this.viewer.setZoomInCallback(this.onZoomIn.bind(this));
     this.viewer.setZoomOutCallback(this.onZoomOut.bind(this));
 
-    this._fileLoadPromise = new Promise((resolve, reject) => {
-      this._fileLoadPromiseResolve = resolve;
-      this._fileLoadPromiseReject = reject;
+    setTimeout(() => {
+      this.dispatchEvent(new CustomEvent('ready'));
     });
   }
 
@@ -86,21 +88,19 @@ class DBViewer extends HTMLElement {
   }
 
   getTableInfo(name) {
-    if (!this._fileDownload) {
-      throw FILE_NOT_LOADED;
-    }
     const table = this._tables.find((table) => table.name === name);
+    if (table == null) {
+      throw NO_TABLE;
+    }
     return table.formatData();
   }
 
   setTablePos(name, xCord, yCord) {
     const table = this._tables.find((table) => table.name === name);
-    table.setPanX = xCord;
-    table.setPanY = yCord;
-  }
-
-  get fileDownload() {
-    return this._fileLoadPromise;
+    if (table == null) {
+      throw NO_TABLE;
+    }
+    table.setTablePos(xCord, yCord);
   }
 
   static get observedAttributes() {
@@ -113,26 +113,27 @@ class DBViewer extends HTMLElement {
     fetch(this._src).then((response) => response.json()).
     then((response) => {
       if (!validateJson(response)) {
-        throw new Error('Invalid file format.');
+        throw INVALID_FILE_FORMAT;
       }
       this._notParsedSchema = JSON.parse(JSON.stringify(response));
       this._tables = schemaParser(response);
       this.viewer.load(this._tables);
       this._fileDownload = true;
-      this._fileLoadPromiseResolve();
+      setTimeout(() => {
+        this.dispatchEvent(new CustomEvent('load'));
+      });
     });
   }
 
   set schema(schema) {
     if (!validateJson(schema)) {
-      throw new Error('Invalid file format.');
+      throw INVALID_FILE_FORMAT;
     }
     this._notParsedSchema = JSON.parse(JSON.stringify(schema));
     schema = JSON.parse(JSON.stringify(schema));
     this._tables = schemaParser(schema);
     this.viewer.load(this._tables);
     this._fileDownload = true;
-    this._fileLoadPromiseResolve();
   }
 
   get schema() {

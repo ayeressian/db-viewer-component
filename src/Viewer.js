@@ -17,8 +17,6 @@ export default class Viewer {
 
     this._ZOOM = 1.2;
     this._PINCH_TO_ZOOM_MULTIPLIER = 0.01;
-    this._SAFARI_PINCH_TO_ZOOM_MULTIPLIER = 50;
-    this._SAFARI_PINCH_TO_ZOOM_OUT_FINGER_DISTANCE = 1;
     this._MAX_ZOOM_VALUE = 2;
 
     this._disble_scroll_event = false;
