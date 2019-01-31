@@ -1,5 +1,6 @@
 import Relation from './Relation.js';
 import constant from './const.js';
+import Minimap from './Minimap.js';
 
 export default class Viewer {
   constructor(mainElem) {
@@ -7,16 +8,16 @@ export default class Viewer {
     this._container = this._mainElem.getElementById('veiwer-container');
 
     this._svgElem = this._mainElem.getElementById('veiwer');
-    this._minimap = this._mainElem.getElementById('minimap');
-    this._viewpoint = this._mainElem.getElementById('viewpoint');
-    this._btnZoomIn = this._mainElem.getElementById('btn-zoom-in');
-    this._btnZoomOut = this._mainElem.getElementById('btn-zoom-out');
     this._svgContainer = this._mainElem.querySelector('.svg-container');
+
+    this._minimap = new Minimap(mainElem, this);
 
     this._setUpEvents();
 
     this._ZOOM = 1.2;
     this._PINCH_TO_ZOOM_MULTIPLIER = 0.01;
+    this._SAFARI_PINCH_TO_ZOOM_MULTIPLIER = 50;
+    this._SAFARI_PINCH_TO_ZOOM_OUT_FINGER_DISTANCE = 1;
     this._MAX_ZOOM_VALUE = 2;
 
     this._disble_scroll_event = false;
@@ -44,7 +45,7 @@ export default class Viewer {
       width: this._svgContainer.clientWidth,
       height: this._svgContainer.clientHeight,
     };
-    this._setMinimapViewPoint();
+    this._minimap.setMinimapViewPoint(this._viewVoxVals);
   }
 
   load(tables) {
@@ -325,13 +326,6 @@ export default class Viewer {
     });
   }
 
-  _setMinimapViewPoint() {
-    this._viewpoint.setAttributeNS(null, 'x', this._viewBoxVals.x);
-    this._viewpoint.setAttributeNS(null, 'y', this._viewBoxVals.y);
-    this._viewpoint.setAttributeNS(null, 'width', this._viewBoxVals.width);
-    this._viewpoint.setAttributeNS(null, 'height', this._viewBoxVals.height);
-  }
-
   getCords() {
     const bRect = this._svgElem.getBoundingClientRect();
     return {
@@ -366,7 +360,7 @@ export default class Viewer {
 
     this._viewportAddjustment();
 
-    this._setMinimapViewPoint();
+    this._minimap.setMinimapViewPoint(this._viewVoxVals);
   }
 
   _setZoom(zoom, targetX, targetY) {
@@ -412,7 +406,7 @@ export default class Viewer {
       this._svgContainer.scrollLeft = this._viewBoxVals.x * zoom;
       this._svgContainer.scrollTop = this._viewBoxVals.y * zoom;
 
-      this._setMinimapViewPoint();
+      this._minimap.setMinimapViewPoint(this._viewVoxVals);
 
       if (this._zoom < zoom && this._zoomInCallback) {
         this._zoomInCallback(zoom);
@@ -454,7 +448,7 @@ export default class Viewer {
         this._viewBoxVals.y -= deltaY;
         this._svgContainer.scrollTop -= deltaY;
       }
-      this._setMinimapViewPoint();
+      this._minimap.setMinimapViewPoint(this._viewVoxVals);
     };
 
     this._container.addEventListener('mouseleave', () => {
@@ -476,10 +470,6 @@ export default class Viewer {
       this._mainElem.removeEventListener('mousemove', mouseMove);
     });
 
-    this._btnZoomIn.addEventListener('click', this.zoomIn.bind(this));
-
-    this._btnZoomOut.addEventListener('click', this.zoomOut.bind(this));
-
     if (this.tables) {
       this.tables.forEach((table) => {
         table.setMoveListener(this.onTableMove.bind(this));
@@ -490,24 +480,9 @@ export default class Viewer {
       if (!this._disble_scroll_event) {
         this._viewBoxVals.x = this._svgContainer.scrollLeft / this._zoom;
         this._viewBoxVals.y = this._svgContainer.scrollTop / this._zoom;
-        this._setMinimapViewPoint();
+        this._minimap.setMinimapViewPoint(this._viewVoxVals);
       }
       this._disble_scroll_event = false;
-    });
-
-    const minimapMouseMove = this._minimapPositionFromMouse.bind(this);
-
-    this._minimap.addEventListener('mousedown', (event) => {
-      if (event.button === 0) {
-        this._minimapPositionFromMouse(event);
-        this._minimap.addEventListener('mousemove', minimapMouseMove);
-      }
-    });
-    this._container.addEventListener('mouseleave', () => {
-      this._minimap.removeEventListener('mousemove', minimapMouseMove);
-    });
-    this._container.addEventListener('mouseup', () => {
-      this._minimap.removeEventListener('mousemove', minimapMouseMove);
     });
 
     this._container.addEventListener('wheel', (event) => {
@@ -536,22 +511,6 @@ export default class Viewer {
       this._setZoom(this._zoom + scaleChange, targetX, targetY);
       this._safariScale = event.scale;
     }, true);
-  }
-
-  _minimapPositionFromMouse(event) {
-    event.stopPropagation();
-    const minimapBoundingClientRect = this._minimap.getBoundingClientRect();
-    const x = event.clientX - minimapBoundingClientRect.x;
-    const y = event.clientY - minimapBoundingClientRect.y;
-    const svgElemBoundingClientRect = this._svgElem.getBoundingClientRect();
-    const ratioX = svgElemBoundingClientRect.width / minimapBoundingClientRect.width;
-    const ratioY = svgElemBoundingClientRect.height / minimapBoundingClientRect.height;
-    const _viewpointBoundingClientRect = this._viewpoint.getBoundingClientRect();
-    this._viewBoxVals.x = (x - _viewpointBoundingClientRect.width / 2) * ratioX;
-    this._viewBoxVals.y = (y - _viewpointBoundingClientRect.height / 2) * ratioY;
-
-    this._svgContainer.scrollLeft = this._viewBoxVals.x;
-    this._svgContainer.scrollTop = this._viewBoxVals.y;
   }
 
   getZoom() {

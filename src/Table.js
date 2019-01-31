@@ -230,8 +230,8 @@ export default class Table {
     const boundingRect = this._elem.getBoundingClientRect();
     const viewPort = this._veiwer.getViewPort();
     this._pos = {
-      x: viewPort.x + viewPort.width / 2 - boundingRect.width / 2,
-      y: viewPort.y + viewPort.height / 2 - boundingRect.height / 2
+      x: viewPort.x * this._veiwer.getZoom() + viewPort.width / 2 - boundingRect.width * this._veiwer.getZoom() / 2,
+      y: viewPort.y * this._veiwer.getZoom() + viewPort.height / 2 - boundingRect.height * this._veiwer.getZoom() / 2
     };
     this._setTablePos(this._pos.x, this._pos.y);
   }

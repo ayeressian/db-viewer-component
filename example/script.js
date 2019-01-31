@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   const dbViewerElem = document.querySelector('db-viewer');
   dbViewerElem.addEventListener('ready', () => {
-    dbViewerElem.scrollLeft = 500;
-    dbViewerElem.scrollTop = 500;
+    dbViewerElem.scrollLeft = 1000;
+    dbViewerElem.scrollTop = 1000;
 
     dbViewerElem.zoomIn();
     dbViewerElem.zoomIn();
