@@ -220,7 +220,7 @@ export default class Table {
     return this._elem;
   }
 
-  _setTablePos(x, y) {
+  #setTablePos(x, y) {
     this._elem.setAttributeNS(null, 'x', x);
     this._elem.setAttributeNS(null, 'y', y);
     this._onMove && this._onMove(this, x, y);
