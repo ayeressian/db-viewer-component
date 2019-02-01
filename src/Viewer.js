@@ -35,9 +35,7 @@ export default class Viewer {
     this._tableMinimap = new Map();
     this._relationInfos = [];
 
-    this._minimap.setAttribute('viewBox', `0 0 ${constant.VIEWER_PAN_WIDTH} ${constant.VIEWER_PAN_HEIGHT}`);
-
-    this._minimap.querySelectorAll('.mini_table').forEach((miniTable) => miniTable.remove());
+    this._minimap.reset();
 
     this._viewBoxVals = {
       x: 0,
@@ -45,7 +43,7 @@ export default class Viewer {
       width: this._svgContainer.clientWidth,
       height: this._svgContainer.clientHeight,
     };
-    this._minimap.setMinimapViewPoint(this._viewVoxVals);
+    this._minimap.setMinimapViewPoint(this._viewBoxVals);
   }
 
   load(tables) {
@@ -65,10 +63,7 @@ export default class Viewer {
   onTableMove(table, deltaX, deltaY) {
     this._drawRelations();
 
-    const minimapTableElem = this._tableMinimap.get(table);
-
-    minimapTableElem.setAttributeNS(null, 'x', deltaX);
-    minimapTableElem.setAttributeNS(null, 'y', deltaY);
+    this._minimap.onTableMove(table, deltaX, deltaY);
 
     if (this._tableMoveCallback) {
       this._tableMoveCallback(table.formatData());
@@ -261,10 +256,7 @@ export default class Viewer {
     this._tableMinimap = new Map();
 
     this.tables.forEach((table, i) => {
-      const tableMini = document.createElementNS(constant.nsSvg, 'rect');
-      tableMini.setAttributeNS(null, 'class', 'mini_table');
-      this._tableMinimap.set(table, tableMini);
-      this._minimap.appendChild(tableMini);
+      this._minimap.createTable(table);
 
       const tableElm = table.render();
       tableElm.setAttribute('id', i + 'table');
@@ -272,8 +264,7 @@ export default class Viewer {
 
       const sides = table.getSides();
 
-      tableMini.setAttributeNS(null, 'width', sides.top.p2.x - sides.top.p1.x);
-      tableMini.setAttributeNS(null, 'height', sides.left.p2.y - sides.left.p1.y);
+      this._minimap.setTableDim(table, sides.top.p2.x - sides.top.p1.x, sides.left.p2.y - sides.left.p1.y);
 
       table.columns.forEach((column) => {
         if (column.fk) {
@@ -360,7 +351,7 @@ export default class Viewer {
 
     this._viewportAddjustment();
 
-    this._minimap.setMinimapViewPoint(this._viewVoxVals);
+    this._minimap.setMinimapViewPoint(this._viewBoxVals);
   }
 
   _setZoom(zoom, targetX, targetY) {
@@ -406,7 +397,7 @@ export default class Viewer {
       this._svgContainer.scrollLeft = this._viewBoxVals.x * zoom;
       this._svgContainer.scrollTop = this._viewBoxVals.y * zoom;
 
-      this._minimap.setMinimapViewPoint(this._viewVoxVals);
+      this._minimap.setMinimapViewPoint(this._viewBoxVals);
 
       if (this._zoom < zoom && this._zoomInCallback) {
         this._zoomInCallback(zoom);
@@ -448,7 +439,7 @@ export default class Viewer {
         this._viewBoxVals.y -= deltaY;
         this._svgContainer.scrollTop -= deltaY;
       }
-      this._minimap.setMinimapViewPoint(this._viewVoxVals);
+      this._minimap.setMinimapViewPoint(this._viewBoxVals);
     };
 
     this._container.addEventListener('mouseleave', () => {
@@ -470,6 +461,9 @@ export default class Viewer {
       this._mainElem.removeEventListener('mousemove', mouseMove);
     });
 
+    this._container.addEventListener('mouseleave', this._minimap.onContainerMouseLeave);
+    this._container.addEventListener('mouseup', this._minimap.onContainerMouseUp);
+
     if (this.tables) {
       this.tables.forEach((table) => {
         table.setMoveListener(this.onTableMove.bind(this));
@@ -480,7 +474,7 @@ export default class Viewer {
       if (!this._disble_scroll_event) {
         this._viewBoxVals.x = this._svgContainer.scrollLeft / this._zoom;
         this._viewBoxVals.y = this._svgContainer.scrollTop / this._zoom;
-        this._minimap.setMinimapViewPoint(this._viewVoxVals);
+        this._minimap.setMinimapViewPoint(this._viewBoxVals);
       }
       this._disble_scroll_event = false;
     });

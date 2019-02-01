@@ -13,23 +13,23 @@ export default class Minimap {
   }
 
   _setUpEvents() {
-    this._btnZoomIn.addEventListener('click', this._viewer.zoomIn.bind(this));
-    this._btnZoomOut.addEventListener('click', this._viewer.zoomOut.bind(this));
+    this._btnZoomIn.addEventListener('click', this._viewer.zoomIn.bind(this._viewer));
+    this._btnZoomOut.addEventListener('click', this._viewer.zoomOut.bind(this._viewer));
 
     const minimapMouseMove = this._minimapPositionFromMouse.bind(this);
 
     this._minimap.addEventListener('mousedown', (event) => {
       if (event.button === 0) {
-        this._minimapPositionFromMouse(event);
+        minimapMouseMove(event);
         this._minimap.addEventListener('mousemove', minimapMouseMove);
       }
     });
-    this._container.addEventListener('mouseleave', () => {
+
+    this.onContainerMouseLeave = () => {
       this._minimap.removeEventListener('mousemove', minimapMouseMove);
-    });
-    this._container.addEventListener('mouseup', () => {
-      this._minimap.removeEventListener('mousemove', minimapMouseMove);
-    });
+    };
+
+    this.onContainerMouseUp = this.onContainerMouseLeave;
   }
 
   _minimapPositionFromMouse(event) {
@@ -54,11 +54,24 @@ export default class Minimap {
     this._minimap.querySelectorAll('.mini_table').forEach((miniTable) => miniTable.remove());
   }
 
-  setMinimapViewPoint(viewpoint) {
-    viewpoint.setAttributeNS(null, 'x', this._viewBoxVals.x);
-    viewpoint.setAttributeNS(null, 'y', this._viewBoxVals.y);
-    viewpoint.setAttributeNS(null, 'width', this._viewBoxVals.width);
-    viewpoint.setAttributeNS(null, 'height', this._viewBoxVals.height);
+  setMinimapViewPoint(viewBoxVals) {
+    this._viewpoint.setAttributeNS(null, 'x', viewBoxVals.x);
+    this._viewpoint.setAttributeNS(null, 'y', viewBoxVals.y);
+    this._viewpoint.setAttributeNS(null, 'width', viewBoxVals.width);
+    this._viewpoint.setAttributeNS(null, 'height', viewBoxVals.height);
+  }
+
+  createTable(table) {
+    const tableMini = document.createElementNS(constant.nsSvg, 'rect');
+    tableMini.setAttributeNS(null, 'class', 'mini_table');
+    this._tableMinimap.set(table, tableMini);
+    this._minimap.appendChild(tableMini);
+  }
+
+  setTableDim(table, x, y) {
+    const miniTable = this._tableMinimap.get(table);
+    miniTable.setAttributeNS(null, 'width', x);
+    miniTable.setAttributeNS(null, 'height', y);
   }
 
   onTableMove(table, deltaX, deltaY) {
