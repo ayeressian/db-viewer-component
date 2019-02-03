@@ -4,14 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
     dbViewerElem.scrollLeft = 1000;
     dbViewerElem.scrollTop = 1000;
 
-    dbViewerElem.zoomIn();
-    dbViewerElem.zoomIn();
+    // dbViewerElem.zoomIn();
+    // dbViewerElem.zoomIn();
   });
 
   dbViewerElem.addEventListener('load', () => {
     // dbViewerElem.setTablePos('school', 0, 0);
     // console.log(dbViewerElem.getTableInfo('school'));
-
     console.log(dbViewerElem.schema);
   });
 

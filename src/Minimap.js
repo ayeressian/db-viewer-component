@@ -1,13 +1,14 @@
 import constant from './const.js';
 
 export default class Minimap {
-  constructor(mainElem, viewer) {
+  constructor(mainElem, viewer, svgElem) {
     this._mainElem = mainElem;
     this._viewer = viewer;
     this._minimap = this._mainElem.getElementById('minimap');
     this._viewpoint = this._mainElem.getElementById('viewpoint');
     this._btnZoomIn = this._mainElem.getElementById('btn-zoom-in');
     this._btnZoomOut = this._mainElem.getElementById('btn-zoom-out');
+    this._svgElem = svgElem;
     this._setUpEvents();
     this.reset();
   }
@@ -44,8 +45,8 @@ export default class Minimap {
     this._viewBoxVals.x = (x - _viewpointBoundingClientRect.width / 2) * ratioX;
     this._viewBoxVals.y = (y - _viewpointBoundingClientRect.height / 2) * ratioY;
 
-    this.viewer.setPanX = this._viewBoxVals.x;
-    this.viewer.setPanY = this._viewBoxVals.y;
+    this._viewer.setPanX(this._viewBoxVals.x);
+    this._viewer.setPanY(this._viewBoxVals.y);
   }
 
   reset() {
@@ -55,6 +56,7 @@ export default class Minimap {
   }
 
   setMinimapViewPoint(viewBoxVals) {
+    this._viewBoxVals = viewBoxVals;
     this._viewpoint.setAttributeNS(null, 'x', viewBoxVals.x);
     this._viewpoint.setAttributeNS(null, 'y', viewBoxVals.y);
     this._viewpoint.setAttributeNS(null, 'width', viewBoxVals.width);

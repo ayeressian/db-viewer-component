@@ -10,7 +10,7 @@ export default class Viewer {
     this._svgElem = this._mainElem.getElementById('veiwer');
     this._svgContainer = this._mainElem.querySelector('.svg-container');
 
-    this._minimap = new Minimap(mainElem, this);
+    this._minimap = new Minimap(mainElem, this, this._svgElem);
 
     this._setUpEvents();
 
@@ -423,8 +423,8 @@ export default class Viewer {
     let prevMouseCordY;
 
     const mouseMove = (event) => {
-      const deltaX = (event.clientX - prevMouseCordX) / this._zoom;
-      const deltaY = (event.clientY - prevMouseCordY) / this._zoom;
+      const deltaX = (event.clientX - prevMouseCordX);
+      const deltaY = (event.clientY - prevMouseCordY);
 
       prevMouseCordY = event.clientY;
       prevMouseCordX = event.clientX;
@@ -528,10 +528,12 @@ export default class Viewer {
 
   setPanX(value) {
     this._svgContainer.scrollLeft = value;
+    this._viewBoxVals.x = this._svgContainer.scrollLeft / this._zoom;
   }
 
   setPanY(value) {
     this._svgContainer.scrollTop = value;
+    this._viewBoxVals.y = this._svgContainer.scrollTop / this._zoom;
   }
 
   getMousePosRelativeContainer(event) {
