@@ -3,10 +3,6 @@ import schemaParser from './schemaParser.js';
 import template from './template.js';
 import validateJson from './validate-schema';
 
-const FILE_NOT_LOADED = new Error(`No schema has been set or loaded yet.
-  If you are using 'src' attribute please use 'load' event
-  to know when the async file fetching has been finished.`);
-
 const NO_TABLE = new Error(`No table exist with the given name.`);
 const INVALID_FILE_FORMAT = new Error('Invalid file format.');
 
@@ -26,8 +22,8 @@ class DBViewer extends HTMLElement {
     this.viewer.setZoomInCallback(this.onZoomIn.bind(this));
     this.viewer.setZoomOutCallback(this.onZoomOut.bind(this));
 
-    setTimeout(() => {
-      this.dispatchEvent(new CustomEvent('ready'));
+    this._readyPromise = new Promise((resolve) => {
+      this._readyPromiseResolve = resolve;
     });
   }
 
@@ -107,20 +103,30 @@ class DBViewer extends HTMLElement {
     return ['src'];
   }
 
+  connectedCallback() {
+    this.viewer.ready();
+    setTimeout(() => {
+      this._readyPromiseResolve();
+      this.dispatchEvent(new CustomEvent('ready'));
+    });
+  }
+
   attributeChangedCallback(name, oldValue, newValue) {
     this._src = newValue;
     this._fileDownload = false;
-    fetch(this._src).then((response) => response.json()).
-    then((response) => {
-      if (!validateJson(response)) {
-        throw INVALID_FILE_FORMAT;
-      }
-      this._notParsedSchema = JSON.parse(JSON.stringify(response));
-      this._tables = schemaParser(response);
-      this.viewer.load(this._tables);
-      this._fileDownload = true;
-      setTimeout(() => {
-        this.dispatchEvent(new CustomEvent('load'));
+    this._readyPromise.then(() => {
+      fetch(this._src).then((response) => response.json()).
+      then((response) => {
+        if (!validateJson(response)) {
+          throw INVALID_FILE_FORMAT;
+        }
+        this._notParsedSchema = JSON.parse(JSON.stringify(response));
+        this._tables = schemaParser(response);
+        this.viewer.load(this._tables);
+        this._fileDownload = true;
+        setTimeout(() => {
+          this.dispatchEvent(new CustomEvent('load'));
+        });
       });
     });
   }

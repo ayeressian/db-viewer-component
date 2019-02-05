@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const dbViewerElem = document.querySelector('db-viewer');
   dbViewerElem.addEventListener('ready', () => {
+    console.log('ready');
     dbViewerElem.scrollLeft = 1000;
     dbViewerElem.scrollTop = 1000;
 
@@ -9,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   dbViewerElem.addEventListener('load', () => {
+    console.log('load');
     // dbViewerElem.setTablePos('school', 0, 0);
     // console.log(dbViewerElem.getTableInfo('school'));
     console.log(dbViewerElem.schema);

@@ -21,6 +21,16 @@ export default class Viewer {
     this._MAX_ZOOM_VALUE = 2;
 
     this._disble_scroll_event = false;
+  }
+
+  ready() {
+    this._viewBoxVals = {
+      x: 0,
+      y: 0,
+      width: this._svgContainer.clientWidth,
+      height: this._svgContainer.clientHeight,
+    };
+    this._minimap.setMinimapViewPoint(this._viewBoxVals);
 
     this._reset();
   }
@@ -36,14 +46,6 @@ export default class Viewer {
     this._relationInfos = [];
 
     this._minimap.reset();
-
-    this._viewBoxVals = {
-      x: 0,
-      y: 0,
-      width: this._svgContainer.clientWidth,
-      height: this._svgContainer.clientHeight,
-    };
-    this._minimap.setMinimapViewPoint(this._viewBoxVals);
   }
 
   load(tables) {
@@ -527,13 +529,14 @@ export default class Viewer {
   }
 
   setPanX(value) {
-    this._svgContainer.scrollLeft = value;
     this._viewBoxVals.x = this._svgContainer.scrollLeft / this._zoom;
+    console.log('setPanX', this._viewBoxVals);
+    this._svgContainer.scrollLeft = value;
   }
 
   setPanY(value) {
-    this._svgContainer.scrollTop = value;
     this._viewBoxVals.y = this._svgContainer.scrollTop / this._zoom;
+    this._svgContainer.scrollTop = value;
   }
 
   getMousePosRelativeContainer(event) {
