@@ -233,7 +233,6 @@ export default class Table {
       x: viewPort.x + viewPort.width / 2 - boundingRect.width / this._veiwer.getZoom() / 2,
       y: viewPort.y + viewPort.height / 2 - boundingRect.height / this._veiwer.getZoom() / 2
     };
-    console.log(viewPort);
     this.setTablePos(this._pos.x, this._pos.y);
   }
 

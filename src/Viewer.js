@@ -529,13 +529,12 @@ export default class Viewer {
   }
 
   setPanX(value) {
-    this._viewBoxVals.x = this._svgContainer.scrollLeft / this._zoom;
-    console.log('setPanX', this._viewBoxVals);
+    this._viewBoxVals.x = value / this._zoom;
     this._svgContainer.scrollLeft = value;
   }
 
   setPanY(value) {
-    this._viewBoxVals.y = this._svgContainer.scrollTop / this._zoom;
+    this._viewBoxVals.y = value / this._zoom;
     this._svgContainer.scrollTop = value;
   }
 

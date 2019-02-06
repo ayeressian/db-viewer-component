@@ -5,6 +5,7 @@ import validateJson from './validate-schema';
 
 const NO_TABLE = new Error(`No table exist with the given name.`);
 const INVALID_FILE_FORMAT = new Error('Invalid file format.');
+const FIREFOX_READY_TIMEOUT = 100;
 
 class DBViewer extends HTMLElement {
   constructor() {
@@ -108,7 +109,7 @@ class DBViewer extends HTMLElement {
     setTimeout(() => {
       this._readyPromiseResolve();
       this.dispatchEvent(new CustomEvent('ready'));
-    });
+    }, FIREFOX_READY_TIMEOUT);
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
