@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   dbViewerElem.addEventListener('load', () => {
-    dbViewerElem.setTablePos('school', 0, 0);
+    // dbViewerElem.setTablePos('school', 0, 0);
     console.log(dbViewerElem.getTableInfo('school'));
     console.log(dbViewerElem.schema);
   });

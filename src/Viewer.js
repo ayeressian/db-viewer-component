@@ -24,14 +24,19 @@ export default class Viewer {
   }
 
   ready() {
+    const width = this._svgContainer.clientWidth;
+    const height = this._svgContainer.clientHeight;
     this._viewBoxVals = {
       x: 0,
       y: 0,
-      width: this._svgContainer.clientWidth,
-      height: this._svgContainer.clientHeight,
+      width,
+      height
     };
     this._minimap.setMinimapViewPoint(this._viewBoxVals);
-
+    setTimeout(() => {
+      this.setPanX(constant.VIEWER_PAN_WIDTH / 2 - width / 2);
+      this.setPanY(constant.VIEWER_PAN_HEIGHT / 2 - height / 2);
+    });
     this._reset();
   }
 
