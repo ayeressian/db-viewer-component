@@ -5,11 +5,22 @@ import validateJson from './validate-schema';
 
 const NO_TABLE = new Error(`No table exist with the given name.`);
 const INVALID_FILE_FORMAT = new Error('Invalid file format.');
-const FIREFOX_READY_TIMEOUT = 100;
 
 class DBViewer extends HTMLElement {
   constructor() {
     super();
+    if (this._checkWindowLoaded()) {
+      this._whenWindowLoaded();
+    } else {
+      window.addEventListener('load', this._whenWindowLoaded.bind(this));
+    }
+
+    this._readyPromise = new Promise((resolve) => {
+      this._readyPromiseResolve = resolve;
+    });
+  }
+
+  _whenWindowLoaded() {
     const shadowDom = this.attachShadow({
       mode: 'open'
     });
@@ -23,9 +34,12 @@ class DBViewer extends HTMLElement {
     this.viewer.setZoomInCallback(this.onZoomIn.bind(this));
     this.viewer.setZoomOutCallback(this.onZoomOut.bind(this));
 
-    this._readyPromise = new Promise((resolve) => {
-      this._readyPromiseResolve = resolve;
-    });
+    this._readyPromiseResolve();
+    this.dispatchEvent(new CustomEvent('ready'));
+  }
+
+  _checkWindowLoaded() {
+    return document.readyState === 'complete';
   }
 
   onTableClick(tableData) {
@@ -105,11 +119,7 @@ class DBViewer extends HTMLElement {
   }
 
   connectedCallback() {
-    this.viewer.ready();
-    setTimeout(() => {
-      this._readyPromiseResolve();
-      this.dispatchEvent(new CustomEvent('ready'));
-    }, FIREFOX_READY_TIMEOUT);
+
   }
 
   attributeChangedCallback(name, oldValue, newValue) {

@@ -21,9 +21,7 @@ export default class Viewer {
     this._MAX_ZOOM_VALUE = 2;
 
     this._disble_scroll_event = false;
-  }
 
-  ready() {
     const width = this._svgContainer.clientWidth;
     const height = this._svgContainer.clientHeight;
     this._viewBoxVals = {
