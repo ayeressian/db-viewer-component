@@ -60,8 +60,6 @@ export default class Viewer {
       table.setMoveListener(this.onTableMove.bind(this));
     });
 
-    this._reset();
-
     this.draw();
   }
 
@@ -430,16 +428,14 @@ export default class Viewer {
     const mouseMove = (event) => {
       const deltaX = (event.clientX - prevMouseCordX);
       const deltaY = (event.clientY - prevMouseCordY);
-
       prevMouseCordY = event.clientY;
       prevMouseCordX = event.clientX;
-
-      if (this._svgContainer.scrollLeft - deltaX + this._svgContainer.clientWidth / this._zoom < constant.VIEWER_PAN_WIDTH &&
+      if (this._svgContainer.scrollLeft - deltaX + this._svgContainer.clientWidth / this._zoom < constant.VIEWER_PAN_WIDTH * this._zoom &&
         this._svgContainer.scrollLeft - deltaX >= 0) {
         this._viewBoxVals.x -= deltaX;
         this._svgContainer.scrollLeft -= deltaX;
       }
-      if (this._svgContainer.scrollTop - deltaY + this._svgContainer.clientHeight / this._zoom < constant.VIEWER_PAN_HEIGHT &&
+      if (this._svgContainer.scrollTop - deltaY + this._svgContainer.clientHeight / this._zoom < constant.VIEWER_PAN_HEIGHT * this._zoom &&
         this._svgContainer.scrollTop - deltaY >= 0) {
         this._viewBoxVals.y -= deltaY;
         this._svgContainer.scrollTop -= deltaY;
