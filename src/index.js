@@ -27,12 +27,15 @@ class DBViewer extends HTMLElement {
     this._fileDownload = true;
     shadowDom.innerHTML = template;
     this.viewer = new Viewer(shadowDom);
-    this.viewer.setTableDblClickCallback(this.onTableDblClick.bind(this));
-    this.viewer.setTableClickCallback(this.onTableClick.bind(this));
-    this.viewer.setTableContextMenuCallback(this.onTableContextMenu.bind(this));
-    this.viewer.setTableMoveCallback(this.onTableMove.bind(this));
-    this.viewer.setZoomInCallback(this.onZoomIn.bind(this));
-    this.viewer.setZoomOutCallback(this.onZoomOut.bind(this));
+    this.viewer.setCallbacks({
+      tableDblClick: this._onTableDblClick.bind(this),
+      tableClick: this._onTableClick.bind(this),
+      tableContextMenu: this._onTableContextMenu.bind(this),
+      tableMove: this._onTableMove.bind(this),
+      zoomIn: this._onZoomIn.bind(this),
+      zoomOut: this._onZoomOut.bind(this),
+      viewPortClick: this._onViewportClick.bind(this)
+    });
 
     this._readyPromiseResolve();
     this.dispatchEvent(new CustomEvent('ready'));
@@ -42,27 +45,31 @@ class DBViewer extends HTMLElement {
     return document.readyState === 'complete';
   }
 
-  onTableClick(tableData) {
+  _onViewportClick(x, y) {
+    this.dispatchEvent(new CustomEvent('viewportClick', {detail: {x, y}}));
+  }
+
+  _onTableClick(tableData) {
     this.dispatchEvent(new CustomEvent('tableClick', {detail: tableData}));
   }
 
-  onTableDblClick(tableData) {
+  _onTableDblClick(tableData) {
     this.dispatchEvent(new CustomEvent('tableDblClick', {detail: tableData}));
   }
 
-  onTableContextMenu(tableData) {
+  _onTableContextMenu(tableData) {
     this.dispatchEvent(new CustomEvent('tableContextMenu', {detail: tableData}));
   }
 
-  onTableMove(tableData) {
+  _onTableMove(tableData) {
     this.dispatchEvent(new CustomEvent('tableMove', {detail: tableData}));
   }
 
-  onZoomIn(zoom) {
+  _onZoomIn(zoom) {
     this.dispatchEvent(new CustomEvent('zoomIn', {detail: {zoom}}));
   }
 
-  onZoomOut(zoom) {
+  _onZoomOut(zoom) {
     this.dispatchEvent(new CustomEvent('zoomOut', {detail: {zoom}}));
   }
 

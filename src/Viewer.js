@@ -35,6 +35,12 @@ export default class Viewer {
       this.setPanX(constant.VIEWER_PAN_WIDTH / 2 - width / 2);
       this.setPanY(constant.VIEWER_PAN_HEIGHT / 2 - height / 2);
     });
+
+    this._svgContainer.addEventListener('click', (event) => {
+      const x = event.clientX + this.getPan().x / this._zoom;
+      const y = event.clientY + this.getPan().y / this._zoom;
+      this._callbacks.viewPortClick(x, y);
+    });
     this._reset();
   }
 
@@ -68,9 +74,7 @@ export default class Viewer {
 
     this._minimap.onTableMove(table, deltaX, deltaY);
 
-    if (this._tableMoveCallback) {
-      this._tableMoveCallback(table.formatData());
-    }
+    this._callbacks.tableMove(table.formatData());
   }
 
   _drawRelations() {
@@ -402,10 +406,10 @@ export default class Viewer {
 
       this._minimap.setMinimapViewPoint(this._viewBoxVals);
 
-      if (this._zoom < zoom && this._zoomInCallback) {
-        this._zoomInCallback(zoom);
-      } else if (this._zoomOutCallback) {
-        this._zoomOutCallback(zoom);
+      if (this._zoom < zoom) {
+        this._callbacks.zoomIn(zoom);
+      } else {
+        this._callbacks.zoomOut(zoom);
       }
       this._zoom = zoom;
     }
@@ -544,45 +548,19 @@ export default class Viewer {
     };
   }
 
-  setTableDblClickCallback(callback) {
-    this._tableDblClickCallback = callback;
-  }
-
-  setTableClickCallback(callback) {
-    this._tableClickCallback = callback;
-  }
-
-  setTableContextMenuCallback(callback) {
-    this._tableContextMenuCallback = callback;
-  }
-
-  setTableMoveCallback(callback) {
-    this._tableMoveCallback = callback;
-  }
-
-  setZoomInCallback(callback) {
-    this._zoomInCallback = callback;
-  }
-
-  setZoomOutCallback(callback) {
-    this._zoomOutCallback = callback;
+  setCallbacks(callbacks) {
+    this._callbacks = callbacks;
   }
 
   tableDblClick(table) {
-    if (this._tableDblClickCallback) {
-      this._tableDblClickCallback(table);
-    }
+    this._callbacks.tableDblClick(table);
   }
 
   tableClick(table) {
-    if (this._tableClickCallback) {
-      this._tableClickCallback(table);
-    }
+    this._callbacks.tableClick(table);
   }
 
   tableContextMenu(table) {
-    if (this._tableContextMenuCallback) {
-      this._tableContextMenuCallback(table);
-    }
+    this._callbacks.tableContextMenu(table);
   }
 }
