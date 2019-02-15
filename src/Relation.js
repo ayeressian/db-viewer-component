@@ -515,7 +515,7 @@ export default class Relation {
         break;
     }
     if (!this.pathElem) return [];
-    return [this.pathElem, this.highlightTrigger];
+    return [this.highlightTrigger, this.pathElem];
   }
 
   sameTableRelation() {
