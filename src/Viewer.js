@@ -37,8 +37,8 @@ export default class Viewer {
     });
 
     this._svgContainer.addEventListener('click', (event) => {
-      const x = event.clientX + this.getPan().x / this._zoom;
-      const y = event.clientY + this.getPan().y / this._zoom;
+      const x = event.offsetX / this._zoom;
+      const y = event.offsetY / this._zoom;
       this._callbacks.viewPortClick(x, y);
     });
     this._reset();
