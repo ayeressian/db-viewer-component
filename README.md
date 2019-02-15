@@ -34,8 +34,9 @@ Name | Description | event.detail
 `tableMove` | Moving table. | {tableName, pos: {x, y}, width, height}
 `zoomIn` | Zooming in view |
 `zoomOut` | Zooming out view |
-`load` | When schema file has been successfully fetched from server. |
-`ready` | When db viewer component has been loaded. |
+`load` | Schema file has been successfully fetched from server. |
+`ready` | Db viewer component has been loaded. |
+`viewportClick` | Clicking on the viewport. | {x, y}
 #### Properties
 Name | Description
 --- | ---
