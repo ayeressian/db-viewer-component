@@ -64,6 +64,7 @@ export default class Viewer {
     tables.forEach((table) => {
       table.setVeiwer(this);
       table.setMoveListener(this.onTableMove.bind(this));
+      table.setMoveEndListener(this.onTableMoveEnd.bind(this));
     });
 
     this.draw();
@@ -75,6 +76,10 @@ export default class Viewer {
     this._minimap.onTableMove(table, deltaX, deltaY);
 
     this._callbacks.tableMove(table.formatData());
+  }
+
+  onTableMoveEnd(table) {
+    this._callbacks.tableMoveEnd(table.formatData());
   }
 
   _drawRelations() {
@@ -261,6 +266,8 @@ export default class Viewer {
     let maxY = Number.MIN_SAFE_INTEGER;
 
     this._tableMinimap = new Map();
+
+    this._minimap.removeTables();
 
     this.tables.forEach((table, i) => {
       this._minimap.createTable(table);

@@ -79,11 +79,15 @@ export default class Table {
         document.addEventListener('mousemove', mouseMove);
 
         this._moveToTop();
+
+        const mouseUp = () => {
+          this._onMoveEnd && this._onMoveEnd(this);
+          this._table.classList.remove('move');
+          document.removeEventListener('mousemove', mouseMove);
+          document.removeEventListener('mouseup', mouseUp);
+        };
+        document.addEventListener('mouseup', mouseUp);
       }
-    });
-    document.addEventListener('mouseup', () => {
-      this._table.classList.remove('move');
-      document.removeEventListener('mousemove', mouseMove);
     });
   }
 
@@ -101,6 +105,10 @@ export default class Table {
 
   setMoveListener(onMove) {
     this._onMove = onMove;
+  }
+
+  setMoveEndListener(onMoveEnd) {
+    this._onMoveEnd = onMoveEnd;
   }
 
   _normalizeX(num) {

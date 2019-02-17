@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   dbViewerElem.addEventListener('tableDblClick', (event) => console.log('tableDblClick', event.detail));
   dbViewerElem.addEventListener('tableContextMenu', (event) => console.log('tableContextMenu', event.detail));
   dbViewerElem.addEventListener('tableMove', (event) => console.log('tableMove', event.detail));
+  dbViewerElem.addEventListener('tableMoveEnd', (event) => console.log('tableMoveEnd', event.detail));
   dbViewerElem.addEventListener('zoomIn', (event) => console.log('zoomIn', event.detail));
   dbViewerElem.addEventListener('zoomOut', (event) => console.log('zoomOut', event.detail));
   dbViewerElem.addEventListener('scroll', (event) => console.log('scroll', event.detail));

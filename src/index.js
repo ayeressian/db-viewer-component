@@ -34,7 +34,8 @@ class DBViewer extends HTMLElement {
       tableMove: this._onTableMove.bind(this),
       zoomIn: this._onZoomIn.bind(this),
       zoomOut: this._onZoomOut.bind(this),
-      viewPortClick: this._onViewportClick.bind(this)
+      viewPortClick: this._onViewportClick.bind(this),
+      tableMoveEnd: this._onTableMoveEnd.bind(this)
     });
 
     this._readyPromiseResolve();
@@ -71,6 +72,10 @@ class DBViewer extends HTMLElement {
 
   _onZoomOut(zoom) {
     this.dispatchEvent(new CustomEvent('zoomOut', {detail: {zoom}}));
+  }
+
+  _onTableMoveEnd(tableData) {
+    this.dispatchEvent(new CustomEvent('tableMoveEnd', {detail: tableData}));
   }
 
   get scrollLeft() {
@@ -123,10 +128,6 @@ class DBViewer extends HTMLElement {
 
   static get observedAttributes() {
     return ['src'];
-  }
-
-  connectedCallback() {
-
   }
 
   attributeChangedCallback(name, oldValue, newValue) {

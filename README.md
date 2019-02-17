@@ -32,6 +32,7 @@ Name | Description | event.detail
 `tableDblClick` | Double clicking on a table. | {tableName, pos: {x, y}, width, height}
 `tableContextMenu` | Right clicking on a table. | {tableName, pos: {x, y}, width, height}
 `tableMove` | Moving table. | {tableName, pos: {x, y}, width, height}
+`tableMoveEnd` | Moving table ends. | {tableName, pos: {x, y}, width, height}
 `zoomIn` | Zooming in view |
 `zoomOut` | Zooming out view |
 `load` | Schema file has been successfully fetched from server. |
