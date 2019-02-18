@@ -69,8 +69,8 @@ export default class Table {
     };
 
     this._elem.addEventListener('mousedown', (event) => {
-      if (event.button === 0) {
-        event.stopPropagation();
+      event.stopPropagation();
+      if (event.button === 0 && this._disableMovement === false) {
         this._table.classList.add('move');
         const boundingRect = this._table.getBoundingClientRect();
         mouseDownInitialElemX = (event.clientX - boundingRect.left) / this._veiwer.getZoom();
@@ -276,5 +276,9 @@ export default class Table {
 
   removeHighlightTo(column) {
     column.elem.classList.remove('toRelation');
+  }
+
+  disableMovement(value) {
+    this._disableMovement = value;
   }
 }

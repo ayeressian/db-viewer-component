@@ -26,8 +26,8 @@ class DBViewer extends HTMLElement {
     });
     this._fileDownload = true;
     shadowDom.innerHTML = template;
-    this.viewer = new Viewer(shadowDom);
-    this.viewer.setCallbacks({
+    this._viewer = new Viewer(shadowDom);
+    this._viewer.setCallbacks({
       tableDblClick: this._onTableDblClick.bind(this),
       tableClick: this._onTableClick.bind(this),
       tableContextMenu: this._onTableContextMenu.bind(this),
@@ -79,31 +79,31 @@ class DBViewer extends HTMLElement {
   }
 
   get scrollLeft() {
-    return this.viewer.getPan().x;
+    return this._viewer.getPan().x;
   }
 
   get scrollTop() {
-    return this.viewer.getPan().y;
+    return this._viewer.getPan().y;
   }
 
   set scrollLeft(value) {
-    this.viewer.setPanX(value);
+    this._viewer.setPanX(value);
   }
 
   set scrollTop(value) {
-    this.viewer.setPanY(value);
+    this._viewer.setPanY(value);
   }
 
   getZoom() {
-    return this.viewer.getZoom();
+    return this._viewer.getZoom();
   }
 
   zoomIn() {
-    this.viewer.zoomIn();
+    this._viewer.zoomIn();
   }
 
   zoomOut() {
-    this.viewer.zoomOut();
+    this._viewer.zoomOut();
   }
 
   set src(src) {
@@ -141,7 +141,7 @@ class DBViewer extends HTMLElement {
         }
         this._notParsedSchema = JSON.parse(JSON.stringify(response));
         this._tables = schemaParser(response);
-        this.viewer.load(this._tables);
+        this._viewer.load(this._tables);
         this._fileDownload = true;
         setTimeout(() => {
           this.dispatchEvent(new CustomEvent('load'));
@@ -157,7 +157,7 @@ class DBViewer extends HTMLElement {
     this._notParsedSchema = JSON.parse(JSON.stringify(schema));
     schema = JSON.parse(JSON.stringify(schema));
     this._tables = schemaParser(schema);
-    this.viewer.load(this._tables);
+    this._viewer.load(this._tables);
     this._fileDownload = true;
   }
 
@@ -166,6 +166,10 @@ class DBViewer extends HTMLElement {
       notParsedTable.pos = this._tables.find((table) => table.name === notParsedTable.name).pos;
     });
     return this._notParsedSchema;
+  }
+
+  set disableTableMovement(value) {
+    this._viewer.disableTableMovement(value);
   }
 }
 

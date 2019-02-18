@@ -570,4 +570,8 @@ export default class Viewer {
   tableContextMenu(table) {
     this._callbacks.tableContextMenu(table);
   }
+
+  disableTableMovement(value) {
+    this.tables.forEach((table) => table.disableMovement(value));
+  }
 }
