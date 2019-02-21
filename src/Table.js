@@ -17,6 +17,8 @@ export default class Table {
     this.columns = columns;
     this._name = name;
     this._pos = pos;
+
+    this._disableMovement = false;
   }
 
   get pos() {
