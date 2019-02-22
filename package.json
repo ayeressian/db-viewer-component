@@ -38,7 +38,9 @@
     "start-server-and-test": "^1.7.11",
     "webpack": "^4.19.1",
     "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.14"
+    "webpack-dev-server": "^3.1.14",
+    "img-loader": "^3.0.0",
+    "url-loader": "^1.1.1"
   },
   "dependencies": {
     "ajv": "^6.7.0"

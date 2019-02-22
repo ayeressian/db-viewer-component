@@ -109,6 +109,18 @@
   padding-right: 10px;
 }
 
+.table td.status {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+}
+
+.table td.status img {
+  width: 14px;
+  height: 14px;
+  margin-left: 7px;
+}
+
 path {
   stroke-width: 1;
   stroke: #666;

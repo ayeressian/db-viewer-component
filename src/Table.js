@@ -17,6 +17,8 @@ export default class Table {
     this.columns = columns;
     this._name = name;
     this._pos = pos;
+
+    this._disableMovement = false;
   }
 
   get pos() {
@@ -76,15 +78,20 @@ export default class Table {
         mouseDownInitialElemX = (event.clientX - boundingRect.left) / this._veiwer.getZoom();
         mouseDownInitialElemY = (event.clientY - boundingRect.top) / this._veiwer.getZoom();
 
+        this._initialClientX = event.clientX;
+        this._initialClientY = event.clientY;
+
         document.addEventListener('mousemove', mouseMove);
 
         this._moveToTop();
 
-        const mouseUp = () => {
-          this._onMoveEnd && this._onMoveEnd(this);
-          this._table.classList.remove('move');
-          document.removeEventListener('mousemove', mouseMove);
-          document.removeEventListener('mouseup', mouseUp);
+        const mouseUp = (event) => {
+          if (this._initialClientX !== event.clientX || this._initialClientY !== event.clientY) {
+            this._onMoveEnd && this._onMoveEnd(this);
+            this._table.classList.remove('move');
+            document.removeEventListener('mousemove', mouseMove);
+            document.removeEventListener('mouseup', mouseUp);
+          }
         };
         document.addEventListener('mouseup', mouseUp);
       }
@@ -193,7 +200,7 @@ export default class Table {
     const headingTr = document.createElementNS(constant.nsHtml, 'tr');
     this._table.appendChild(headingTr);
     const headingTh = document.createElementNS(constant.nsHtml, 'th');
-    headingTh.setAttributeNS(null, 'colspan', 2);
+    headingTh.setAttributeNS(null, 'colspan', 3);
     headingTh.innerHTML = this._name;
     headingTr.appendChild(headingTh);
 
@@ -203,6 +210,20 @@ export default class Table {
       const columnTr = document.createElementNS(constant.nsHtml, 'tr');
       column.elem = columnTr;
       this._table.appendChild(columnTr);
+
+      const columnStatusTd = document.createElementNS(constant.nsHtml, 'td');
+      if (column.pk) {
+        const img = document.createElementNS(constant.nsHtml, 'img');
+        img.src = '/src/asset/pk.png';
+        columnStatusTd.appendChild(img);
+        columnStatusTd.classList.add('status');
+      } else if (column.fk) {
+        const img = document.createElementNS(constant.nsHtml, 'img');
+        img.src = '/src/asset/fk.png';
+        columnStatusTd.appendChild(img);
+        columnStatusTd.classList.add('status');
+      }
+      columnTr.appendChild(columnStatusTd);
 
       const columnNameTd = document.createElementNS(constant.nsHtml, 'td');
       columnNameTd.innerHTML = column.name;
