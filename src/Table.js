@@ -88,10 +88,10 @@ export default class Table {
         const mouseUp = (event) => {
           if (this._initialClientX !== event.clientX || this._initialClientY !== event.clientY) {
             this._onMoveEnd && this._onMoveEnd(this);
-            this._table.classList.remove('move');
-            document.removeEventListener('mousemove', mouseMove);
-            document.removeEventListener('mouseup', mouseUp);
           }
+          this._table.classList.remove('move');
+          document.removeEventListener('mouseup', mouseUp);
+          document.removeEventListener('mousemove', mouseMove);
         };
         document.addEventListener('mouseup', mouseUp);
       }
