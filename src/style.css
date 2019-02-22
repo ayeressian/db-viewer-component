@@ -115,10 +115,19 @@
   padding: 0;
 }
 
-.table td.status img {
+.table td.status div {
   width: 14px;
   height: 14px;
   margin-left: 7px;
+  background-size: contain;
+}
+
+.table td.status .pk {
+  background-image: url(./asset/pk.png);
+}
+
+.table td.status .fk {
+  background-image: url(./asset/fk.png);
 }
 
 path {

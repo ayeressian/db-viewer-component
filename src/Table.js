@@ -213,14 +213,14 @@ export default class Table {
 
       const columnStatusTd = document.createElementNS(constant.nsHtml, 'td');
       if (column.pk) {
-        const img = document.createElementNS(constant.nsHtml, 'img');
-        img.src = '/src/asset/pk.png';
-        columnStatusTd.appendChild(img);
+        const pdDiv = document.createElementNS(constant.nsHtml, 'div');
+        pdDiv.classList.add('pk');
+        columnStatusTd.appendChild(pdDiv);
         columnStatusTd.classList.add('status');
       } else if (column.fk) {
-        const img = document.createElementNS(constant.nsHtml, 'img');
-        img.src = '/src/asset/fk.png';
-        columnStatusTd.appendChild(img);
+        const fkDiv = document.createElementNS(constant.nsHtml, 'div');
+        fkDiv.classList.add('fk');
+        columnStatusTd.appendChild(fkDiv);
         columnStatusTd.classList.add('status');
       }
       columnTr.appendChild(columnStatusTd);
