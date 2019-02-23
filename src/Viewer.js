@@ -441,15 +441,15 @@ export default class Viewer {
       const deltaY = (event.clientY - prevMouseCordY);
       prevMouseCordY = event.clientY;
       prevMouseCordX = event.clientX;
-      if (this._svgContainer.scrollLeft - deltaX + this._svgContainer.clientWidth / this._zoom < constant.VIEWER_PAN_WIDTH * this._zoom &&
-        this._svgContainer.scrollLeft - deltaX >= 0) {
+      const originalScrollLeft = this._svgContainer.scrollLeft;
+      this._svgContainer.scrollLeft -= deltaX;
+      if (originalScrollLeft !== this._svgContainer.scrollLeft) {
         this._viewBoxVals.x -= deltaX;
-        this._svgContainer.scrollLeft -= deltaX;
       }
-      if (this._svgContainer.scrollTop - deltaY + this._svgContainer.clientHeight / this._zoom < constant.VIEWER_PAN_HEIGHT * this._zoom &&
-        this._svgContainer.scrollTop - deltaY >= 0) {
+      const originalScrollTop = this._svgContainer.scrollTop;
+      this._svgContainer.scrollTop -= deltaY;
+      if (originalScrollTop !== this._svgContainer.scrollTop) {
         this._viewBoxVals.y -= deltaY;
-        this._svgContainer.scrollTop -= deltaY;
       }
       this._minimap.setMinimapViewPoint(this._viewBoxVals);
     };
