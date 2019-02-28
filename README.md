@@ -18,13 +18,13 @@ The schema for viewer can be specified either with src attribute as shown above 
 ```javascript
 document.querySelector('db-viewer').schema = awesomeSchema;
 ```
-The json schema for db-veiwer schema can be found [here](https://github.com/ayeressian/db-viewer-component/blob/new-events-methods/src/validation-schema.json).
+The json schema for db-veiwer schema can be found [here](https://raw.githubusercontent.com/ayeressian/db-viewer-component/new-events-methods/src/validation-schema.json). An example of schema can be found [here](https://raw.githubusercontent.com/ayeressian/db-viewer-component/master/example/schema/school.json).
 
 ### API
 #### Attributes
 Name | Description
 --- | ---
-`src` | Viewer-schema url. It should follow [this](https://github.com/ayeressian/db-viewer-component/blob/new-events-methods/src/validation-schema.json) json schema.
+`src` | Viewer-schema url. It should follow [this](https://raw.githubusercontent.com/ayeressian/db-viewer-component/new-events-methods/src/validation-schema.json) json schema. An example of schema can be found [here](https://raw.githubusercontent.com/ayeressian/db-viewer-component/master/example/schema/school.json).
 #### Events
 Name | Description | event.detail
 --- | --- | ---
@@ -41,8 +41,8 @@ Name | Description | event.detail
 #### Properties
 Name | Description
 --- | ---
-`schema` | Get and set schema for viewer. This will override the html src attribute. Note: src attribute accepts the address of viewer-schema and schema property accepts javascript object as viewer-schema. The viwer-schema should follow [this](https://github.com/ayeressian/db-viewer-component/blob/new-events-methods/src/validation-schema.json) json schema. Note the only way that db-viewer can alter the schema is by adding position of tables.
-`src` | Set viewer-schema url. It should follow [this](https://github.com/ayeressian/db-viewer-component/blob/new-events-methods/src/validation-schema.json) json schema. It has the same effect as the src attribute.
+`schema` | Get and set schema for viewer. This will override the html src attribute. Note: src attribute accepts the address of viewer-schema and schema property accepts javascript object as viewer-schema. The viwer-schema should follow [this](https://raw.githubusercontent.com/ayeressian/db-viewer-component/new-events-methods/src/validation-schema.json) json schema. Note the only way that db-viewer can alter the schema is by adding position of tables.
+`src` | Set viewer-schema url. It should follow [this](https://github.com/ayeressian/db-viewer-component/blob/new-events-methods/src/validation-schema.json) json schema. An example of schema can be found [here](https://raw.githubusercontent.com/ayeressian/db-viewer-component/master/example/schema/school.json). It has the same effect as the src attribute. An example of schema can be found [here](https://raw.githubusercontent.com/ayeressian/db-viewer-component/master/example/schema/school.json).
 `scrollLeft` | Get and set scrolling position from left.
 `scrollTop` | Get and set scrolling position from top.
 #### Methods
