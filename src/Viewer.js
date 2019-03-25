@@ -324,7 +324,6 @@ export default class Viewer {
   }
 
   _setViewPort(type) {
-    debugger;
     switch (type) {
       case 'noChange':
       break;
