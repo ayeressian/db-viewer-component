@@ -29,6 +29,8 @@ export default class Table {
     return this._name;
   }
 
+  static
+
   _moveToTop() {
     const parentNode = this._elem.parentNode;
     // The reason for not using append of this._elem instead of remaining element prepend
@@ -42,13 +44,13 @@ export default class Table {
 
   _clickEvents() {
     this._elem.addEventListener('dblclick', () => {
-      this._veiwer.tableDblClick(this.formatData());
+      this._veiwer.tableDblClick(this.data());
     });
     this._elem.addEventListener('click', () => {
-      this._veiwer.tableClick(this.formatData());
+      this._veiwer.tableClick(this.data());
     });
     this._elem.addEventListener('contextmenu', () => {
-      this._veiwer.tableContextMenu(this.formatData());
+      this._veiwer.tableContextMenu(this.data());
     });
   }
 
@@ -265,7 +267,7 @@ export default class Table {
     this.setTablePos(this._pos.x, this._pos.y);
   }
 
-  formatData() {
+  data() {
     const boundingRect = this._table.getBoundingClientRect();
     return {
       name: this._name,

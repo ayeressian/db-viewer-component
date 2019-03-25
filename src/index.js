@@ -115,7 +115,7 @@ class DBViewer extends HTMLElement {
     if (table == null) {
       throw NO_TABLE;
     }
-    return table.formatData();
+    return table.data();
   }
 
   setTablePos(name, xCord, yCord) {
@@ -141,7 +141,7 @@ class DBViewer extends HTMLElement {
         }
         this._notParsedSchema = JSON.parse(JSON.stringify(response));
         this._tables = schemaParser(response);
-        this._viewer.load(this._tables);
+        this._viewer.load(this._tables, response.viewPort);
         this._fileDownload = true;
         setTimeout(() => {
           this.dispatchEvent(new CustomEvent('load'));

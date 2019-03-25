@@ -1,4 +1,5 @@
 {
+  "viewPort": "noChange",
   "tables": [
     {
       "name": "school",
@@ -125,6 +126,5 @@
         }
       ]
     }
-
   ]
 }
