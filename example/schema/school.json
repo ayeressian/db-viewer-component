@@ -1,4 +1,5 @@
 {
+  "viewPort": "centerMinMaxTable",
   "tables": [
     {
       "name": "school",

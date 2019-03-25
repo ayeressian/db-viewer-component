@@ -31,10 +31,6 @@ export default class Viewer {
       height
     };
     this._minimap.setMinimapViewPoint(this._viewBoxVals);
-    setTimeout(() => {
-      this.setPanX(constant.VIEWER_PAN_WIDTH / 2 - width / 2);
-      this.setPanY(constant.VIEWER_PAN_HEIGHT / 2 - height / 2);
-    });
 
     this._svgContainer.addEventListener('click', (event) => {
       const x = event.offsetX / this._zoom;
@@ -57,7 +53,7 @@ export default class Viewer {
     this._minimap.reset();
   }
 
-  load(tables) {
+  load(tables, viewPort) {
     this._relationInfos = [];
     this._svgElem.innerHTML = '';
     this.tables = tables;
@@ -67,7 +63,7 @@ export default class Viewer {
       table.setMoveEndListener(this.onTableMoveEnd.bind(this));
     });
 
-    this.draw();
+    this.draw(viewPort);
   }
 
   onTableMove(table, deltaX, deltaY) {
@@ -75,11 +71,11 @@ export default class Viewer {
 
     this._minimap.onTableMove(table, deltaX, deltaY);
 
-    this._callbacks.tableMove(table.formatData());
+    this._callbacks.tableMove(table.data());
   }
 
   onTableMoveEnd(table) {
-    this._callbacks.tableMoveEnd(table.formatData());
+    this._callbacks.tableMoveEnd(table.data());
   }
 
   _drawRelations() {
@@ -259,7 +255,7 @@ export default class Viewer {
     });
   }
 
-  draw() {
+  draw(viewPort) {
     let minX = Number.MAX_SAFE_INTEGER;
     let maxX = Number.MIN_SAFE_INTEGER;
     let minY = Number.MAX_SAFE_INTEGER;
@@ -315,12 +311,46 @@ export default class Viewer {
     });
 
     setTimeout(() => {
-      // this._windowResizeEvent();
       this._drawRelations();
     });
 
     // After draw happened
     setTimeout(() => {
+      if (viewPort === 'centerToTables') {
+        let totalX = 0;
+        let totalY = 0;
+        this.tables.forEach((table) => {
+          const data = table.data();
+          totalX += data.pos.x + data.width / 2;
+          totalY += data.pos.y + data.height / 2;
+        });
+        const centerX = totalX / this.tables.length;
+        const centerY = totalY / this.tables.length;
+        this.setPanX(centerX - this._viewBoxVals.width / 2);
+        this.setPanY(centerY - this._viewBoxVals.height / 2);
+      } else if (viewPort === 'centerMinMaxTable') {
+        let minX = Number.MAX_SAFE_INTEGER;
+        let minY = Number.MAX_SAFE_INTEGER;
+        let maxX = Number.MIN_SAFE_INTEGER;
+        let maxY = Number.MIN_SAFE_INTEGER;
+        this.tables.forEach((table) => {
+          const data = table.data();
+          if (data.pos.x < minX) minX = data.pos.x;
+          if (data.pos.y < minY) minY = data.pos.y;
+          if (data.pos.x + data.width > maxX) maxX = data.pos.x + data.width;
+          if (data.pos.y + data.height > maxY) maxY = data.pos.y + data.height;
+        });
+        const centerX = minX + maxX / 2;
+        const centerY = minY + maxY / 2;
+        this.setPanX(centerX - this._viewBoxVals.width / 2);
+        this.setPanY(centerY - this._viewBoxVals.height / 2);
+      } else {
+        const width = this._svgContainer.clientWidth;
+        const height = this._svgContainer.clientHeight;
+        this.setPanX(constant.VIEWER_PAN_WIDTH / 2 - width / 2);
+        this.setPanY(constant.VIEWER_PAN_HEIGHT / 2 - height / 2);
+      }
+
       this.tables.forEach((table) => table.postDraw && table.postDraw());
     });
   }
