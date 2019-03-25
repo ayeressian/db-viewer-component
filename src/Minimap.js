@@ -42,11 +42,11 @@ export default class Minimap {
     const ratioX = svgElemBoundingClientRect.width / minimapBoundingClientRect.width;
     const ratioY = svgElemBoundingClientRect.height / minimapBoundingClientRect.height;
     const _viewpointBoundingClientRect = this._viewpoint.getBoundingClientRect();
-    this._viewBoxVals.x = (x - _viewpointBoundingClientRect.width / 2) * ratioX;
-    this._viewBoxVals.y = (y - _viewpointBoundingClientRect.height / 2) * ratioY;
+    const xCord = (x - _viewpointBoundingClientRect.width / 2) * ratioX;
+    const yCord = (y - _viewpointBoundingClientRect.height / 2) * ratioY;
 
-    this._viewer.setPanX(this._viewBoxVals.x);
-    this._viewer.setPanY(this._viewBoxVals.y);
+    this._viewer.setPanX(xCord);
+    this._viewer.setPanY(yCord);
   }
 
   removeTables() {
