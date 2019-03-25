@@ -29,8 +29,6 @@ export default class Table {
     return this._name;
   }
 
-  static
-
   _moveToTop() {
     const parentNode = this._elem.parentNode;
     // The reason for not using append of this._elem instead of remaining element prepend
@@ -244,11 +242,16 @@ export default class Table {
 
     if (this._pos === 'center') {
       this.setTablePos(OUT_OF_VIEW_CORD, OUT_OF_VIEW_CORD);
-      setTimeout(this._center.bind(this));
     } else {
       this.setTablePos(this._pos.x, this._pos.y);
     }
     return this._elem;
+  }
+
+  postDraw() {
+    if (this._pos === 'center') {
+      this._center();
+    }
   }
 
   setTablePos(x, y) {
@@ -259,10 +262,10 @@ export default class Table {
 
   _center() {
     const boundingRect = this._elem.getBoundingClientRect();
-    const viewPort = this._veiwer.getViewPort();
+    const viewport = this._veiwer.getViewPort();
     this._pos = {
-      x: viewPort.x + viewPort.width / 2 - boundingRect.width / this._veiwer.getZoom() / 2,
-      y: viewPort.y + viewPort.height / 2 - boundingRect.height / this._veiwer.getZoom() / 2
+      x: viewport.x + viewport.width / 2 - boundingRect.width / this._veiwer.getZoom() / 2,
+      y: viewport.y + viewport.height / 2 - boundingRect.height / this._veiwer.getZoom() / 2
     };
     this.setTablePos(this._pos.x, this._pos.y);
   }

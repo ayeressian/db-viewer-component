@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(dbViewerElem.schema);
   });
 
-  dbViewerElem.src = '/example/schema/school.json';
+  dbViewerElem.src = '/example/schema/simple.json';
 
   dbViewerElem.addEventListener('tableClick', (event) => console.log('tableClick', event.detail));
   dbViewerElem.addEventListener('tableDblClick', (event) => console.log('tableDblClick', event.detail));

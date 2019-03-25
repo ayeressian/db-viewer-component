@@ -34,7 +34,7 @@ class DBViewer extends HTMLElement {
       tableMove: this._onTableMove.bind(this),
       zoomIn: this._onZoomIn.bind(this),
       zoomOut: this._onZoomOut.bind(this),
-      viewPortClick: this._onViewportClick.bind(this),
+      viewportClick: this._onViewportClick.bind(this),
       tableMoveEnd: this._onTableMoveEnd.bind(this)
     });
 
@@ -141,7 +141,7 @@ class DBViewer extends HTMLElement {
         }
         this._notParsedSchema = JSON.parse(JSON.stringify(response));
         this._tables = schemaParser(response);
-        this._viewer.load(this._tables, response.viewPort);
+        this._viewer.load(this._tables, response.viewport);
         this._fileDownload = true;
         setTimeout(() => {
           this.dispatchEvent(new CustomEvent('load'));
