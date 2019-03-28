@@ -52,6 +52,19 @@ export default class Table {
     });
   }
 
+  _notAllowOutOfBound(x, y) {
+    if (x < 0) x = 0;
+    if (y < 0) y = 0;
+    const boundingRect = this._table.getBoundingClientRect();
+    if (x + boundingRect.width / this._veiwer.getZoom() > constant.VIEWER_PAN_WIDTH) {
+      x = constant.VIEWER_PAN_WIDTH - boundingRect.width / this._veiwer.getZoom();
+    }
+    if (y + boundingRect.height / this._veiwer.getZoom() > constant.VIEWER_PAN_HEIGHT) {
+      y = constant.VIEWER_PAN_HEIGHT - boundingRect.height / this._veiwer.getZoom();
+    }
+    return {x, y};
+  }
+
   _moveEvents() {
     let mouseDownInitialElemX;
     let mouseDownInitialElemY;
@@ -64,10 +77,12 @@ export default class Table {
       const normalizedClientY = mousePos.y / this._veiwer.getZoom() + this._veiwer.getPan().y / this._veiwer.getZoom();
       const deltaX = normalizedClientX - mouseDownInitialElemX;
       const deltaY = normalizedClientY - mouseDownInitialElemY;
-      this._pos.x = deltaX;
-      this._pos.y = deltaY;
-      this.setTablePos(deltaX, deltaY);
-      this._onMove && this._onMove(this, deltaX, deltaY);
+      let {x, y} = this._notAllowOutOfBound(deltaX, deltaY);
+      this._pos.x = x;
+      this._pos.y = y;
+
+      this.setTablePos(x, y);
+      this._onMove && this._onMove(this, x, y);
     };
 
     this._elem.addEventListener('mousedown', (event) => {

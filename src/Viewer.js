@@ -55,7 +55,7 @@ export default class Viewer {
     this._minimap.reset();
   }
 
-  load(tables, viewport) {
+  load(tables, viewport, tableArrang) {
     this._relationInfos = [];
     this._svgElem.innerHTML = '';
     this.tables = tables;
