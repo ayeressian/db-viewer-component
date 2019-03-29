@@ -75,14 +75,11 @@ export default class Table {
 
       const normalizedClientX = mousePos.x / this._veiwer.getZoom() + this._veiwer.getPan().x / this._veiwer.getZoom();
       const normalizedClientY = mousePos.y / this._veiwer.getZoom() + this._veiwer.getPan().y / this._veiwer.getZoom();
-      const deltaX = normalizedClientX - mouseDownInitialElemX;
-      const deltaY = normalizedClientY - mouseDownInitialElemY;
-      let {x, y} = this._notAllowOutOfBound(deltaX, deltaY);
-      this._pos.x = x;
-      this._pos.y = y;
+      const x = normalizedClientX - mouseDownInitialElemX;
+      const y = normalizedClientY - mouseDownInitialElemY;
 
       this.setTablePos(x, y);
-      this._onMove && this._onMove(this, x, y);
+      this._onMove && this._onMove(this, this._pos.x, this._pos.y);
     };
 
     this._elem.addEventListener('mousedown', (event) => {
@@ -256,7 +253,8 @@ export default class Table {
     this._moveEvents();
 
     if (this._pos === 'center') {
-      this.setTablePos(OUT_OF_VIEW_CORD, OUT_OF_VIEW_CORD);
+      this.setTablePos(OUT_OF_VIEW_CORD, OUT_OF_VIEW_CORD, true);
+      this._penddingCenter = true;
     } else {
       this.setTablePos(this._pos.x, this._pos.y);
     }
@@ -264,12 +262,20 @@ export default class Table {
   }
 
   postDraw() {
-    if (this._pos === 'center') {
+    if (this._penddingCenter) {
       this._center();
     }
   }
 
-  setTablePos(x, y) {
+  setTablePos(x, y, disableOutOfBoundCheck) {
+    if (!disableOutOfBoundCheck) {
+      const result = this._notAllowOutOfBound(x, y);
+      x = result.x;
+      y = result.y;
+    }
+    this._pos = {
+      x, y
+    };
     this._elem.setAttributeNS(null, 'x', x);
     this._elem.setAttributeNS(null, 'y', y);
     this._onMove && this._onMove(this, x, y);
@@ -278,11 +284,9 @@ export default class Table {
   _center() {
     const boundingRect = this._elem.getBoundingClientRect();
     const viewport = this._veiwer.getViewPort();
-    this._pos = {
-      x: viewport.x + viewport.width / 2 - boundingRect.width / this._veiwer.getZoom() / 2,
-      y: viewport.y + viewport.height / 2 - boundingRect.height / this._veiwer.getZoom() / 2
-    };
-    this.setTablePos(this._pos.x, this._pos.y);
+    const x = viewport.x + viewport.width / 2 - boundingRect.width / this._veiwer.getZoom() / 2;
+    const y = viewport.y + viewport.height / 2 - boundingRect.height / this._veiwer.getZoom() / 2;
+    this.setTablePos(x, y);
   }
 
   data() {

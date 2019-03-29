@@ -55,6 +55,13 @@ export default class Viewer {
     this._minimap.reset();
   }
 
+  _arrangTablesSnail(tables) {
+    let direction = 'right';
+    tables.forEach((table) => {
+      table.set
+    });
+  }
+
   load(tables, viewport, tableArrang) {
     this._relationInfos = [];
     this._svgElem.innerHTML = '';
@@ -64,6 +71,10 @@ export default class Viewer {
       table.setMoveListener(this.onTableMove.bind(this));
       table.setMoveEndListener(this.onTableMoveEnd.bind(this));
     });
+
+    if (tableArrang === 'snail') {
+      this._arrangTablesSnail(tables);
+    }
 
     this.draw(viewport);
   }
