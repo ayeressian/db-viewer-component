@@ -1,0 +1,7 @@
+{
+  "globals": {
+    "require": "readonly",
+    "module": "readonly",
+    "__dirname": "readonly"
+  }
+}

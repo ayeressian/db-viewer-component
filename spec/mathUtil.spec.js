@@ -1,6 +1,7 @@
-const expect = require('chai').expect;
-const requireM = require('esm')(module);
-const {segmentIntersection, lineIntersection, to3FixedNumber} = requireM('../src/mathUtil.js');
+import chai from 'chai';
+import {segmentIntersection, lineIntersection, to3FixedNumber} from '../src/mathUtil.js';
+
+const expect = chai.expect;
 
 describe('#lineIntersection', () => {
   it('will return null when lines are parallel', () => {
