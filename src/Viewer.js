@@ -55,11 +55,10 @@ export default class Viewer {
     this._minimap.reset();
   }
 
-  _arrangTablesSnail(tables) {
+  _arrangTablesSpiral(tables) {
     let direction = 'right';
-    tables.forEach((table) => {
-      table.set
-    });
+    let counter = 1;
+    
   }
 
   load(tables, viewport, tableArrang) {
