@@ -1,8 +1,12 @@
 import chai from 'chai';
 import schemaParser from '../src/schemaParser.js';
 import constant from '../src/const.js';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 
 const expect = chai.expect;
+
+chai.use(sinonChai);
 
 describe('Viewer', () => {
   const subject = () => {
@@ -15,32 +19,20 @@ describe('Viewer', () => {
       const schema = {
         tables: Array(7).fill().map((val, i) => ({name: `${i}`, columns: []}))
       };
-      let tables = schemaParser(schema).tables;
+      let tables = schemaParser(schema);
+      tables.forEach((table) => table.setTablePos = sinon.fake());
       tables = Viewer.prototype._arrangTablesSpiral(tables);
 
       const centerX = constant.VIEWER_PAN_WIDTH / 2;
       const centerY = constant.VIEWER_PAN_HEIGHT / 2;
 
-      expect(tables[0].pos.x).eq(centerX);
-      expect(tables[0].pos.y).eq(centerY);
-
-      expect(tables[1].pos.x).eq(centerX + constant.SPIRAL_ARRANGE_DIST_X);
-      expect(tables[1].pos.y).eq(centerY);
-
-      expect(tables[2].pos.x).eq(centerX + constant.SPIRAL_ARRANGE_DIST_X);
-      expect(tables[2].pos.y).eq(centerY + constant.SPIRAL_ARRANGE_DIST_Y);
-
-      expect(tables[3].pos.x).eq(centerX);
-      expect(tables[3].pos.y).eq(centerY + constant.SPIRAL_ARRANGE_DIST_Y);
-
-      expect(tables[4].pos.x).eq(centerX - constant.SPIRAL_ARRANGE_DIST_X);
-      expect(tables[4].pos.y).eq(centerY + constant.SPIRAL_ARRANGE_DIST_Y);
-
-      expect(tables[5].pos.x).eq(centerX - constant.SPIRAL_ARRANGE_DIST_X);
-      expect(tables[5].pos.y).eq(centerY);
-
-      expect(tables[6].pos.x).eq(centerX - constant.SPIRAL_ARRANGE_DIST_X);
-      expect(tables[6].pos.y).eq(centerY - constant.SPIRAL_ARRANGE_DIST_Y);
+      expect(tables[0].setTablePos).to.have.been.calledWith(centerX, centerY);
+      expect(tables[1].setTablePos).to.have.been.calledWith(centerX + constant.SPIRAL_ARRANGE_DIST_X, centerY);
+      expect(tables[2].setTablePos).to.have.been.calledWith(centerX + constant.SPIRAL_ARRANGE_DIST_X, centerY + constant.SPIRAL_ARRANGE_DIST_Y);
+      expect(tables[3].setTablePos).to.have.been.calledWith(centerX, centerY + constant.SPIRAL_ARRANGE_DIST_Y);
+      expect(tables[4].setTablePos).to.have.been.calledWith(centerX - constant.SPIRAL_ARRANGE_DIST_X, centerY + constant.SPIRAL_ARRANGE_DIST_Y);
+      expect(tables[5].setTablePos).to.have.been.calledWith(centerX - constant.SPIRAL_ARRANGE_DIST_X, centerY);
+      expect(tables[6].setTablePos).to.have.been.calledWith(centerX - constant.SPIRAL_ARRANGE_DIST_X, centerY - constant.SPIRAL_ARRANGE_DIST_Y);
     });
   });
 });
