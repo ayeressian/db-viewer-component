@@ -62,7 +62,7 @@ export default class Viewer {
     let direction = 0;
     let index = 1;
     let numOfTablesTillDirectionChange = 1;
-    while (index < tables.lenght) {
+    while (index < tables.length) {
       const lastIndex = index + numOfTablesTillDirectionChange;
       const tablesWithDirection = tables.slice(index, lastIndex);
       tablesWithDirection.forEach((table) => {
