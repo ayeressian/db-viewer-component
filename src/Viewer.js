@@ -62,7 +62,14 @@ export default class Viewer {
     let direction = 0;
     let index = 1;
     let numOfTablesTillDirectionChange = 1;
+    let countBeforeDirChange = 0;
     while (index < tables.length) {
+      if (countBeforeDirChange === 2) {
+        ++numOfTablesTillDirectionChange;
+        countBeforeDirChange = 0;
+      } else {
+        ++countBeforeDirChange;
+      }
       const lastIndex = index + numOfTablesTillDirectionChange;
       const tablesWithDirection = tables.slice(index, lastIndex);
       tablesWithDirection.forEach((table) => {
@@ -80,10 +87,9 @@ export default class Viewer {
           currentY -= constant.SPIRAL_ARRANGE_DIST_Y;
           break;
         }
+        direction = (direction + 1) % 4;
         table.setTablePos(currentX, currentY);
       });
-      ++numOfTablesTillDirectionChange;
-      direction = direction + 1 % 4;
       index = lastIndex;
     }
     return tables;
