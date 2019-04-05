@@ -87,9 +87,9 @@ export default class Viewer {
           currentY -= constant.SPIRAL_ARRANGE_DIST_Y;
           break;
         }
-        direction = (direction + 1) % 4;
         table.setTablePos(currentX, currentY);
       });
+      direction = (direction + 1) % 4;
       index = lastIndex;
     }
     return tables;
