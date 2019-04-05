@@ -258,6 +258,86 @@ export default class Relation {
     };
   }
 
+  _getSelfRelationLeft(start, end) {
+    const dStartLine = `M ${start.x - PATH_START_PADDING} ${start.y - PATH_START_LENGTH} v ${PATH_START_LENGTH * 2}`;
+
+    const dPath = `M ${start.x} ${start.y} h ${-PATH_SELF_RELATION_LENGTH} V ${end.y} h ${PATH_SELF_RELATION_LENGTH}`;
+
+    const dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}` +
+      `M ${end.x} ${end.y} l ${-PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT}`;
+
+    const d = dStartLine + dPath + dArrow;
+
+    const path = this._createPath(d);
+
+    const highlight = this._createHighlightTrigger(dPath);
+
+    return {
+      path,
+      highlight
+    };
+  }
+
+  _getSelfRelationRight(start, end) {
+    const dStartLine = `M ${start.x + PATH_START_PADDING} ${start.y - PATH_START_LENGTH} v ${PATH_START_LENGTH * 2}`;
+
+    const dPath = `M ${start.x} ${start.y} h ${PATH_SELF_RELATION_LENGTH} V ${end.y} h ${-PATH_SELF_RELATION_LENGTH}`;
+
+    const dArrow = `M ${end.x} ${end.y} l ${PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}` +
+      `M ${end.x} ${end.y} l ${PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT}`;
+
+    const d = dStartLine + dPath + dArrow;
+
+    const path = this._createPath(d);
+
+    const highlight = this._createHighlightTrigger(dPath);
+
+    return {
+      path,
+      highlight
+    };
+  }
+
+  _getSelfRelationTop(start, end) {
+    const dStartLine = `M ${start.x - PATH_START_LENGTH} ${start.y - PATH_START_PADDING} h ${PATH_START_LENGTH * 2}`;
+
+    const dPath = `M ${start.x} ${start.y} v ${-PATH_SELF_RELATION_LENGTH} H ${end.x} v ${PATH_SELF_RELATION_LENGTH}`;
+
+    const dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}` +
+      `M ${end.x} ${end.y} l ${PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}`;
+
+    const d = dStartLine + dPath + dArrow;
+
+    const path = this._createPath(d);
+
+    const highlight = this._createHighlightTrigger(dPath);
+
+    return {
+      path,
+      highlight
+    };
+  }
+
+  _getSelfRelationBottom(start, end) {
+    const dStartLine = `M ${start.x - PATH_START_LENGTH} ${start.y + PATH_START_PADDING} h ${PATH_START_LENGTH * 2}`;
+
+    const dPath = `M ${start.x} ${start.y} v ${PATH_SELF_RELATION_LENGTH} H ${end.x} v ${-PATH_SELF_RELATION_LENGTH}`;
+
+    const dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}` +
+      `M ${end.x} ${end.y} l ${PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}`;
+
+    const d = dStartLine + dPath + dArrow;
+
+    const path = this._createPath(d);
+
+    const highlight = this._createHighlightTrigger(dPath);
+
+    return {
+      path,
+      highlight
+    };
+  }
+
   removeHoverEffect() {
     this._onMouseLeave();
   }
@@ -305,6 +385,8 @@ export default class Relation {
     const fromTableSides = this.fromTable.getSides();
     const toTableSides = this.toTable.getSides();
 
+    let result;
+
     switch (this.fromTablePathSide) {
       case constant.PATH_LEFT:
         {
@@ -313,47 +395,25 @@ export default class Relation {
             case constant.PATH_LEFT:
               {
                 const end = this._getLeftSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-
-                const dStartLine = `M ${start.x - PATH_START_PADDING} ${start.y - PATH_START_LENGTH} v ${PATH_START_LENGTH * 2}`;
-
-                const dPath = `M ${start.x} ${start.y} h ${-PATH_SELF_RELATION_LENGTH}
-                                V ${end.y}
-                                h ${PATH_SELF_RELATION_LENGTH}`;
-
-                const dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}
-                                M ${end.x} ${end.y} l ${-PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT}`;
-
-                const d = dStartLine + dPath + dArrow;
-
-                const path = this._createPath(d);
-
-                const highlightTrigger = this._createHighlightTrigger(dPath);
-
-                this._setElems(path, highlightTrigger);
+                result = this._getSelfRelationLeft(start, end);
               }
               break;
             case constant.PATH_RIGHT:
               {
                 const end = this._getRightSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-
-                const result = this._get3LinePathHoriz(start, end);
-                this._setElems(result.path, result.highlight);
+                result = this._get3LinePathHoriz(start, end);
               }
               break;
             case constant.PATH_TOP:
               {
                 const end = this._getTopSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-
-                const result = this._get2LinePathFlatTop(start, end);
-                this._setElems(result.path, result.highlight);
+                result = this._get2LinePathFlatTop(start, end);
               }
               break;
             case constant.PATH_BOTTOM:
               {
                 const end = this._getBottomSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-
-                const result = this._get2LinePathFlatBottom(start, end);
-                this._setElems(result.path, result.highlight);
+                result = this._get2LinePathFlatBottom(start, end);
               }
               break;
           }
@@ -367,45 +427,25 @@ export default class Relation {
             case constant.PATH_LEFT:
               {
                 const end = this._getLeftSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                const result = this._get3LinePathHoriz(start, end);
-
-                this._setElems(result.path, result.highlight);
+                result = this._get3LinePathHoriz(start, end);
               }
               break;
             case constant.PATH_RIGHT:
               {
                 const end = this._getRightSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-
-                const dStartLine = `M ${start.x + PATH_START_PADDING} ${start.y - PATH_START_LENGTH} v ${PATH_START_LENGTH * 2}`;
-
-                const dPath = `M ${start.x} ${start.y} h ${PATH_SELF_RELATION_LENGTH}
-                                V ${end.y}
-                                h ${-PATH_SELF_RELATION_LENGTH}`;
-
-                const dArrow = `M ${end.x} ${end.y} l ${PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}
-                                M ${end.x} ${end.y} l ${PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT}`;
-
-                const d = dStartLine + dPath + dArrow;
-
-                const path = this._createPath(d);
-
-                const highlightTrigger = this._createHighlightTrigger(dPath);
-
-                this._setElems(path, highlightTrigger);
+                result = this._getSelfRelationRight(start, end);
               }
               break;
             case constant.PATH_TOP:
               {
                 const end = this._getTopSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                const result = this._get2LinePathFlatTop(start, end);
-                this._setElems(result.path, result.highlight);
+                result = this._get2LinePathFlatTop(start, end);
               }
               break;
             case constant.PATH_BOTTOM:
               {
                 const end = this._getBottomSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                const result = this._get2LinePathFlatBottom(start, end);
-                this._setElems(result.path, result.highlight);
+                result = this._get2LinePathFlatBottom(start, end);
               }
               break;
           }
@@ -419,44 +459,25 @@ export default class Relation {
             case constant.PATH_LEFT:
               {
                 const end = this._getLeftSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                const result = this._get2LinePathFlatTop(start, end);
-                this._setElems(result.path, result.highlight);
+                result = this._get2LinePathFlatTop(start, end);
               }
               break;
             case constant.PATH_RIGHT:
               {
                 const end = this._getRightSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                const result = this._get2LinePathFlatTop(start, end);
-                this._setElems(result.path, result.highlight);
+                result = this._get2LinePathFlatTop(start, end);
               }
               break;
             case constant.PATH_TOP:
               {
                 const end = this._getTopSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-
-                const dStartLine = `M ${start.x - PATH_START_LENGTH} ${start.y - PATH_START_PADDING} h ${PATH_START_LENGTH * 2}`;
-
-                const dPath = `M ${start.x} ${start.y} v ${-PATH_SELF_RELATION_LENGTH}
-                                H ${end.x}
-                                v ${PATH_SELF_RELATION_LENGTH}`;
-
-                const dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}
-                                M ${end.x} ${end.y} l ${PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}`;
-
-                const d = dStartLine + dPath + dArrow;
-
-                const path = this._createPath(d);
-
-                const highlightTrigger = this._createHighlightTrigger(dPath);
-
-                this._setElems(path, highlightTrigger);
+                result = this._getSelfRelationTop(start, end);
               }
               break;
             case constant.PATH_BOTTOM:
               {
                 const end = this._getBottomSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                const result = this._get3LinePathVert(start, end);
-                this._setElems(result.path, result.highlight);
+                result = this._get3LinePathVert(start, end);
               }
               break;
           }
@@ -470,50 +491,32 @@ export default class Relation {
             case constant.PATH_LEFT:
               {
                 const end = this._getLeftSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                const result = this._get2LinePathFlatBottom(start, end);
-                this._setElems(result.path, result.highlight);
+                result = this._get2LinePathFlatBottom(start, end);
               }
               break;
             case constant.PATH_RIGHT:
               {
                 const end = this._getRightSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                const result = this._get2LinePathFlatBottom(start, end);
-                this._setElems(result.path, result.highlight);
+                result = this._get2LinePathFlatBottom(start, end);
               }
               break;
             case constant.PATH_TOP:
               {
                 const end = this._getTopSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                const result = this._get3LinePathVert(start, end);
-                this._setElems(result.path, result.highlight);
+                result = this._get3LinePathVert(start, end);
               }
               break;
             case constant.PATH_BOTTOM:
               {
                 const end = this._getBottomSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-
-                const dStartLine = `M ${start.x - PATH_START_LENGTH} ${start.y + PATH_START_PADDING} h ${PATH_START_LENGTH * 2}`;
-
-                const dPath = `M ${start.x} ${start.y} v ${PATH_SELF_RELATION_LENGTH}
-                                H ${end.x}
-                                v ${-PATH_SELF_RELATION_LENGTH}`;
-
-                const dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}
-                                M ${end.x} ${end.y} l ${PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}`;
-
-                const d = dStartLine + dPath + dArrow;
-
-                const path = this._createPath(d);
-
-                const highlightTrigger = this._createHighlightTrigger(dPath);
-
-                this._setElems(path, highlightTrigger);
+                result = this._getSelfRelationBottom(start, end);
               }
               break;
           }
         }
         break;
     }
+    this._setElems(result.path, result.highlight);
     if (!this.pathElem) return [];
     return [this.highlightTrigger, this.pathElem];
   }
