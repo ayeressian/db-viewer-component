@@ -104,7 +104,8 @@ export default class Viewer {
     });
 
     if (tableArrang === 'spiral') {
-      this._arrangTablesSpiral(tables);
+      // wait for table render to happen
+      setTimeout(() => this._arrangTablesSpiral(tables));
     }
 
     this.draw(viewport);
@@ -357,11 +358,7 @@ export default class Viewer {
     // After draw happened
     setTimeout(() => {
       this._drawRelations();
-      if (viewport) {
-        this._setViewPort(viewport).then(() => this.tables.forEach((table) => table.postDraw && table.postDraw()));
-      } else {
-        this._setViewPort('center');
-      }
+      this._setViewPort(viewport).then(() => this.tables.forEach((table) => table.postDraw && table.postDraw()));
     });
   }
 
@@ -371,7 +368,7 @@ export default class Viewer {
     switch (type) {
       case 'noChange':
       break;
-      case 'centerTableWeight':
+      case 'centerTablesWeight':
       {
         let totalX = 0;
         let totalY = 0;
@@ -394,8 +391,11 @@ export default class Viewer {
         viewportY = constant.VIEWER_PAN_HEIGHT / 2 - height / 2;
       }
       break;
-      default:
+      default: // centerTables
       {
+        if (this.tables.length === 0) {
+          return this._setViewPort('center');
+        }
         let minX = Number.MAX_SAFE_INTEGER;
         let minY = Number.MAX_SAFE_INTEGER;
         let maxX = Number.MIN_SAFE_INTEGER;
@@ -652,8 +652,8 @@ export default class Viewer {
 
   getMousePosRelativeContainer(event) {
     return {
-      x: event.clientX - this._container.offsetLeft,
-      y: event.clientY - this._container.offsetTop
+      x: event.clientX - this._container.getBoundingClientRect().x,
+      y: event.clientY - this._container.getBoundingClientRect().y
     };
   }
 

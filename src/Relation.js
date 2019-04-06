@@ -514,7 +514,10 @@ export default class Relation {
         }
         break;
     }
-    this._setElems(result.path, result.highlight);
+    // In case of tables overlapping there won't be any result
+    if (result) {
+      this._setElems(result.path, result.highlight);
+    }
     if (!this.pathElem) return [];
     return [this.highlightTrigger, this.pathElem];
   }
