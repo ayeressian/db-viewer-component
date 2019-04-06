@@ -200,13 +200,6 @@ export default class Table {
   render() {
     this._elem = document.createElementNS(constant.nsSvg, 'foreignObject');
 
-    setTimeout(() => {
-      let borderWidth = parseInt(getComputedStyle(this._table).borderWidth, 10);
-      borderWidth = isNaN(borderWidth)? 0: borderWidth;
-      this._elem.setAttributeNS(null, 'width', this._table.scrollWidth + borderWidth);
-      this._elem.setAttributeNS(null, 'height', this._table.scrollHeight + borderWidth);
-    });
-
     this._table = document.createElementNS(constant.nsHtml, 'table');
     this._table.className = 'table';
     const headingTr = document.createElementNS(constant.nsHtml, 'tr');
@@ -258,6 +251,15 @@ export default class Table {
     } else {
       this.setTablePos(this._pos.x, this._pos.y);
     }
+
+    // After render happened
+    setTimeout(() => {
+      let borderWidth = parseInt(getComputedStyle(this._table).borderWidth, 10);
+      borderWidth = isNaN(borderWidth)? 0: borderWidth;
+      this._elem.setAttributeNS(null, 'width', this._table.scrollWidth + borderWidth);
+      this._elem.setAttributeNS(null, 'height', this._table.scrollHeight + borderWidth);
+    });
+
     return this._elem;
   }
 

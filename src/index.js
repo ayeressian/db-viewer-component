@@ -141,7 +141,7 @@ class DBViewer extends HTMLElement {
         }
         this._notParsedSchema = JSON.parse(JSON.stringify(response));
         this._tables = schemaParser(response);
-        this._viewer.load(this._tables, response.viewport);
+        this._viewer.load(this._tables, response.viewport, this._notParsedSchema.arrangement);
         this._fileDownload = true;
         setTimeout(() => {
           this.dispatchEvent(new CustomEvent('load'));

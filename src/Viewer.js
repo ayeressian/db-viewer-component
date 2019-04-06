@@ -32,8 +32,6 @@ export default class Viewer {
     };
     this._minimap.setMinimapViewPoint(this._viewBoxVals);
 
-    setTimeout(() => this._setViewPort('center'));
-
     this._svgContainer.addEventListener('click', (event) => {
       const x = event.offsetX / this._zoom;
       const y = event.offsetY / this._zoom;
@@ -105,8 +103,8 @@ export default class Viewer {
       table.setMoveEndListener(this.onTableMoveEnd.bind(this));
     });
 
-    if (tableArrang === 'snail') {
-      this._arrangTablesSnail(tables);
+    if (tableArrang === 'spiral') {
+      this._arrangTablesSpiral(tables);
     }
 
     this.draw(viewport);
@@ -356,14 +354,14 @@ export default class Viewer {
       }
     });
 
+    // After draw happened
     setTimeout(() => {
       this._drawRelations();
-    });
-
-    // After draw happened
-    setTimeout(async () => {
-      await this._setViewPort(viewport);
-      this.tables.forEach((table) => table.postDraw && table.postDraw());
+      if (viewport) {
+        this._setViewPort(viewport).then(() => this.tables.forEach((table) => table.postDraw && table.postDraw()));
+      } else {
+        this._setViewPort('center');
+      }
     });
   }
 

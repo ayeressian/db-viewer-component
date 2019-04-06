@@ -380,8 +380,6 @@ export default class Relation {
   }
 
   render() {
-    // if (this.toPathIndex == null || this.fromPathCount == null) throw new MissingCountIndex();
-
     const fromTableSides = this.fromTable.getSides();
     const toTableSides = this.toTable.getSides();
 
