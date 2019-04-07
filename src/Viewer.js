@@ -640,14 +640,24 @@ export default class Viewer {
 
   setPanX(value) {
     this._viewBoxVals.x = value / this._zoom;
+    const originalScrollLeft = this._svgContainer.scrollLeft;
     this._svgContainer.scrollLeft = value;
-    return new Promise((resolve) => this._panXResolver = resolve);
+    if (this._svgContainer.scrollLeft === originalScrollLeft) {
+      return Promise.resolve();
+    } else {
+      return new Promise((resolve) => this._panXResolver = resolve);
+    }
   }
 
   setPanY(value) {
     this._viewBoxVals.y = value / this._zoom;
+    const originalScrollTop = this._svgContainer.scrollTop;
     this._svgContainer.scrollTop = value;
-    return new Promise((resolve) => this._panYResolver = resolve);
+    if (this._svgContainer.scrollTop === originalScrollTop) {
+      return Promise.resolve();
+    } else {
+      return new Promise((resolve) => this._panYResolver = resolve);
+    }
   }
 
   getMousePosRelativeContainer(event) {
