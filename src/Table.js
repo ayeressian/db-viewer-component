@@ -245,7 +245,7 @@ export default class Table {
     this._clickEvents();
     this._moveEvents();
 
-    if (this._pos === 'center') {
+    if (this._pos === 'center-viewport') {
       this.setTablePos(OUT_OF_VIEW_CORD, OUT_OF_VIEW_CORD, true);
       this._penddingCenter = true;
     } else {

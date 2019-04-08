@@ -30,26 +30,26 @@
   "devDependencies": {
     "babel-eslint": "^8.2.6",
     "chai": "^4.2.0",
-    "css-loader": "^1.0.0",
+    "css-loader": "^1.0.1",
     "eslint": "^4.19.1",
     "eslint-config-google": "^0.9.1",
-    "esm": "^3.0.84",
+    "esm": "^3.2.22",
     "html-loader": "^0.5.5",
     "http-server": "^0.11.1",
     "img-loader": "^3.0.0",
     "mocha": "^5.2.0",
     "mocha-loader": "^2.0.1",
     "mocha-webpack": "^2.0.0-beta.0",
-    "puppeteer": "^1.11.0",
+    "puppeteer": "^1.14.0",
     "sinon": "^7.3.1",
     "sinon-chai": "^3.3.0",
-    "start-server-and-test": "^1.7.11",
+    "start-server-and-test": "^1.7.13",
     "url-loader": "^1.1.1",
-    "webpack": "^4.19.1",
-    "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.14"
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0",
+    "webpack-dev-server": "^3.2.1"
   },
   "dependencies": {
-    "ajv": "^6.7.0"
+    "ajv": "^6.10.0"
   }
 }

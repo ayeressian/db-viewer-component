@@ -25,6 +25,7 @@ The json schema for db-veiwer schema can be found [here](https://raw.githubuserc
 Name | Description
 --- | ---
 `src` | Viewer-schema url. It should follow [this](https://raw.githubusercontent.com/ayeressian/db-viewer-component/new-events-methods/src/validation-schema.json) json schema. An example of schema can be found [here](https://raw.githubusercontent.com/ayeressian/db-viewer-component/master/example/schema/school.json).
+`disable-table-movement` | If this attribute exist. Table movement will be disabled.
 #### Events
 Name | Description | event.detail
 --- | --- | ---
@@ -45,6 +46,7 @@ Name | Description
 `src` | Set viewer-schema url. It should follow [this](https://github.com/ayeressian/db-viewer-component/blob/new-events-methods/src/validation-schema.json) json schema. An example of schema can be found [here](https://raw.githubusercontent.com/ayeressian/db-viewer-component/master/example/schema/school.json). It has the same effect as the src attribute. An example of schema can be found [here](https://raw.githubusercontent.com/ayeressian/db-viewer-component/master/example/schema/school.json).
 `scrollLeft` | Get and set scrolling position from left.
 `scrollTop` | Get and set scrolling position from top.
+`disableTableMovement` | Disables table movement if true.
 #### Methods
 Name | Description | Arguments
 --- | --- | ---

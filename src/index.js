@@ -127,27 +127,38 @@ class DBViewer extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['src'];
+    return ['src', 'disable-table-movement'];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    this._src = newValue;
-    this._fileDownload = false;
-    this._readyPromise.then(() => {
-      fetch(this._src).then((response) => response.json()).
-      then((response) => {
-        if (!validateJson(response)) {
-          throw INVALID_FILE_FORMAT;
-        }
-        this._notParsedSchema = JSON.parse(JSON.stringify(response));
-        this._tables = schemaParser(response);
-        this._viewer.load(this._tables, response.viewport, this._notParsedSchema.arrangement);
-        this._fileDownload = true;
-        setTimeout(() => {
-          this.dispatchEvent(new CustomEvent('load'));
+    switch (name) {
+      case 'src':
+      this._src = newValue;
+      this._fileDownload = false;
+      this._readyPromise.then(() => {
+        fetch(this._src).then((response) => response.json()).
+        then((response) => {
+          if (!validateJson(response)) {
+            throw INVALID_FILE_FORMAT;
+          }
+          this._notParsedSchema = JSON.parse(JSON.stringify(response));
+          this._tables = schemaParser(response);
+          this._viewer.load(this._tables, response.viewport, this._notParsedSchema.arrangement);
+          this._fileDownload = true;
+          setTimeout(() => {
+            this.dispatchEvent(new CustomEvent('load'));
+          });
         });
       });
-    });
+      break;
+      case 'disable-table-movement':
+        if (this.hasAttribute('disable-table-movement')) {
+          this._readyPromise.then(() => this._viewer.disableTableMovement(true));
+        } else {
+          this._readyPromise.then(() => this._viewer.disableTableMovement(false));
+        }
+      break;
+    }
   }
 
   set schema(schema) {
@@ -157,7 +168,7 @@ class DBViewer extends HTMLElement {
     this._notParsedSchema = JSON.parse(JSON.stringify(schema));
     schema = JSON.parse(JSON.stringify(schema));
     this._tables = schemaParser(schema);
-    this._viewer.load(this._tables);
+    this._viewer.load(this._tables, schema.viewport, schema.arrangement);
     this._fileDownload = true;
   }
 
@@ -169,7 +180,15 @@ class DBViewer extends HTMLElement {
   }
 
   set disableTableMovement(value) {
-    this._viewer.disableTableMovement(value);
+    if (value) {
+      this.setAttribute('disable-table-movement', '');
+    } else {
+      this.removeAttribute('disable-table-movement');
+    }
+  }
+
+  get disableTableMovement() {
+    return this._viewer.isTableMovementDisabled;
   }
 }
 

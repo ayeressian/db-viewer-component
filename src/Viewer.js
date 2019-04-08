@@ -38,6 +38,8 @@ export default class Viewer {
       this._callbacks.viewportClick(x, y);
     });
     this._reset();
+
+    this.isTableMovementDisabled = false;
   }
 
   _reset() {
@@ -101,6 +103,7 @@ export default class Viewer {
       table.setVeiwer(this);
       table.setMoveListener(this.onTableMove.bind(this));
       table.setMoveEndListener(this.onTableMoveEnd.bind(this));
+      table.disableMovement(this.isTableMovementDisabled);
     });
 
     if (tableArrang === 'spiral') {
@@ -368,7 +371,7 @@ export default class Viewer {
     switch (type) {
       case 'noChange':
       break;
-      case 'centerTablesWeight':
+      case 'centerByTablesWeight':
       {
         let totalX = 0;
         let totalY = 0;
@@ -395,7 +398,7 @@ export default class Viewer {
         viewportY = constant.VIEWER_PAN_HEIGHT / 2 - height / 2;
       }
       break;
-      default: // centerTables
+      default: // centerByTables
       {
         if (this.tables.length === 0) {
           return this._setViewPort('center');
@@ -692,6 +695,9 @@ export default class Viewer {
   }
 
   disableTableMovement(value) {
-    this.tables.forEach((table) => table.disableMovement(value));
+    this.isTableMovementDisabled = value;
+    if (this.tables) {
+      this.tables.forEach((table) => table.disableMovement(value));
+    }
   }
 }

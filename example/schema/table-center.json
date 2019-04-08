@@ -2,7 +2,7 @@
   "tables": [
     {
       "name": "table1",
-      "pos": "center",
+      "pos": "center-viewport",
       "columns": [
         {
           "name": "id",
