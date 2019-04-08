@@ -372,13 +372,17 @@ export default class Viewer {
       {
         let totalX = 0;
         let totalY = 0;
-        this.tables.forEach((table) => {
+        const filteredTables = this.tables.filter((table) => {
+          const data = table.data();
+          return data.pos.x >= 0 && data.pos.y >= 0;
+        });
+        filteredTables.forEach((table) => {
           const data = table.data();
           totalX += data.pos.x + data.width / 2;
           totalY += data.pos.y + data.height / 2;
         });
-        const centerX = totalX / this.tables.length;
-        const centerY = totalY / this.tables.length;
+        const centerX = totalX / filteredTables.length;
+        const centerY = totalY / filteredTables.length;
         viewportX = centerX - this._viewBoxVals.width / 2;
         viewportY = centerY - this._viewBoxVals.height / 2;
       }
@@ -402,15 +406,19 @@ export default class Viewer {
         let maxY = Number.MIN_SAFE_INTEGER;
         this.tables.forEach((table) => {
           const data = table.data();
-          if (data.pos.x < minX) minX = data.pos.x;
-          if (data.pos.y < minY) minY = data.pos.y;
-          if (data.pos.x + data.width > maxX) maxX = data.pos.x + data.width;
-          if (data.pos.y + data.height > maxY) maxY = data.pos.y + data.height;
+          if (data.pos.x >= 0 && data.pos.y >= 0) {
+            if (data.pos.x < minX) minX = data.pos.x;
+            if (data.pos.y < minY) minY = data.pos.y;
+            if (data.pos.x + data.width > maxX) maxX = data.pos.x + data.width;
+            if (data.pos.y + data.height > maxY) maxY = data.pos.y + data.height;
+          }
         });
         const centerX = (minX + maxX) / 2;
         const centerY = (minY + maxY) / 2;
         viewportX = centerX - this._viewBoxVals.width / 2;
         viewportY = centerY - this._viewBoxVals.height / 2;
+        if (viewportX < 0) viewportX = 0;
+        if (viewportY < 0) viewportY = 0;
       }
       break;
     }
