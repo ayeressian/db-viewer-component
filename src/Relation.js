@@ -178,34 +178,45 @@ export default class Relation {
     };
   }
 
-  _get3LinePathHoriz(start, end) {
+  _get3LinePathHoriz(start, end, oneTo, toMany) {
     let dArrow1 = `M ${end.x} ${end.y} `;
     let dArrow2 = `M ${end.x} ${end.y} `;
 
     let dStartLine;
-
+    let dPath;
+    const p2X = start.x + (end.x - start.x) / 2;
     if (start.x > end.x) {
       dArrow1 += `l ${PATH_ARROW_LENGTH} `;
       dArrow2 += `l ${PATH_ARROW_LENGTH} `;
 
-      dStartLine = `M ${start.x - PATH_START_PADDING} ${start.y - PATH_START_LENGTH} v ${2* PATH_START_LENGTH}`;
-
-      const tmp = start;
-      start = end;
-      end = tmp;
+      dPath = `M ${start.x} ${start.y}`;
+      if (oneTo) {
+        dStartLine = `M ${start.x - PATH_START_PADDING} ${start.y - PATH_START_LENGTH} v ${2* PATH_START_LENGTH}`;
+        dPath += `H ${p2X}`;
+      } else { // zero to
+        dStartLine = `M ${start.x - PATH_START_PADDING} ${start.y}` +
+          ` a 1,1 0 1,0 ${-PATH_START_LENGTH * 2},0 a 1,1 0 1,0 ${PATH_START_LENGTH * 2},0`;
+        dPath += `h ${-PATH_START_PADDING} m ${-PATH_START_LENGTH * 2} 0 H ${p2X}`;
+      }
     } else {
       dArrow1 += `l ${-PATH_ARROW_LENGTH} `;
       dArrow2 += `l ${-PATH_ARROW_LENGTH} `;
 
-      dStartLine = `M ${start.x + PATH_START_PADDING} ${start.y - PATH_START_LENGTH} v ${2* PATH_START_LENGTH}`;
+      dPath = `M ${start.x} ${start.y} `;
+      if (oneTo) {
+        dStartLine = `M ${start.x + PATH_START_PADDING} ${start.y - PATH_START_LENGTH} v ${2* PATH_START_LENGTH}`;
+        dPath += `H ${p2X}`;
+      } else { // zero to
+        dStartLine = `M ${start.x + PATH_START_PADDING} ${start.y}` +
+          ` a 1,1 0 1,0 ${PATH_START_LENGTH * 2},0 a 1,1 0 1,0 ${-PATH_START_LENGTH * 2},0`;
+        dPath += `h ${PATH_START_PADDING} m ${PATH_START_LENGTH * 2} 0 H ${p2X}`;
+      }
     }
+
+    dPath += `V ${end.y} H ${end.x}`;
 
     dArrow1 += PATH_ARROW_HEIGHT;
     dArrow2 += -PATH_ARROW_HEIGHT;
-
-    const p2X = start.x + (end.x - start.x) / 2;
-
-    const dPath = `M ${start.x} ${start.y} H ${p2X} V ${end.y} H ${end.x}`;
 
     const d = `${dStartLine} ${dPath} ${dArrow1} ${dArrow2}`;
     const path = this._createPath(d);
@@ -399,7 +410,7 @@ export default class Relation {
             case constant.PATH_RIGHT:
               {
                 const end = this._getRightSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get3LinePathHoriz(start, end);
+                result = this._get3LinePathHoriz(start, end, this.fromColumn.nn, this.fromColumn.uq);
               }
               break;
             case constant.PATH_TOP:
@@ -425,7 +436,7 @@ export default class Relation {
             case constant.PATH_LEFT:
               {
                 const end = this._getLeftSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get3LinePathHoriz(start, end);
+                result = this._get3LinePathHoriz(start, end, this.fromColumn.nn, this.fromColumn.uq);
               }
               break;
             case constant.PATH_RIGHT:
