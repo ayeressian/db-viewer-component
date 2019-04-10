@@ -50,6 +50,68 @@
           }
         }
       ]
+    },
+    {
+      "name": "student",
+      "pos": {
+        "x": 1271,
+        "y": 1407
+      },
+      "columns": [
+        {
+          "name": "id",
+          "pk": true,
+          "type": "int"
+        },
+        {
+          "name": "firstname",
+          "type": "string"
+        },
+        {
+          "name": "lastname",
+          "type": "string"
+        },
+        {
+          "name": "age",
+          "type": "int"
+        },
+        {
+          "name": "class_id",
+          "fk": {
+            "table": "class",
+            "column": "id"
+          },
+          "required": true
+        },
+        {
+          "name": "friend",
+          "fk": {
+            "table": "student",
+            "column": "id"
+          }
+        },
+        {
+          "name": "friend1",
+          "fk": {
+            "table": "student",
+            "column": "id"
+          }
+        },
+        {
+          "name": "friend2",
+          "fk": {
+            "table": "student",
+            "column": "id"
+          }
+        },
+        {
+          "name": "friend3",
+          "fk": {
+            "table": "student",
+            "column": "id"
+          }
+        }
+      ]
     }
   ]
 }
