@@ -14,17 +14,14 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         }
       ]
@@ -43,27 +40,23 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
           }
-        }        
+        }
       ]
     },
     {
@@ -80,22 +73,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -103,7 +92,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -125,22 +113,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -148,7 +132,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -170,22 +153,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -193,7 +172,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -215,22 +193,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -238,7 +212,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -260,22 +233,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -283,7 +252,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -305,22 +273,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -328,7 +292,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -350,22 +313,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -373,7 +332,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -395,22 +353,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -418,7 +372,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -440,22 +393,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -463,7 +412,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -485,22 +433,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -508,7 +452,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -530,22 +473,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -553,7 +492,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -575,22 +513,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -598,7 +532,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -620,22 +553,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -643,7 +572,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -665,22 +593,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -688,7 +612,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -710,22 +633,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -733,7 +652,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -755,22 +673,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -778,7 +692,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -800,22 +713,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -823,7 +732,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -845,22 +753,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -868,7 +772,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -890,22 +793,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -913,7 +812,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -935,22 +833,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -958,7 +852,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -980,22 +873,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -1003,7 +892,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -1025,22 +913,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -1048,7 +932,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -1070,22 +953,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -1093,7 +972,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -1115,22 +993,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -1138,7 +1012,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -1160,22 +1033,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -1183,7 +1052,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -1205,22 +1073,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -1228,7 +1092,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -1250,22 +1113,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -1273,7 +1132,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"
@@ -1295,22 +1153,18 @@
         },
         {
           "name": "col1",
-          "required": true,
           "type": "int"
         },
         {
           "name": "col2",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col3",
-          "required": true,
           "type": "string"
         },
         {
           "name": "col4",
-          "required": true,
           "fk": {
             "table": "table1",
             "column": "id"
@@ -1318,7 +1172,6 @@
         },
         {
           "name": "col5",
-          "required": true,
           "fk": {
             "table": "table2",
             "column": "id"

@@ -14,17 +14,14 @@
         },
         {
           "name": "cpacity",
-          "required": true,
           "type": "int"
         },
         {
           "name": "name",
-          "required": true,
           "type": "string"
         },
         {
           "name": "address",
-          "required": true,
           "type": "string"
         }
       ]
@@ -43,83 +40,12 @@
         },
         {
           "name": "grade",
-          "required": true,
           "type": "int"
         },
         {
           "name": "school_id",
-          "required": true,
           "fk": {
             "table": "school",
-            "column": "id"
-          }
-        }
-      ]
-    },
-    {
-      "name": "student",
-      "pos": {
-        "x": 1271,
-        "y": 1407
-      },
-      "columns": [
-        {
-          "name": "id",
-          "pk": true,
-          "type": "int"
-        },
-        {
-          "name": "firstname",
-          "required": true,
-          "type": "string"
-        },
-        {
-          "name": "lastname",
-          "required": true,
-          "type": "string"
-        },
-        {
-          "name": "age",
-          "required": true,
-          "type": "int"
-        },
-        {
-          "name": "class_id",
-          "fk": {
-            "table": "class",
-            "column": "id"
-          },
-          "required": true
-        },
-        {
-          "name": "friend",
-          "required": true,
-          "fk": {
-            "table": "student",
-            "column": "id"
-          }
-        },
-        {
-          "name": "friend1",
-          "required": true,
-          "fk": {
-            "table": "student",
-            "column": "id"
-          }
-        },
-        {
-          "name": "friend2",
-          "required": true,
-          "fk": {
-            "table": "student",
-            "column": "id"
-          }
-        },
-        {
-          "name": "friend3",
-          "required": true,
-          "fk": {
-            "table": "student",
             "column": "id"
           }
         }
