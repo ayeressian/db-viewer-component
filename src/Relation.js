@@ -236,32 +236,31 @@ export default class Relation {
     let dStartLine = `M ${start.x - PATH_START_LENGTH} `;
 
     let dPath;
-
+    const p2Y = start.y + (end.y - start.y) / 2;
     if (start.y > end.y) {
       dArrow1 += PATH_ARROW_LENGTH;
       dArrow2 += PATH_ARROW_LENGTH;
-
       dPath = `M ${start.x} ${start.y} v ${-PATH_START_PADDING} m 0 ${-PATH_START_LENGTH} V ${p2Y} H ${end.x} V ${end.y}`;
       if (oneTo) {
         dStartLine += `${start.y - PATH_START_PADDING} h ${2* PATH_START_LENGTH}`;
       } else { // zero to
-        dStartLine = `M ${start.x} ${start.y - PATH_START_PADDING}` +
+        dStartLine = `M ${start.x - PATH_START_LENGTH} ${start.y - PATH_START_PADDING - PATH_START_LENGTH}` +
           ` a 1,1 0 1,0 ${PATH_START_LENGTH * 2},0 a 1,1 0 1,0 ${-PATH_START_LENGTH * 2},0`;
+        dPath = `M ${start.x} ${start.y} v ${-PATH_START_PADDING} m 0 ${-PATH_START_LENGTH * 2} V ${p2Y} H ${end.x} V ${end.y}`;
       }
     } else {
       dArrow1 += -PATH_ARROW_LENGTH;
       dArrow2 += -PATH_ARROW_LENGTH;
 
       dStartLine += `${start.y + PATH_START_PADDING} h ${2* PATH_START_LENGTH}`;
+      if (oneTo) {
+        dPath = `M ${start.x} ${start.y} v ${-PATH_START_PADDING} m 0 ${-PATH_START_LENGTH} V ${p2Y} H ${end.x} V ${end.y}`;
+      } else { // zero to
+        dStartLine = `M ${start.x - PATH_START_LENGTH} ${start.y + PATH_START_PADDING + PATH_START_LENGTH}` +
+          ` a 1,1 0 1,0 ${PATH_START_LENGTH * 2},0 a 1,1 0 1,0 ${-PATH_START_LENGTH * 2},0`;
+        dPath = `M ${start.x} ${start.y} v ${PATH_START_PADDING} m 0 ${PATH_START_LENGTH * 2} V ${p2Y} H ${end.x} V ${end.y}`;
+      }
     }
-
-    if (start.x > end.x) {
-      const tmp = start;
-      start = end;
-      end = tmp;
-    }
-
-    const p2Y = start.y + (end.y - start.y) / 2;
 
     const d = `${dStartLine} ${dPath} ${dArrow1} ${dArrow2}`;
 
