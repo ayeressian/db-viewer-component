@@ -5,8 +5,7 @@ import constant from './const.js';
 
 const PATH_ARROW_LENGTH = 9;
 const PATH_ARROW_HEIGHT = 4;
-const PATH_START_PADDING = 7;
-const PATH_START_LENGTH = 5;
+const PATH_START = 5;
 const PATH_SELF_RELATION_LENGTH = 40;
 
 export default class Relation {
@@ -83,8 +82,8 @@ export default class Relation {
     let dStartLine;
 
     if (start.y > end.y) {
-      dStartLine = `M ${start.x - PATH_START_LENGTH} ${start.y - PATH_START_PADDING}
-                    h ${2 * PATH_START_LENGTH}`;
+      dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START}
+                    h ${2 * PATH_START}`;
 
       if (start.x > end.x) {
         dArrow1 += `l ${PATH_ARROW_LENGTH} `;
@@ -105,11 +104,11 @@ export default class Relation {
       dArrow2 += `l ${-PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}`;
 
       if (start.x > end.x) {
-        dStartLine = `M ${start.x - PATH_START_PADDING} `;
+        dStartLine = `M ${start.x - PATH_START} `;
       } else {
-        dStartLine = `M ${start.x + PATH_START_PADDING} `;
+        dStartLine = `M ${start.x + PATH_START} `;
       }
-      dStartLine += `${start.y - PATH_START_LENGTH} v ${2 * PATH_START_LENGTH}`;
+      dStartLine += `${start.y - PATH_START} v ${2 * PATH_START}`;
     }
 
     const dPath = `M ${start.x} ${start.y} H ${end.x} V ${end.y}`;
@@ -137,20 +136,20 @@ export default class Relation {
       dArrow2 += `l ${-PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}`;
 
       if (start.x > end.x) {
-        dStartLine = `M ${start.x - PATH_START_PADDING} `;
+        dStartLine = `M ${start.x - PATH_START} `;
       } else {
-        dStartLine = `M ${start.x + PATH_START_PADDING} `;
+        dStartLine = `M ${start.x + PATH_START} `;
       }
 
-      dStartLine += `${start.y - PATH_START_LENGTH} `;
+      dStartLine += `${start.y - PATH_START} `;
 
-      dStartLine += `v ${PATH_START_LENGTH * 2}`;
+      dStartLine += `v ${PATH_START * 2}`;
 
       const tmp = start;
       start = end;
       end = tmp;
     } else {
-      dStartLine = `M ${start.x - PATH_START_LENGTH} ${start.y + PATH_START_PADDING} h ${2 * PATH_START_LENGTH}`;
+      dStartLine = `M ${start.x - PATH_START} ${start.y + PATH_START} h ${2 * PATH_START}`;
 
       if (start.x > end.x) {
         dArrow1 += `l ${PATH_ARROW_LENGTH} `;
@@ -191,12 +190,12 @@ export default class Relation {
 
       dPath = `M ${start.x} ${start.y}`;
       if (oneTo) {
-        dStartLine = `M ${start.x - PATH_START_PADDING} ${start.y - PATH_START_LENGTH} v ${2* PATH_START_LENGTH}`;
+        dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START} v ${2* PATH_START}`;
         dPath += `H ${p2X}`;
       } else { // zero to
-        dStartLine = `M ${start.x - PATH_START_PADDING} ${start.y}` +
-          ` a 1,1 0 1,0 ${-PATH_START_LENGTH * 2},0 a 1,1 0 1,0 ${PATH_START_LENGTH * 2},0`;
-        dPath += `h ${-PATH_START_PADDING} m ${-PATH_START_LENGTH * 2} 0 H ${p2X}`;
+        dStartLine = `M ${start.x} ${start.y}` +
+          ` a 1,1 0 1,0 ${-PATH_START * 2},0 a 1,1 0 1,0 ${PATH_START * 2},0`;
+        dPath += `m ${-PATH_START * 2} 0 H ${p2X}`;
       }
     } else {
       dArrow1 += `l ${-PATH_ARROW_LENGTH} `;
@@ -204,12 +203,12 @@ export default class Relation {
 
       dPath = `M ${start.x} ${start.y} `;
       if (oneTo) {
-        dStartLine = `M ${start.x + PATH_START_PADDING} ${start.y - PATH_START_LENGTH} v ${2* PATH_START_LENGTH}`;
+        dStartLine = `M ${start.x} ${start.y - PATH_START} v ${2* PATH_START}`;
         dPath += `H ${p2X}`;
       } else { // zero to
-        dStartLine = `M ${start.x + PATH_START_PADDING} ${start.y}` +
-          ` a 1,1 0 1,0 ${PATH_START_LENGTH * 2},0 a 1,1 0 1,0 ${-PATH_START_LENGTH * 2},0`;
-        dPath += `h ${PATH_START_PADDING} m ${PATH_START_LENGTH * 2} 0 H ${p2X}`;
+        dStartLine = `M ${start.x} ${start.y}` +
+          ` a 1,1 0 1,0 ${PATH_START * 2},0 a 1,1 0 1,0 ${-PATH_START * 2},0`;
+        dPath += `m ${PATH_START * 2} 0 H ${p2X}`;
       }
     }
 
@@ -233,32 +232,32 @@ export default class Relation {
     let dArrow1 = `M ${end.x} ${end.y} l ${PATH_ARROW_HEIGHT} `;
     let dArrow2 = `M ${end.x} ${end.y} l ${-PATH_ARROW_HEIGHT} `;
 
-    let dStartLine = `M ${start.x - PATH_START_LENGTH} `;
+    let dStartLine = `M ${start.x - PATH_START} `;
 
     let dPath;
     const p2Y = start.y + (end.y - start.y) / 2;
     if (start.y > end.y) {
       dArrow1 += PATH_ARROW_LENGTH;
       dArrow2 += PATH_ARROW_LENGTH;
-      dPath = `M ${start.x} ${start.y} v ${-PATH_START_PADDING} m 0 ${-PATH_START_LENGTH} V ${p2Y} H ${end.x} V ${end.y}`;
       if (oneTo) {
-        dStartLine += `${start.y - PATH_START_PADDING} h ${2* PATH_START_LENGTH}`;
+        dStartLine += `${start.y - PATH_START} h ${2* PATH_START}`;
+        dPath = `M ${start.x} ${start.y} v ${-PATH_START} m 0 ${-PATH_START} V ${p2Y} H ${end.x} V ${end.y}`;
       } else { // zero to
-        dStartLine = `M ${start.x - PATH_START_LENGTH} ${start.y - PATH_START_PADDING - PATH_START_LENGTH}` +
-          ` a 1,1 0 1,0 ${PATH_START_LENGTH * 2},0 a 1,1 0 1,0 ${-PATH_START_LENGTH * 2},0`;
-        dPath = `M ${start.x} ${start.y} v ${-PATH_START_PADDING} m 0 ${-PATH_START_LENGTH * 2} V ${p2Y} H ${end.x} V ${end.y}`;
+        dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START}` +
+          ` a 1,1 0 1,0 ${PATH_START * 2},0 a 1,1 0 1,0 ${-PATH_START * 2},0`;
+        dPath = `M ${start.x} ${start.y} m 0 ${-PATH_START * 2} V ${p2Y} H ${end.x} V ${end.y}`;
       }
     } else {
       dArrow1 += -PATH_ARROW_LENGTH;
       dArrow2 += -PATH_ARROW_LENGTH;
 
-      dStartLine += `${start.y + PATH_START_PADDING} h ${2* PATH_START_LENGTH}`;
+      dStartLine += `${start.y + PATH_START} h ${2* PATH_START}`;
       if (oneTo) {
-        dPath = `M ${start.x} ${start.y} v ${-PATH_START_PADDING} m 0 ${-PATH_START_LENGTH} V ${p2Y} H ${end.x} V ${end.y}`;
+        dPath = `M ${start.x} ${start.y} v ${-PATH_START} m 0 ${-PATH_START} V ${p2Y} H ${end.x} V ${end.y}`;
       } else { // zero to
-        dStartLine = `M ${start.x - PATH_START_LENGTH} ${start.y + PATH_START_PADDING + PATH_START_LENGTH}` +
-          ` a 1,1 0 1,0 ${PATH_START_LENGTH * 2},0 a 1,1 0 1,0 ${-PATH_START_LENGTH * 2},0`;
-        dPath = `M ${start.x} ${start.y} v ${PATH_START_PADDING} m 0 ${PATH_START_LENGTH * 2} V ${p2Y} H ${end.x} V ${end.y}`;
+        dStartLine = `M ${start.x - PATH_START} ${start.y + PATH_START}` +
+          ` a 1,1 0 1,0 ${PATH_START * 2},0 a 1,1 0 1,0 ${-PATH_START * 2},0`;
+        dPath = `M ${start.x} ${start.y} m 0 ${PATH_START * 2} V ${p2Y} H ${end.x} V ${end.y}`;
       }
     }
 
@@ -275,7 +274,7 @@ export default class Relation {
   }
 
   _getSelfRelationLeft(start, end) {
-    const dStartLine = `M ${start.x - PATH_START_PADDING} ${start.y - PATH_START_LENGTH} v ${PATH_START_LENGTH * 2}`;
+    const dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START} v ${PATH_START * 2}`;
 
     const dPath = `M ${start.x} ${start.y} h ${-PATH_SELF_RELATION_LENGTH} V ${end.y} h ${PATH_SELF_RELATION_LENGTH}`;
 
@@ -295,7 +294,7 @@ export default class Relation {
   }
 
   _getSelfRelationRight(start, end) {
-    const dStartLine = `M ${start.x + PATH_START_PADDING} ${start.y - PATH_START_LENGTH} v ${PATH_START_LENGTH * 2}`;
+    const dStartLine = `M ${start.x + PATH_START} ${start.y - PATH_START} v ${PATH_START * 2}`;
 
     const dPath = `M ${start.x} ${start.y} h ${PATH_SELF_RELATION_LENGTH} V ${end.y} h ${-PATH_SELF_RELATION_LENGTH}`;
 
@@ -315,7 +314,7 @@ export default class Relation {
   }
 
   _getSelfRelationTop(start, end) {
-    const dStartLine = `M ${start.x - PATH_START_LENGTH} ${start.y - PATH_START_PADDING} h ${PATH_START_LENGTH * 2}`;
+    const dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START} h ${PATH_START * 2}`;
 
     const dPath = `M ${start.x} ${start.y} v ${-PATH_SELF_RELATION_LENGTH} H ${end.x} v ${PATH_SELF_RELATION_LENGTH}`;
 
@@ -335,7 +334,7 @@ export default class Relation {
   }
 
   _getSelfRelationBottom(start, end) {
-    const dStartLine = `M ${start.x - PATH_START_LENGTH} ${start.y + PATH_START_PADDING} h ${PATH_START_LENGTH * 2}`;
+    const dStartLine = `M ${start.x - PATH_START} ${start.y + PATH_START} h ${PATH_START * 2}`;
 
     const dPath = `M ${start.x} ${start.y} v ${PATH_SELF_RELATION_LENGTH} H ${end.x} v ${-PATH_SELF_RELATION_LENGTH}`;
 
