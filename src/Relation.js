@@ -177,6 +177,11 @@ export default class Relation {
     };
   }
 
+  _getCirclePath(x, y) {
+    return `M ${x - PATH_START} ${y}` +
+          ` a 1,1 0 1,0 ${PATH_START * 2},0 a 1,1 0 1,0 ${-PATH_START * 2},0`;
+  }
+
   _get3LinePathHoriz(start, end, oneTo, toMany) {
     let dArrow1 = `M ${end.x} ${end.y} `;
     let dArrow2 = `M ${end.x} ${end.y} `;
@@ -193,8 +198,7 @@ export default class Relation {
         dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START} v ${2* PATH_START}`;
         dPath += `H ${p2X}`;
       } else { // zero to
-        dStartLine = `M ${start.x} ${start.y}` +
-          ` a 1,1 0 1,0 ${-PATH_START * 2},0 a 1,1 0 1,0 ${PATH_START * 2},0`;
+        dStartLine = this._getCirclePath(start.x - PATH_START, start.y);
         dPath += `m ${-PATH_START * 2} 0 H ${p2X}`;
       }
     } else {
@@ -206,8 +210,7 @@ export default class Relation {
         dStartLine = `M ${start.x} ${start.y - PATH_START} v ${2* PATH_START}`;
         dPath += `H ${p2X}`;
       } else { // zero to
-        dStartLine = `M ${start.x} ${start.y}` +
-          ` a 1,1 0 1,0 ${PATH_START * 2},0 a 1,1 0 1,0 ${-PATH_START * 2},0`;
+        dStartLine = this._getCirclePath(start.x + PATH_START, start.y);
         dPath += `m ${PATH_START * 2} 0 H ${p2X}`;
       }
     }
@@ -243,8 +246,7 @@ export default class Relation {
         dStartLine += `${start.y - PATH_START} h ${2* PATH_START}`;
         dPath = `M ${start.x} ${start.y} v ${-PATH_START} m 0 ${-PATH_START} V ${p2Y} H ${end.x} V ${end.y}`;
       } else { // zero to
-        dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START}` +
-          ` a 1,1 0 1,0 ${PATH_START * 2},0 a 1,1 0 1,0 ${-PATH_START * 2},0`;
+        dStartLine = this._getCirclePath(start.x, start.y - PATH_START);
         dPath = `M ${start.x} ${start.y} m 0 ${-PATH_START * 2} V ${p2Y} H ${end.x} V ${end.y}`;
       }
     } else {
@@ -255,8 +257,7 @@ export default class Relation {
       if (oneTo) {
         dPath = `M ${start.x} ${start.y} v ${-PATH_START} m 0 ${-PATH_START} V ${p2Y} H ${end.x} V ${end.y}`;
       } else { // zero to
-        dStartLine = `M ${start.x - PATH_START} ${start.y + PATH_START}` +
-          ` a 1,1 0 1,0 ${PATH_START * 2},0 a 1,1 0 1,0 ${-PATH_START * 2},0`;
+        dStartLine = this._getCirclePath(start.x, start.y + PATH_START);
         dPath = `M ${start.x} ${start.y} m 0 ${PATH_START * 2} V ${p2Y} H ${end.x} V ${end.y}`;
       }
     }
