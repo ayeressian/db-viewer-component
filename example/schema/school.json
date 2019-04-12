@@ -43,19 +43,13 @@
           "type": "int"
         },
         {
-          "name": "grade1",
-          "type": "int"
-        },
-        {
-          "name": "grade2",
-          "type": "int"
-        },
-        {
           "name": "school_id",
           "fk": {
             "table": "school",
             "column": "id"
-          }
+          },
+          "nn": true,
+          "uq": true
         }
       ]
     }

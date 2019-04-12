@@ -208,15 +208,23 @@ export default class Relation {
   }
 
   _get3LinePathHoriz(start, end, oneTo, toMany) {
-    let dArrow1 = `M ${end.x} ${end.y} `;
-    let dArrow2 = `M ${end.x} ${end.y} `;
+    let dArrow1;
+    let dArrow2;
+    if (!toMany) {
+      dArrow1 = `M ${end.x} ${end.y} `;
+      dArrow2 = dArrow1;
+    }
 
     let dStartLine;
     let dPath;
     const p2X = start.x + (end.x - start.x) / 2;
     if (start.x > end.x) {
-      dArrow1 += `l ${PATH_ARROW_LENGTH} `;
-      dArrow2 += `l ${PATH_ARROW_LENGTH} `;
+      if (toMany) {
+        dArrow1 = dArrow2 = `M ${end.x + PATH_ARROW_LENGTH} ${end.y} l ${end.x} `;
+      } else {
+        dArrow1 += `l ${PATH_ARROW_LENGTH} `;
+        dArrow2 += `l ${PATH_ARROW_LENGTH} `;
+      }
 
       dPath = `M ${start.x} ${start.y}`;
       if (oneTo) {
@@ -227,8 +235,12 @@ export default class Relation {
         dPath += `m ${-PATH_START * 2} 0 H ${p2X}`;
       }
     } else {
-      dArrow1 += `l ${-PATH_ARROW_LENGTH} `;
-      dArrow2 += `l ${-PATH_ARROW_LENGTH} `;
+      if (toMany) {
+        dArrow1 = dArrow2 = `M ${end.x - PATH_ARROW_LENGTH} ${end.y} l ${end.x} `;
+      } else {
+        dArrow1 += `l ${-PATH_ARROW_LENGTH} `;
+        dArrow2 += `l ${-PATH_ARROW_LENGTH} `;
+      }
 
       dPath = `M ${start.x} ${start.y} `;
       if (oneTo) {
