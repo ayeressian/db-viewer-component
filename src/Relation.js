@@ -75,15 +75,19 @@ export default class Relation {
     };
   }
 
-  _get2LinePathFlatTop(start, end) {
+  _get2LinePathFlatTop(start, end, oneTo, toMany) {
     let dArrow1 = `M ${end.x} ${end.y} `;
     let dArrow2 = `M ${end.x} ${end.y} `;
 
     let dStartLine;
 
     if (start.y > end.y) {
-      dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START}
-                    h ${2 * PATH_START}`;
+      if (oneTo) {
+        dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START}
+                      h ${2 * PATH_START}`;
+      } else { // zero to
+        dStartLine = this._getCirclePath(start.x - PATH_START, start.y - PATH_START);
+      }
 
       if (start.x > end.x) {
         dArrow1 += `l ${PATH_ARROW_LENGTH} `;
@@ -102,13 +106,20 @@ export default class Relation {
     } else {
       dArrow1 += `l ${PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}`;
       dArrow2 += `l ${-PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}`;
-
-      if (start.x > end.x) {
-        dStartLine = `M ${start.x - PATH_START} `;
-      } else {
-        dStartLine = `M ${start.x + PATH_START} `;
+      if (oneTo) {
+        if (start.x > end.x) {
+          dStartLine = `M ${start.x - PATH_START} `;
+        } else {
+          dStartLine = `M ${start.x + PATH_START} `;
+        }
+        dStartLine += `${start.y - PATH_START} v ${2 * PATH_START}`;
+      } else { // zero to
+        if (start.x > end.x) {
+          dStartLine = this._getCirclePath(start.x - PATH_START, start.y);
+        } else {
+          dStartLine = this._getCirclePath(start.x + PATH_START, start.y);
+        }
       }
-      dStartLine += `${start.y - PATH_START} v ${2 * PATH_START}`;
     }
 
     const dPath = `M ${start.x} ${start.y} H ${end.x} V ${end.y}`;
