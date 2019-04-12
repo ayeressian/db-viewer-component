@@ -80,14 +80,18 @@ export default class Relation {
     let dArrow2 = `M ${end.x} ${end.y} `;
 
     let dStartLine;
+    let dPath;
 
     if (start.y > end.y) {
       if (oneTo) {
         dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START}
                       h ${2 * PATH_START}`;
+        dPath = `M ${start.x} ${start.y}`;
       } else { // zero to
-        dStartLine = this._getCirclePath(start.x - PATH_START, start.y - PATH_START);
+        dStartLine = this._getCirclePath(start.x, start.y - PATH_START);
+        dPath = `M ${start.x} ${start.y - PATH_START * 2}`;
       }
+      dPath += ` V ${end.y} H ${end.x}`;
 
       if (start.x > end.x) {
         dArrow1 += `l ${PATH_ARROW_LENGTH} `;
@@ -99,10 +103,6 @@ export default class Relation {
 
       dArrow1 += PATH_ARROW_HEIGHT;
       dArrow2 += -PATH_ARROW_HEIGHT;
-
-      const tmp = start;
-      start = end;
-      end = tmp;
     } else {
       dArrow1 += `l ${PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}`;
       dArrow2 += `l ${-PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}`;
@@ -113,16 +113,21 @@ export default class Relation {
           dStartLine = `M ${start.x + PATH_START} `;
         }
         dStartLine += `${start.y - PATH_START} v ${2 * PATH_START}`;
+        dPath = `M ${start.x} ${start.y} H ${end.x} V ${end.y}`;
       } else { // zero to
         if (start.x > end.x) {
           dStartLine = this._getCirclePath(start.x - PATH_START, start.y);
         } else {
           dStartLine = this._getCirclePath(start.x + PATH_START, start.y);
         }
+        if (start.x > end.x) {
+          dPath = `M ${start.x - PATH_START * 2}`;
+        } else {
+          dPath = `M ${start.x + PATH_START * 2}`;
+        }
+        dPath += ` ${start.y} H ${end.x} V ${end.y}`;
       }
     }
-
-    const dPath = `M ${start.x} ${start.y} H ${end.x} V ${end.y}`;
 
     const d = `${dStartLine} ${dPath} ${dArrow1} ${dArrow2}`;
 
@@ -141,6 +146,7 @@ export default class Relation {
     let dArrow2 = `M ${end.x} ${end.y} `;
 
     let dStartLine;
+    let dPath;
 
     if (start.y > end.y) {
       dArrow1 += `l ${PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}`;
@@ -152,24 +158,24 @@ export default class Relation {
         } else {
           dStartLine = `M ${start.x + PATH_START} `;
         }
-        dStartLine += `${start.y - PATH_START} `;
-        dStartLine += `v ${PATH_START * 2}`;
+        dStartLine += `${start.y - PATH_START} v ${PATH_START * 2}`;
+        dPath = `M ${start.x} ${start.y} V ${end.y} H ${end.x}`;
       } else { // zero to
         if (start.x > end.x) {
           dStartLine = this._getCirclePath(start.x - PATH_START, start.y);
+          dPath = `M ${start.x - PATH_START * 2} ${start.y} H ${end.x} V ${end.y}`;
         } else {
           dStartLine = this._getCirclePath(start.x + PATH_START, start.y);
+          dPath = `M ${start.x + PATH_START * 2} ${start.y} H ${end.x} V ${end.y}`;
         }
       }
-
-      const tmp = start;
-      start = end;
-      end = tmp;
     } else {
       if (oneTo) {
         dStartLine = `M ${start.x - PATH_START} ${start.y + PATH_START} h ${2 * PATH_START}`;
+        dPath = `M ${start.x} ${start.y} V ${end.y} H ${end.x}`;
       } else { // zero to
         dStartLine = this._getCirclePath(start.x, start.y + PATH_START);
+        dPath = `M ${start.x} ${start.y + PATH_START * 2} V ${end.y} H ${end.x}`;
       }
 
       if (start.x > end.x) {
@@ -183,8 +189,6 @@ export default class Relation {
       dArrow1 += PATH_ARROW_HEIGHT;
       dArrow2 += -PATH_ARROW_HEIGHT;
     }
-
-    const dPath = `M ${start.x} ${start.y} V ${end.y} H ${end.x}`;
 
     const d = `${dStartLine} ${dPath} ${dArrow1} ${dArrow2}`;
 
@@ -228,7 +232,7 @@ export default class Relation {
 
       dPath = `M ${start.x} ${start.y} `;
       if (oneTo) {
-        dStartLine = `M ${start.x} ${start.y - PATH_START} v ${2* PATH_START}`;
+        dStartLine = `M ${start.x + PATH_START} ${start.y - PATH_START} v ${2* PATH_START}`;
         dPath += `H ${p2X}`;
       } else { // zero to
         dStartLine = this._getCirclePath(start.x + PATH_START, start.y);
@@ -265,10 +269,10 @@ export default class Relation {
       dArrow2 += PATH_ARROW_LENGTH;
       if (oneTo) {
         dStartLine += `${start.y - PATH_START} h ${2* PATH_START}`;
-        dPath = `M ${start.x} ${start.y} v ${-PATH_START} m 0 ${-PATH_START} V ${p2Y} H ${end.x} V ${end.y}`;
+        dPath = `M ${start.x} ${start.y} V ${p2Y} H ${end.x} V ${end.y}`;
       } else { // zero to
         dStartLine = this._getCirclePath(start.x, start.y - PATH_START);
-        dPath = `M ${start.x} ${start.y} m 0 ${-PATH_START * 2} V ${p2Y} H ${end.x} V ${end.y}`;
+        dPath = `M ${start.x} ${start.y - PATH_START * 2} V ${p2Y} H ${end.x} V ${end.y}`;
       }
     } else {
       dArrow1 += -PATH_ARROW_LENGTH;
@@ -276,10 +280,10 @@ export default class Relation {
 
       dStartLine += `${start.y + PATH_START} h ${2* PATH_START}`;
       if (oneTo) {
-        dPath = `M ${start.x} ${start.y} v ${-PATH_START} m 0 ${-PATH_START} V ${p2Y} H ${end.x} V ${end.y}`;
+        dPath = `M ${start.x} ${start.y} V ${p2Y} H ${end.x} V ${end.y}`;
       } else { // zero to
         dStartLine = this._getCirclePath(start.x, start.y + PATH_START);
-        dPath = `M ${start.x} ${start.y} m 0 ${PATH_START * 2} V ${p2Y} H ${end.x} V ${end.y}`;
+        dPath = `M ${start.x} ${start.y + PATH_START * 2} V ${p2Y} H ${end.x} V ${end.y}`;
       }
     }
 
@@ -430,7 +434,7 @@ export default class Relation {
             case constant.PATH_LEFT:
               {
                 const end = this._getLeftSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._getSelfRelationLeft(start, end);
+                result = this._getSelfRelationLeft(start, end, this.fromColumn.nn, this.fromColumn.uq);
               }
               break;
             case constant.PATH_RIGHT:
@@ -442,13 +446,13 @@ export default class Relation {
             case constant.PATH_TOP:
               {
                 const end = this._getTopSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get2LinePathFlatTop(start, end);
+                result = this._get2LinePathFlatTop(start, end, this.fromColumn.nn, this.fromColumn.uq);
               }
               break;
             case constant.PATH_BOTTOM:
               {
                 const end = this._getBottomSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get2LinePathFlatBottom(start, end);
+                result = this._get2LinePathFlatBottom(start, end, this.fromColumn.nn, this.fromColumn.uq);
               }
               break;
           }
@@ -468,19 +472,19 @@ export default class Relation {
             case constant.PATH_RIGHT:
               {
                 const end = this._getRightSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._getSelfRelationRight(start, end);
+                result = this._getSelfRelationRight(start, end, this.fromColumn.nn, this.fromColumn.uq);
               }
               break;
             case constant.PATH_TOP:
               {
                 const end = this._getTopSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get2LinePathFlatTop(start, end);
+                result = this._get2LinePathFlatTop(start, end, this.fromColumn.nn, this.fromColumn.uq);
               }
               break;
             case constant.PATH_BOTTOM:
               {
                 const end = this._getBottomSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get2LinePathFlatBottom(start, end);
+                result = this._get2LinePathFlatBottom(start, end, this.fromColumn.nn, this.fromColumn.uq);
               }
               break;
           }
@@ -494,25 +498,25 @@ export default class Relation {
             case constant.PATH_LEFT:
               {
                 const end = this._getLeftSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get2LinePathFlatTop(start, end);
+                result = this._get2LinePathFlatTop(start, end, this.fromColumn.nn, this.fromColumn.uq);
               }
               break;
             case constant.PATH_RIGHT:
               {
                 const end = this._getRightSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get2LinePathFlatTop(start, end);
+                result = this._get2LinePathFlatTop(start, end, this.fromColumn.nn, this.fromColumn.uq);
               }
               break;
             case constant.PATH_TOP:
               {
                 const end = this._getTopSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._getSelfRelationTop(start, end);
+                result = this._getSelfRelationTop(start, end, this.fromColumn.nn, this.fromColumn.uq);
               }
               break;
             case constant.PATH_BOTTOM:
               {
                 const end = this._getBottomSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get3LinePathVert(start, end);
+                result = this._get3LinePathVert(start, end, this.fromColumn.nn, this.fromColumn.uq);
               }
               break;
           }
@@ -526,25 +530,25 @@ export default class Relation {
             case constant.PATH_LEFT:
               {
                 const end = this._getLeftSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get2LinePathFlatBottom(start, end);
+                result = this._get2LinePathFlatBottom(start, end, this.fromColumn.nn, this.fromColumn.uq);
               }
               break;
             case constant.PATH_RIGHT:
               {
                 const end = this._getRightSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get2LinePathFlatBottom(start, end);
+                result = this._get2LinePathFlatBottom(start, end, this.fromColumn.nn, this.fromColumn.uq);
               }
               break;
             case constant.PATH_TOP:
               {
                 const end = this._getTopSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get3LinePathVert(start, end);
+                result = this._get3LinePathVert(start, end, this.fromColumn.nn, this.fromColumn.uq);
               }
               break;
             case constant.PATH_BOTTOM:
               {
                 const end = this._getBottomSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._getSelfRelationBottom(start, end);
+                result = this._getSelfRelationBottom(start, end, this.fromColumn.nn, this.fromColumn.uq);
               }
               break;
           }
