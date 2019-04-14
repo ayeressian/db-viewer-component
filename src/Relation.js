@@ -153,7 +153,7 @@ export default class Relation {
 
     const path = this._createPath(d);
 
-    const highlight = this._createHighlightTrigger(dPath);
+    const highlight = this._createHighlightTrigger(d);
 
     return {
       path,
@@ -233,17 +233,12 @@ export default class Relation {
 
     const path = this._createPath(d);
 
-    const highlight = this._createHighlightTrigger(dPath);
+    const highlight = this._createHighlightTrigger(d);
 
     return {
       path,
       highlight
     };
-  }
-
-  _getCirclePath(x, y) {
-    return `M ${x - PATH_START} ${y}` +
-          ` a 1,1 0 1,0 ${PATH_START * 2},0 a 1,1 0 1,0 ${-PATH_START * 2},0`;
   }
 
   _get3LinePathHoriz(start, end, oneTo, toMany) {
@@ -299,7 +294,7 @@ export default class Relation {
     const d = `${dStartLine} ${dPath} ${dArrow1} ${dArrow2}`;
     const path = this._createPath(d);
 
-    const highlight = this._createHighlightTrigger(dPath);
+    const highlight = this._createHighlightTrigger(d);
 
     return {
       path,
@@ -357,7 +352,7 @@ export default class Relation {
 
     const path = this._createPath(d);
 
-    const highlight = this._createHighlightTrigger(dPath);
+    const highlight = this._createHighlightTrigger(d);
 
     return {
       path,
@@ -365,19 +360,32 @@ export default class Relation {
     };
   }
 
-  _getSelfRelationLeft(start, end) {
-    const dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START} v ${PATH_START * 2}`;
+  _getSelfRelationLeft(start, end, oneTo, toMany) {
+    let dStartLine;
+    let dPath;
 
-    const dPath = `M ${start.x} ${start.y} h ${-PATH_SELF_RELATION_LENGTH} V ${end.y} h ${PATH_SELF_RELATION_LENGTH}`;
+    if (oneTo) {
+      dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START} v ${PATH_START * 2}`;
+      dPath = `M ${start.x} ${start.y} h ${-PATH_SELF_RELATION_LENGTH} V ${end.y} h ${PATH_SELF_RELATION_LENGTH}`;
+    } else {
+      dStartLine = this._getCirclePath(start.x - PATH_START, start.y);
+      dPath = `M ${start.x - PATH_START * 2} ${start.y} h ${-PATH_SELF_RELATION_LENGTH + PATH_START * 2} V ${end.y} h ${PATH_SELF_RELATION_LENGTH}`;
+    }
 
-    const dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}` +
-      `M ${end.x} ${end.y} l ${-PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT}`;
+    let dArrow;
+    if (toMany) {
+      dArrow = `M ${end.x - PATH_ARROW_LENGTH} ${end.y} l ${PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}` +
+        `M ${end.x - PATH_ARROW_LENGTH} ${end.y} l ${PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT}`;
+    } else {
+      dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}` +
+        `M ${end.x} ${end.y} l ${-PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT}`;
+    }
 
     const d = dStartLine + dPath + dArrow;
 
     const path = this._createPath(d);
 
-    const highlight = this._createHighlightTrigger(dPath);
+    const highlight = this._createHighlightTrigger(d);
 
     return {
       path,
@@ -385,19 +393,32 @@ export default class Relation {
     };
   }
 
-  _getSelfRelationRight(start, end) {
-    const dStartLine = `M ${start.x + PATH_START} ${start.y - PATH_START} v ${PATH_START * 2}`;
+  _getSelfRelationRight(start, end, oneTo, toMany) {
+    let dStartLine;
+    let dPath;
 
-    const dPath = `M ${start.x} ${start.y} h ${PATH_SELF_RELATION_LENGTH} V ${end.y} h ${-PATH_SELF_RELATION_LENGTH}`;
+    if (oneTo) {
+      dStartLine = `M ${start.x + PATH_START} ${start.y - PATH_START} v ${PATH_START * 2}`;
+      dPath = `M ${start.x} ${start.y} h ${PATH_SELF_RELATION_LENGTH} V ${end.y} h ${-PATH_SELF_RELATION_LENGTH}`;
+    } else {
+      dStartLine = this._getCirclePath(start.x + PATH_START, start.y);
+      dPath = `M ${start.x + PATH_START * 2} ${start.y} h ${PATH_SELF_RELATION_LENGTH - PATH_START * 2} V ${end.y} h ${-PATH_SELF_RELATION_LENGTH}`;
+    }
 
-    const dArrow = `M ${end.x} ${end.y} l ${PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}` +
-      `M ${end.x} ${end.y} l ${PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT}`;
+    let dArrow;
+    if (toMany) {
+      dArrow = `M ${end.x + PATH_ARROW_LENGTH} ${end.y} l ${-PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}` +
+       `M ${end.x + PATH_ARROW_LENGTH} ${end.y} l ${-PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT}`;
+    } else {
+      dArrow = `M ${end.x} ${end.y} l ${PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}` +
+       `M ${end.x} ${end.y} l ${PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT}`;
+    }
 
     const d = dStartLine + dPath + dArrow;
 
     const path = this._createPath(d);
 
-    const highlight = this._createHighlightTrigger(dPath);
+    const highlight = this._createHighlightTrigger(d);
 
     return {
       path,
@@ -405,19 +426,32 @@ export default class Relation {
     };
   }
 
-  _getSelfRelationTop(start, end) {
-    const dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START} h ${PATH_START * 2}`;
+  _getSelfRelationTop(start, end, oneTo, toMany) {
+    let dStartLine;
+    let dPath;
 
-    const dPath = `M ${start.x} ${start.y} v ${-PATH_SELF_RELATION_LENGTH} H ${end.x} v ${PATH_SELF_RELATION_LENGTH}`;
+    if (oneTo) {
+      dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START} h ${PATH_START * 2}`;
+      dPath = `M ${start.x} ${start.y} v ${-PATH_SELF_RELATION_LENGTH} H ${end.x} v ${PATH_SELF_RELATION_LENGTH}`;
+    } else {
+      dStartLine = this._getCirclePath(start.x, start.y - PATH_START);
+      dPath = `M ${start.x} ${start.y - PATH_START * 2} v ${-PATH_SELF_RELATION_LENGTH + PATH_START * 2} H ${end.x} v ${PATH_SELF_RELATION_LENGTH}`;
+    }
 
-    const dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}` +
-      `M ${end.x} ${end.y} l ${PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}`;
+    let dArrow;
+    if (toMany) {
+      dArrow = `M ${end.x} ${end.y - PATH_ARROW_LENGTH} l ${-PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}` +
+        `M ${end.x} ${end.y - PATH_ARROW_LENGTH} l ${PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}`;
+    } else {
+      dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}` +
+        `M ${end.x} ${end.y} l ${PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}`;
+    }
 
     const d = dStartLine + dPath + dArrow;
 
     const path = this._createPath(d);
 
-    const highlight = this._createHighlightTrigger(dPath);
+    const highlight = this._createHighlightTrigger(d);
 
     return {
       path,
@@ -425,24 +459,41 @@ export default class Relation {
     };
   }
 
-  _getSelfRelationBottom(start, end) {
-    const dStartLine = `M ${start.x - PATH_START} ${start.y + PATH_START} h ${PATH_START * 2}`;
+  _getSelfRelationBottom(start, end, oneTo, toMany) {
+    let dStartLine;
+    let dPath;
+    if (oneTo) {
+      dPath = `M ${start.x} ${start.y} v ${PATH_SELF_RELATION_LENGTH} H ${end.x} v ${-PATH_SELF_RELATION_LENGTH}`;
+      dStartLine = `M ${start.x - PATH_START} ${start.y + PATH_START} h ${PATH_START * 2}`;
+    } else {
+      dStartLine = this._getCirclePath(start.x, start.y + PATH_START);
+      dPath = `M ${start.x} ${start.y + PATH_START * 2} v ${PATH_SELF_RELATION_LENGTH - PATH_START * 2} H ${end.x} v ${-PATH_SELF_RELATION_LENGTH}`;
+    }
 
-    const dPath = `M ${start.x} ${start.y} v ${PATH_SELF_RELATION_LENGTH} H ${end.x} v ${-PATH_SELF_RELATION_LENGTH}`;
-
-    const dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}` +
-      `M ${end.x} ${end.y} l ${PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}`;
+    let dArrow;
+    if (toMany) {
+      dArrow = `M ${end.x} ${end.y + PATH_ARROW_LENGTH} l ${-PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}` +
+        `M ${end.x} ${end.y + PATH_ARROW_LENGTH} l ${PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}`;
+    } else {
+      dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}` +
+        `M ${end.x} ${end.y} l ${PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}`;
+    }
 
     const d = dStartLine + dPath + dArrow;
 
     const path = this._createPath(d);
 
-    const highlight = this._createHighlightTrigger(dPath);
+    const highlight = this._createHighlightTrigger(d);
 
     return {
       path,
       highlight
     };
+  }
+
+  _getCirclePath(x, y) {
+    return `M ${x - PATH_START} ${y}` +
+          ` a 1,1 0 1,0 ${PATH_START * 2},0 a 1,1 0 1,0 ${-PATH_START * 2},0`;
   }
 
   removeHoverEffect() {
