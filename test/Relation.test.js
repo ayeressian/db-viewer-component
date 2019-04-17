@@ -55,7 +55,7 @@ describe('Relation', () => {
       const end = {x: 100, y: 500};
       it('Calls correct methods with correct arguments', () => {
         Relation.prototype._getSelfRelationLeft(start, end);
-        const argument = 'M 90 100 a 1,1 0 1,0 10,0 a 1,1 0 1,0 -10,0 M 90 100 h -30 V 500 h 40 M 100 500 l -9 -4 M 100 500 l -9 4';
+        const argument = 'M 90 100 a 1,1 0 1,0 10,0 a 1,1 0 1,0 -10,0 M 90 100 h -30 V 500 h 40 M 100 500 l -9 4 M 100 500 l -9 -4';
         expect(Relation.prototype._createPath).to.have.been.calledWith(argument);
         expect(Relation.prototype._createHighlightTrigger).to.have.been.calledWith(argument);
       });
@@ -64,7 +64,7 @@ describe('Relation', () => {
       const end = {x: 100, y: 500};
       it('Calls correct methods with correct arguments', () => {
         Relation.prototype._getSelfRelationRight(start, end);
-        const argument = 'M 100 100 a 1,1 0 1,0 10,0 a 1,1 0 1,0 -10,0 M 110 100 h 30 V 500 h -40 M 100 500 l 9 -4 M 100 500 l 9 4';
+        const argument = 'M 100 100 a 1,1 0 1,0 10,0 a 1,1 0 1,0 -10,0 M 110 100 h 30 V 500 h -40 M 100 500 l 9 4 M 100 500 l 9 -4';
         expect(Relation.prototype._createPath).to.have.been.calledWith(argument);
         expect(Relation.prototype._createHighlightTrigger).to.have.been.calledWith(argument);
       });
@@ -73,7 +73,7 @@ describe('Relation', () => {
       const end = {x: 500, y: 100};
       it('Calls correct methods with correct arguments', () => {
         Relation.prototype._getSelfRelationTop(start, end);
-        const argument = 'M 95 95 a 1,1 0 1,0 10,0 a 1,1 0 1,0 -10,0 M 100 90 v -30 H 500 v 40 M 500 100 l -4 -9 M 500 100 l 4 -9';
+        const argument = 'M 95 95 a 1,1 0 1,0 10,0 a 1,1 0 1,0 -10,0 M 100 90 v -30 H 500 v 40 M 500 100 l 4 -9 M 500 100 l -4 -9';
         expect(Relation.prototype._createPath).to.have.been.calledWith(argument);
         expect(Relation.prototype._createHighlightTrigger).to.have.been.calledWith(argument);
       });
@@ -82,7 +82,7 @@ describe('Relation', () => {
       const end = {x: 500, y: 100};
       it('Calls correct methods with correct arguments', () => {
         Relation.prototype._getSelfRelationBottom(start, end);
-        const argument = 'M 95 105 a 1,1 0 1,0 10,0 a 1,1 0 1,0 -10,0 M 100 110 v 30 H 500 v -40 M 500 100 l -4 9 M 500 100 l 4 9';
+        const argument = 'M 95 105 a 1,1 0 1,0 10,0 a 1,1 0 1,0 -10,0 M 100 110 v 30 H 500 v -40 M 500 100 l 4 9 M 500 100 l -4 9';
         expect(Relation.prototype._createPath).to.have.been.calledWith(argument);
         expect(Relation.prototype._createHighlightTrigger).to.have.been.calledWith(argument);
       });

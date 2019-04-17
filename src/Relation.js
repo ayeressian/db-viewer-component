@@ -351,7 +351,7 @@ export default class Relation {
       dPath = `M ${start.x} ${start.y + PATH_START * 2} v ${PATH_SELF_RELATION_LENGTH - PATH_START * 2} H ${end.x} v ${-PATH_SELF_RELATION_LENGTH}`;
     }
 
-    const dArrow = this._getArrow(end, toMany, 'up');
+    const dArrow = this._getArrow(end, toMany, 'top');
 
     const d = `${dStartLine} ${dPath} ${dArrow}`;
 
