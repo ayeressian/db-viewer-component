@@ -18,10 +18,8 @@
       "default": "centerByTables"
     },
     "tables": {
-      "$id": "#/properties/tables",
       "type": "array",
       "items": {
-        "$id": "#/properties/tables/items",
         "type": "object",
         "required": [
           "name",
@@ -47,6 +45,10 @@
               }, 
               {
                 "type": "object",
+                "required": [
+                  "x",
+                  "y"
+                ],
                 "properties": {
                   "x": {
                     "type": "integer",
@@ -63,17 +65,14 @@
             ]
           },
           "columns": {
-            "$id": "#/properties/tables/items/properties/columns",
             "type": "array",
             "items": {
-              "$id": "#/properties/tables/items/properties/columns/items",
               "type": "object",
               "required": [
                 "name"
               ],
               "properties": {
                 "name": {
-                  "$id": "#/properties/tables/items/properties/columns/items/properties/name",
                   "type": "string",
                   "examples": [
                     "id"
@@ -81,15 +80,39 @@
                   "pattern": "^(.*)$"
                 },
                 "pk": {
-                  "$id": "#/properties/tables/items/properties/columns/items/properties/pk",
                   "type": "boolean",
                   "default": false,
                   "examples": [
                     true
-                  ]
+                  ],
+                  "description": "pk stands for primary key"
+                },
+                "nn": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "nn stands for not null"
+                },
+                "uq": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "uq stands for unique"
+                },
+                "fk": {
+                  "type": "object",
+                  "required": [
+                    "table",
+                    "column"
+                  ],
+                  "properties": {
+                    "table": {
+                      "type": "string"
+                    },
+                    "column": {
+                      "type": "string"
+                    }
+                  }
                 },
                 "type": {
-                  "$id": "#/properties/tables/items/properties/columns/items/properties/type",
                   "type": "string",
                   "examples": [
                     "int"

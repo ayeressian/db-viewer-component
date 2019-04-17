@@ -374,14 +374,14 @@ export default class Relation {
 
     let dArrow;
     if (toMany) {
-      dArrow = `M ${end.x - PATH_ARROW_LENGTH} ${end.y} l ${PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}` +
+      dArrow = `M ${end.x - PATH_ARROW_LENGTH} ${end.y} l ${PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT} ` +
         `M ${end.x - PATH_ARROW_LENGTH} ${end.y} l ${PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT}`;
     } else {
-      dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}` +
+      dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT} ` +
         `M ${end.x} ${end.y} l ${-PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT}`;
     }
 
-    const d = dStartLine + dPath + dArrow;
+    const d = `${dStartLine} ${dPath} ${dArrow}`;
 
     const path = this._createPath(d);
 
@@ -407,14 +407,14 @@ export default class Relation {
 
     let dArrow;
     if (toMany) {
-      dArrow = `M ${end.x + PATH_ARROW_LENGTH} ${end.y} l ${-PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}` +
+      dArrow = `M ${end.x + PATH_ARROW_LENGTH} ${end.y} l ${-PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT} ` +
        `M ${end.x + PATH_ARROW_LENGTH} ${end.y} l ${-PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT}`;
     } else {
-      dArrow = `M ${end.x} ${end.y} l ${PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}` +
+      dArrow = `M ${end.x} ${end.y} l ${PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT} ` +
        `M ${end.x} ${end.y} l ${PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT}`;
     }
 
-    const d = dStartLine + dPath + dArrow;
+    const d = `${dStartLine} ${dPath} ${dArrow}`;
 
     const path = this._createPath(d);
 
@@ -440,14 +440,14 @@ export default class Relation {
 
     let dArrow;
     if (toMany) {
-      dArrow = `M ${end.x} ${end.y - PATH_ARROW_LENGTH} l ${-PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}` +
+      dArrow = `M ${end.x} ${end.y - PATH_ARROW_LENGTH} l ${-PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH} ` +
         `M ${end.x} ${end.y - PATH_ARROW_LENGTH} l ${PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}`;
     } else {
-      dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}` +
+      dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH} ` +
         `M ${end.x} ${end.y} l ${PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}`;
     }
 
-    const d = dStartLine + dPath + dArrow;
+    const d = `${dStartLine} ${dPath} ${dArrow}`;
 
     const path = this._createPath(d);
 
@@ -472,14 +472,14 @@ export default class Relation {
 
     let dArrow;
     if (toMany) {
-      dArrow = `M ${end.x} ${end.y + PATH_ARROW_LENGTH} l ${-PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}` +
+      dArrow = `M ${end.x} ${end.y + PATH_ARROW_LENGTH} l ${-PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH} ` +
         `M ${end.x} ${end.y + PATH_ARROW_LENGTH} l ${PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}`;
     } else {
-      dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}` +
+      dArrow = `M ${end.x} ${end.y} l ${-PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH} ` +
         `M ${end.x} ${end.y} l ${PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}`;
     }
 
-    const d = dStartLine + dPath + dArrow;
+    const d = `${dStartLine} ${dPath} ${dArrow}`;
 
     const path = this._createPath(d);
 
