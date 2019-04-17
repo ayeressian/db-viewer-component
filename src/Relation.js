@@ -75,6 +75,33 @@ export default class Relation {
     };
   }
 
+  _arrowFlat(start, end, toMany, dArrow1, dArrow2) {
+    if (toMany) {
+      if (start.x > end.x) {
+        dArrow1 = `M ${end.x + PATH_ARROW_LENGTH} ${end.y} l ${-PATH_ARROW_LENGTH} `;
+        dArrow2 = `M ${end.x + PATH_ARROW_LENGTH} ${end.y} l ${-PATH_ARROW_LENGTH} `;
+      } else {
+        dArrow1 = `M ${end.x - PATH_ARROW_LENGTH} ${end.y} l ${PATH_ARROW_LENGTH} `;
+        dArrow2 = `M ${end.x - PATH_ARROW_LENGTH} ${end.y} l ${PATH_ARROW_LENGTH} `;
+      }
+    } else {
+      if (start.x > end.x) {
+        dArrow1 += `l ${PATH_ARROW_LENGTH} `;
+        dArrow2 += `l ${PATH_ARROW_LENGTH} `;
+      } else {
+        dArrow1 += `l ${-PATH_ARROW_LENGTH} `;
+        dArrow2 += `l ${-PATH_ARROW_LENGTH} `;
+      }
+    }
+
+    dArrow1 += PATH_ARROW_HEIGHT;
+    dArrow2 += -PATH_ARROW_HEIGHT;
+
+    return {
+      dArrow1, dArrow2
+    };
+  }
+
   _get2LinePathFlatTop(start, end, oneTo, toMany) {
     let dArrow1;
     let dArrow2;
@@ -98,26 +125,9 @@ export default class Relation {
       }
       dPath += ` V ${end.y} H ${end.x}`;
 
-      if (toMany) {
-        if (start.x > end.x) {
-          dArrow1 = `M ${end.x + PATH_ARROW_LENGTH} ${end.y} l ${-PATH_ARROW_LENGTH} `;
-          dArrow2 = `M ${end.x + PATH_ARROW_LENGTH} ${end.y} l ${-PATH_ARROW_LENGTH} `;
-        } else {
-          dArrow1 = `M ${end.x - PATH_ARROW_LENGTH} ${end.y} l ${PATH_ARROW_LENGTH} `;
-          dArrow2 = `M ${end.x - PATH_ARROW_LENGTH} ${end.y} l ${PATH_ARROW_LENGTH} `;
-        }
-      } else {
-        if (start.x > end.x) {
-          dArrow1 += `l ${PATH_ARROW_LENGTH} `;
-          dArrow2 += `l ${PATH_ARROW_LENGTH} `;
-        } else {
-          dArrow1 += `l ${-PATH_ARROW_LENGTH} `;
-          dArrow2 += `l ${-PATH_ARROW_LENGTH} `;
-        }
-      }
-
-      dArrow1 += PATH_ARROW_HEIGHT;
-      dArrow2 += -PATH_ARROW_HEIGHT;
+      const arrowResult = this._arrowFlat(start, end, toMany, dArrow1, dArrow2);
+      dArrow1 = arrowResult.dArrow1;
+      dArrow2 = arrowResult.dArrow2;
     } else {
       if (toMany) {
         dArrow1 = `M ${end.x} ${end.y - PATH_ARROW_LENGTH} l ${PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH} `;
@@ -207,26 +217,9 @@ export default class Relation {
         dPath = `M ${start.x} ${start.y + PATH_START * 2} V ${end.y} H ${end.x}`;
       }
 
-      if (toMany) {
-        if (start.x > end.x) {
-          dArrow1 = `M ${end.x + PATH_ARROW_LENGTH} ${end.y} l ${-PATH_ARROW_LENGTH} `;
-          dArrow2 = `M ${end.x + PATH_ARROW_LENGTH} ${end.y} l ${-PATH_ARROW_LENGTH} `;
-        } else {
-          dArrow1 = `M ${end.x - PATH_ARROW_LENGTH} ${end.y} l ${PATH_ARROW_LENGTH} `;
-          dArrow2 = `M ${end.x - PATH_ARROW_LENGTH} ${end.y} l ${PATH_ARROW_LENGTH} `;
-        }
-      } else {
-        if (start.x > end.x) {
-          dArrow1 += `l ${PATH_ARROW_LENGTH} `;
-          dArrow2 += `l ${PATH_ARROW_LENGTH} `;
-        } else {
-          dArrow1 += `l ${-PATH_ARROW_LENGTH} `;
-          dArrow2 += `l ${-PATH_ARROW_LENGTH} `;
-        }
-      }
-
-      dArrow1 += PATH_ARROW_HEIGHT;
-      dArrow2 += -PATH_ARROW_HEIGHT;
+      const arrowResult = this._arrowFlat(start, end, toMany, dArrow1, dArrow2);
+      dArrow1 = arrowResult.dArrow1;
+      dArrow2 = arrowResult.dArrow2;
     }
 
     const d = `${dStartLine} ${dPath} ${dArrow1} ${dArrow2}`;
@@ -580,7 +573,6 @@ export default class Relation {
       case constant.PATH_RIGHT:
         {
           const start = this._getRightSidePathCord(fromTableSides, this.fromPathIndex, this.fromPathCount);
-
           switch (this.toTablePathSide) {
             case constant.PATH_LEFT:
               {
@@ -747,41 +739,30 @@ export default class Relation {
     return [this.pathElem, this.highlightTrigger];
   }
 
-  static ySort(arr, table) {
+  static _sort(arr, table, axis) {
     arr.sort((r1, r2) => {
       if (r1.fromIntersectPoint == null || r2.fromIntersectPoint == null) {
         return -1;
       }
       if (r1.fromTable === table) {
         if (r2.fromTable === table) {
-          return r1.fromIntersectPoint.y - r2.fromIntersectPoint.y;
+          return r1.fromIntersectPoint[axis] - r2.fromIntersectPoint[axis];
         }
-        return r1.fromIntersectPoint.y - r2.toIntersectPoint.y;
+        return r1.fromIntersectPoint[axis] - r2.toIntersectPoint[axis];
       } else {
         if (r2.fromTable === table) {
-          return r1.toIntersectPoint.y - r2.fromIntersectPoint.y;
+          return r1.toIntersectPoint[axis] - r2.fromIntersectPoint[axis];
         }
-        return r1.toIntersectPoint.y - r2.toIntersectPoint.y;
+        return r1.toIntersectPoint[axis] - r2.toIntersectPoint[axis];
       }
     });
   }
 
+  static ySort(arr, table) {
+    return Relation._sort(arr, table, 'y');
+  }
+
   static xSort(arr, table) {
-    arr.sort((r1, r2) => {
-      if (r1.fromIntersectPoint == null || r2.fromIntersectPoint == null) {
-        return -1;
-      }
-      if (r1.fromTable === table) {
-        if (r2.fromTable === table) {
-          return r1.fromIntersectPoint.x - r2.fromIntersectPoint.x;
-        }
-        return r1.fromIntersectPoint.x - r2.toIntersectPoint.x;
-      } else {
-        if (r2.fromTable === table) {
-          return r1.toIntersectPoint.x - r2.fromIntersectPoint.x;
-        }
-        return r1.toIntersectPoint.x - r2.toIntersectPoint.x;
-      }
-    });
+    return Relation._sort(arr, table, 'x');
   }
 }
