@@ -48,8 +48,8 @@
             "table": "school",
             "column": "id"
           },
-          "nn": true,
-          "uq": true
+          "nn": false,
+          "uq": false
         }
       ]
     }

@@ -235,24 +235,12 @@ export default class Relation {
   }
 
   _get3LinePathHoriz(start, end, oneTo, toMany) {
-    let dArrow1;
-    let dArrow2;
-    if (!toMany) {
-      dArrow1 = `M ${end.x} ${end.y} `;
-      dArrow2 = dArrow1;
-    }
-
     let dStartLine;
     let dPath;
     const p2X = start.x + (end.x - start.x) / 2;
+    let arrow;
     if (start.x > end.x) {
-      if (toMany) {
-        dArrow1 = dArrow2 = `M ${end.x + PATH_ARROW_LENGTH} ${end.y} l ${-PATH_ARROW_LENGTH} `;
-      } else {
-        dArrow1 += `l ${PATH_ARROW_LENGTH} `;
-        dArrow2 += `l ${PATH_ARROW_LENGTH} `;
-      }
-
+      arrow = this._getArrow(end.x, end.y, toMany, 'left');
       dPath = `M ${start.x} ${start.y}`;
       if (oneTo) {
         dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START} v ${2* PATH_START}`;
@@ -262,13 +250,7 @@ export default class Relation {
         dPath += `m ${-PATH_START * 2} 0 H ${p2X}`;
       }
     } else {
-      if (toMany) {
-        dArrow1 = dArrow2 = `M ${end.x - PATH_ARROW_LENGTH} ${end.y} l ${PATH_ARROW_LENGTH} `;
-      } else {
-        dArrow1 += `l ${-PATH_ARROW_LENGTH} `;
-        dArrow2 += `l ${-PATH_ARROW_LENGTH} `;
-      }
-
+      arrow = this._getArrow(end.x, end.y, toMany, 'right');
       dPath = `M ${start.x} ${start.y} `;
       if (oneTo) {
         dStartLine = `M ${start.x + PATH_START} ${start.y - PATH_START} v ${2* PATH_START}`;
@@ -281,10 +263,7 @@ export default class Relation {
 
     dPath += `V ${end.y} H ${end.x}`;
 
-    dArrow1 += PATH_ARROW_HEIGHT;
-    dArrow2 += -PATH_ARROW_HEIGHT;
-
-    const d = `${dStartLine} ${dPath} ${dArrow1} ${dArrow2}`;
+    const d = `${dStartLine} ${dPath} ${arrow}`;
     const path = this._createPath(d);
 
     const highlight = this._createHighlightTrigger(d);
@@ -296,26 +275,13 @@ export default class Relation {
   }
 
   _get3LinePathVert(start, end, oneTo, toMany) {
-    let dArrow1;
-    let dArrow2;
-    if (!toMany) {
-      dArrow1 = `M ${end.x} ${end.y} l ${PATH_ARROW_HEIGHT} `;
-      dArrow2 = `M ${end.x} ${end.y} l ${-PATH_ARROW_HEIGHT} `;
-    }
-
     let dStartLine = `M ${start.x - PATH_START} `;
 
     let dPath;
     const p2Y = start.y + (end.y - start.y) / 2;
+    let arrow;
     if (start.y > end.y) {
-      if (toMany) {
-        dArrow1 = `M ${end.x} ${end.y + PATH_ARROW_LENGTH} l ${PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH} `;
-        dArrow2 = `M ${end.x} ${end.y + PATH_ARROW_LENGTH} l ${-PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH} `;
-      } else {
-        dArrow1 += PATH_ARROW_LENGTH;
-        dArrow2 += PATH_ARROW_LENGTH;
-      }
-
+      arrow = this._getArrow(end.x, end.y, toMany, 'up');
       if (oneTo) {
         dStartLine += `${start.y - PATH_START} h ${2* PATH_START}`;
         dPath = `M ${start.x} ${start.y} V ${p2Y} H ${end.x} V ${end.y}`;
@@ -324,14 +290,7 @@ export default class Relation {
         dPath = `M ${start.x} ${start.y - PATH_START * 2} V ${p2Y} H ${end.x} V ${end.y}`;
       }
     } else {
-      if (toMany) {
-        dArrow1 = `M ${end.x} ${end.y - PATH_ARROW_LENGTH} l ${PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH} `;
-        dArrow2 = `M ${end.x} ${end.y - PATH_ARROW_LENGTH} l ${-PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH} `;
-      } else {
-        dArrow1 += -PATH_ARROW_LENGTH;
-        dArrow2 += -PATH_ARROW_LENGTH;
-      }
-
+      arrow = this._getArrow(end.x, end.y, toMany, 'bottom');
       dStartLine += `${start.y + PATH_START} h ${2* PATH_START}`;
       if (oneTo) {
         dPath = `M ${start.x} ${start.y} V ${p2Y} H ${end.x} V ${end.y}`;
@@ -341,7 +300,7 @@ export default class Relation {
       }
     }
 
-    const d = `${dStartLine} ${dPath} ${dArrow1} ${dArrow2}`;
+    const d = `${dStartLine} ${dPath} ${arrow}`;
 
     const path = this._createPath(d);
 
@@ -487,6 +446,43 @@ export default class Relation {
   _getCirclePath(x, y) {
     return `M ${x - PATH_START} ${y}` +
           ` a 1,1 0 1,0 ${PATH_START * 2},0 a 1,1 0 1,0 ${-PATH_START * 2},0`;
+  }
+
+  _getArrow(x, y, toMany, orientation) {
+    switch (orientation) {
+      case 'top':
+      if (toMany) {
+        return `M ${x} ${y + PATH_ARROW_LENGTH} l ${PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH} ` +
+          `M ${x} ${y + PATH_ARROW_LENGTH} l ${-PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}`;
+      } else {
+        return `M ${x} ${y} l ${PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH} ` +
+          `M ${x} ${y} l ${-PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}`;
+      }
+      case 'bottom':
+      if (toMany) {
+        return `M ${x} ${y - PATH_ARROW_LENGTH} l ${PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH} ` +
+          `M ${x} ${y - PATH_ARROW_LENGTH} l ${-PATH_ARROW_HEIGHT} ${PATH_ARROW_LENGTH}`;
+      } else {
+        return `M ${x} ${y} l ${PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH} ` +
+          `M ${x} ${y} l ${-PATH_ARROW_HEIGHT} ${-PATH_ARROW_LENGTH}`;
+      }
+      case 'left':
+      if (toMany) {
+        return `M ${x + PATH_ARROW_LENGTH} ${y} l ${-PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT} ` +
+          `M ${x + PATH_ARROW_LENGTH} ${y} l ${-PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}`;
+      } else {
+        return `M ${x} ${y} l ${PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT} ` +
+          `M ${x} ${y} l ${PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}`;
+      }
+      case 'right':
+      if (toMany) {
+        return `M ${x - PATH_ARROW_LENGTH} ${y} l ${PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT} ` +
+          `M ${x - PATH_ARROW_LENGTH} ${y} l ${PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}`;
+      } else {
+        return `M ${x} ${y} l ${-PATH_ARROW_LENGTH} ${PATH_ARROW_HEIGHT} ` +
+          `M ${x} ${y} l ${-PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}`;
+      }
+    }
   }
 
   removeHoverEffect() {
