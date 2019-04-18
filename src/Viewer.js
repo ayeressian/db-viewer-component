@@ -126,7 +126,7 @@ export default class Viewer {
     this._callbacks.tableMoveEnd(table.data());
   }
 
-  _updatePideIndex(relations, side, sidesAndCount, table) {
+  _updatePathIndex(relations, side, sidesAndCount, table) {
     let pathIndex = 0;
     relations.forEach((relation) => {
       const count = sidesAndCount.find((item) => item.side === side).count;
@@ -233,10 +233,10 @@ export default class Viewer {
         minPathSideCount.count += 2;
       });
 
-      this._updatePideIndex(leftRelations, 'left', sidesAndCount, table);
-      this._updatePideIndex(leftRelations, 'right', sidesAndCount, table);
-      this._updatePideIndex(leftRelations, 'top', sidesAndCount, table);
-      this._updatePideIndex(leftRelations, 'bottom', sidesAndCount, table);
+      this._updatePathIndex(leftRelations, 'left', sidesAndCount, table);
+      this._updatePathIndex(rightRelations, 'right', sidesAndCount, table);
+      this._updatePathIndex(topRelations, 'top', sidesAndCount, table);
+      this._updatePathIndex(bottomRelations, 'bottom', sidesAndCount, table);
     });
 
     this._relationInfos.forEach((relation) => {
