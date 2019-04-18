@@ -39,29 +39,40 @@ export default class Relation {
     return (pathIndex + 1) * (sideLength / (pathCount + 1));
   }
 
-  _getPathCord(tableSides, pathIndex, pathCount, side) {
-    const sideLength = tableSides[side].p2.y - tableSides[side].p1.y;
+  _getLeftSidePathCord(tableSides, pathIndex, pathCount) {
+    const sideLength = tableSides.left.p2.y - tableSides.left.p1.y;
     const posOnLine = this._getPosOnLine(pathIndex, pathCount, sideLength);
     return {
-      y: tableSides[side].p1.y + posOnLine,
-      x: tableSides[side].left.p1.x
+      y: tableSides.left.p1.y + posOnLine,
+      x: tableSides.left.p1.x
     };
   }
 
-  _getLeftSidePathCord(tableSides, pathIndex, pathCount) {
-    return this._getPathCord(tableSides, pathIndex, pathCount, 'left');
-  }
-
   _getRightSidePathCord(tableSides, pathIndex, pathCount) {
-    return this._getPathCord(tableSides, pathIndex, pathCount, 'right');
+    const sideLength = tableSides.right.p2.y - tableSides.right.p1.y;
+    const posOnLine = this._getPosOnLine(pathIndex, pathCount, sideLength);
+    return {
+      y: tableSides.right.p1.y + posOnLine,
+      x: tableSides.right.p1.x
+    };
   }
 
   _getTopSidePathCord(tableSides, pathIndex, pathCount) {
-    return this._getPathCord(tableSides, pathIndex, pathCount, 'top');
+    const sideLength = tableSides.top.p2.x - tableSides.top.p1.x;
+    const posOnLine = this._getPosOnLine(pathIndex, pathCount, sideLength);
+    return {
+      y: tableSides.top.p1.y,
+      x: tableSides.top.p1.x + posOnLine
+    };
   }
 
   _getBottomSidePathCord(tableSides, pathIndex, pathCount) {
-    return this._getPathCord(tableSides, pathIndex, pathCount, 'bottom');
+    const sideLength = tableSides.bottom.p2.x - tableSides.bottom.p1.x;
+    const posOnLine = this._getPosOnLine(pathIndex, pathCount, sideLength);
+    return {
+      y: tableSides.bottom.p1.y,
+      x: tableSides.bottom.p1.x + posOnLine
+    };
   }
 
   _get2LinePathFlatTop(start, end, oneTo, toMany) {
