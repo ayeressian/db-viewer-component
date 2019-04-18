@@ -126,6 +126,29 @@ export default class Viewer {
     this._callbacks.tableMoveEnd(table.data());
   }
 
+  _updatePideIndex(relations, side, sidesAndCount, table) {
+    let pathIndex = 0;
+    relations.forEach((relation) => {
+      const count = sidesAndCount.find((item) => item.side === side).count;
+      if (relation.fromTable !== relation.toTable) {
+        if (relation.fromTable === table) {
+          relation.fromPathIndex = pathIndex;
+          relation.fromPathCount = count;
+        } else {
+          relation.toPathIndex = pathIndex;
+          relation.toPathCount = count;
+        }
+        pathIndex++;
+      } else {
+        relation.fromPathCount = count;
+        relation.toPathCount = count;
+        relation.fromPathIndex = pathIndex;
+        relation.toPathIndex = pathIndex + 1;
+        pathIndex += 2;
+      }
+    });
+  }
+
   _drawRelations() {
     this.tables.forEach((table) => {
       const tableRelations = this._getTableRelations(table);
@@ -210,89 +233,10 @@ export default class Viewer {
         minPathSideCount.count += 2;
       });
 
-      let pathIndex = 0;
-      leftRelations.forEach((relation) => {
-        const count = sidesAndCount.find((item) => item.side === 'left').count;
-        if (relation.fromTable !== relation.toTable) {
-          if (relation.fromTable === table) {
-            relation.fromPathIndex = pathIndex;
-            relation.fromPathCount = count;
-          } else {
-            relation.toPathIndex = pathIndex;
-            relation.toPathCount = count;
-          }
-          pathIndex++;
-        } else {
-          relation.fromPathCount = count;
-          relation.toPathCount = count;
-          relation.fromPathIndex = pathIndex;
-          relation.toPathIndex = pathIndex + 1;
-          pathIndex += 2;
-        }
-      });
-
-      pathIndex = 0;
-      rightRelations.forEach((relation) => {
-        const count = sidesAndCount.find((item) => item.side === 'right').count;
-        if (relation.fromTable !== relation.toTable) {
-          if (relation.fromTable === table) {
-            relation.fromPathIndex = pathIndex;
-            relation.fromPathCount = count;
-          } else {
-            relation.toPathIndex = pathIndex;
-            relation.toPathCount = count;
-          }
-          pathIndex++;
-        } else {
-          relation.fromPathCount = count;
-          relation.toPathCount = count;
-          relation.fromPathIndex = pathIndex;
-          relation.toPathIndex = pathIndex + 1;
-          pathIndex += 2;
-        }
-      });
-
-      pathIndex = 0;
-      topRelations.forEach((relation) => {
-        const count = sidesAndCount.find((item) => item.side === 'top').count;
-        if (relation.fromTable !== relation.toTable) {
-          if (relation.fromTable === table) {
-            relation.fromPathIndex = pathIndex;
-            relation.fromPathCount = count;
-          } else {
-            relation.toPathIndex = pathIndex;
-            relation.toPathCount = count;
-          }
-          pathIndex++;
-        } else {
-          relation.fromPathCount = count;
-          relation.toPathCount = count;
-          relation.fromPathIndex = pathIndex;
-          relation.toPathIndex = pathIndex + 1;
-          pathIndex += 2;
-        }
-      });
-
-      pathIndex = 0;
-      bottomRelations.forEach((relation) => {
-        const count = sidesAndCount.find((item) => item.side === 'bottom').count;
-        if (relation.fromTable !== relation.toTable) {
-          if (relation.fromTable === table) {
-            relation.fromPathIndex = pathIndex;
-            relation.fromPathCount = count;
-          } else {
-            relation.toPathIndex = pathIndex;
-            relation.toPathCount = count;
-          }
-          pathIndex++;
-        } else {
-          relation.fromPathCount = count;
-          relation.toPathCount = count;
-          relation.fromPathIndex = pathIndex;
-          relation.toPathIndex = pathIndex + 1;
-          pathIndex += 2;
-        }
-      });
+      this._updatePideIndex(leftRelations, 'left', sidesAndCount, table);
+      this._updatePideIndex(leftRelations, 'right', sidesAndCount, table);
+      this._updatePideIndex(leftRelations, 'top', sidesAndCount, table);
+      this._updatePideIndex(leftRelations, 'bottom', sidesAndCount, table);
     });
 
     this._relationInfos.forEach((relation) => {
