@@ -452,140 +452,112 @@ export default class Relation {
     const fromTableSides = this.fromTable.getSides();
     const toTableSides = this.toTable.getSides();
 
-    let result;
-
     const toMany = !this.fromColumn.uq;
+
+    let startMethod;
+    let endMethod;
+    let resultMethod;
 
     switch (this.fromTablePathSide) {
       case constant.PATH_LEFT:
         {
-          const start = this._getLeftSidePathCord(fromTableSides, this.fromPathIndex, this.fromPathCount);
+          startMethod = this._getLeftSidePathCord;
           switch (this.toTablePathSide) {
             case constant.PATH_LEFT:
-              {
-                const end = this._getLeftSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._getSelfRelationLeft(start, end, this.fromColumn.nn, toMany);
-              }
+              endMethod = this._getLeftSidePathCord;
+              resultMethod = this._getSelfRelationLeft;
               break;
             case constant.PATH_RIGHT:
-              {
-                const end = this._getRightSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get3LinePathHoriz(start, end, this.fromColumn.nn, toMany);
-              }
+              endMethod = this._getRightSidePathCord;
+              resultMethod = this._get3LinePathHoriz;
               break;
             case constant.PATH_TOP:
-              {
-                const end = this._getTopSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get2LinePathFlatTop(start, end, this.fromColumn.nn, toMany);
-              }
+              endMethod = this._getTopSidePathCord;
+              resultMethod = this._get2LinePathFlatTop;
               break;
             case constant.PATH_BOTTOM:
-              {
-                const end = this._getBottomSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get2LinePathFlatBottom(start, end, this.fromColumn.nn, toMany);
-              }
+              endMethod = this._getBottomSidePathCord;
+              resultMethod = this._get2LinePathFlatBottom;
               break;
           }
         }
         break;
       case constant.PATH_RIGHT:
         {
-          const start = this._getRightSidePathCord(fromTableSides, this.fromPathIndex, this.fromPathCount);
+          startMethod = this._getRightSidePathCord;
           switch (this.toTablePathSide) {
             case constant.PATH_LEFT:
-              {
-                const end = this._getLeftSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get3LinePathHoriz(start, end, this.fromColumn.nn, toMany);
-              }
+              endMethod = this._getLeftSidePathCord;
+              resultMethod = this._get3LinePathHoriz;
               break;
             case constant.PATH_RIGHT:
-              {
-                const end = this._getRightSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._getSelfRelationRight(start, end, this.fromColumn.nn, toMany);
-              }
+              endMethod = this._getRightSidePathCord;
+              resultMethod = this._getSelfRelationRight;
               break;
             case constant.PATH_TOP:
-              {
-                const end = this._getTopSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get2LinePathFlatTop(start, end, this.fromColumn.nn, toMany);
-              }
+              endMethod = this._getTopSidePathCord;
+              resultMethod = this._get2LinePathFlatTop;
               break;
             case constant.PATH_BOTTOM:
-              {
-                const end = this._getBottomSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get2LinePathFlatBottom(start, end, this.fromColumn.nn, toMany);
-              }
+              endMethod = this._getBottomSidePathCord;
+              resultMethod = this._get2LinePathFlatBottom;
               break;
           }
         }
         break;
       case constant.PATH_TOP:
         {
-          const start = this._getTopSidePathCord(fromTableSides, this.fromPathIndex, this.fromPathCount);
-
+          startMethod = this._getTopSidePathCord;
           switch (this.toTablePathSide) {
             case constant.PATH_LEFT:
-              {
-                const end = this._getLeftSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get2LinePathFlatTop(start, end, this.fromColumn.nn, toMany);
-              }
+              endMethod = this._getLeftSidePathCord;
+              resultMethod = this._get2LinePathFlatTop;
               break;
             case constant.PATH_RIGHT:
-              {
-                const end = this._getRightSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get2LinePathFlatTop(start, end, this.fromColumn.nn, toMany);
-              }
+              endMethod = this._getRightSidePathCord;
+              resultMethod = this._get2LinePathFlatTop;
               break;
             case constant.PATH_TOP:
-              {
-                const end = this._getTopSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._getSelfRelationTop(start, end, this.fromColumn.nn, toMany);
-              }
+              endMethod = this._getTopSidePathCord;
+              resultMethod = this._getSelfRelationTop;
               break;
             case constant.PATH_BOTTOM:
-              {
-                const end = this._getBottomSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get3LinePathVert(start, end, this.fromColumn.nn, toMany);
-              }
+              endMethod = this._getBottomSidePathCord;
+              resultMethod = this._get3LinePathVert;
               break;
           }
         }
         break;
       case constant.PATH_BOTTOM:
         {
-          const start = this._getBottomSidePathCord(fromTableSides, this.fromPathIndex, this.fromPathCount);
-
+          startMethod = this._getBottomSidePathCord;
           switch (this.toTablePathSide) {
             case constant.PATH_LEFT:
-              {
-                const end = this._getLeftSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get2LinePathFlatBottom(start, end, this.fromColumn.nn, toMany);
-              }
+              endMethod = this._getLeftSidePathCord;
+              resultMethod = this._get2LinePathFlatBottom;
               break;
             case constant.PATH_RIGHT:
-              {
-                const end = this._getRightSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get2LinePathFlatBottom(start, end, this.fromColumn.nn, toMany);
-              }
+              endMethod = this._getRightSidePathCord;
+              resultMethod = this._get2LinePathFlatBottom;
               break;
             case constant.PATH_TOP:
-              {
-                const end = this._getTopSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._get3LinePathVert(start, end, this.fromColumn.nn, toMany);
-              }
+              endMethod = this._getTopSidePathCord;
+              resultMethod = this._get3LinePathVert;
               break;
             case constant.PATH_BOTTOM:
-              {
-                const end = this._getBottomSidePathCord(toTableSides, this.toPathIndex, this.toPathCount);
-                result = this._getSelfRelationBottom(start, end, this.fromColumn.nn, toMany);
-              }
+              endMethod = this._getBottomSidePathCord;
+              resultMethod = this._getSelfRelationBottom;
               break;
           }
         }
         break;
     }
+
     // In case of tables overlapping there won't be any result
-    if (result) {
+    if (startMethod && endMethod) {
+      const start = startMethod.call(this, fromTableSides, this.fromPathIndex, this.fromPathCount);
+      const end = endMethod.call(this, toTableSides, this.toPathIndex, this.toPathCount);
+      const result = resultMethod.call(this, start, end, this.fromColumn.nn, toMany);
       this._setElems(result.path, result.highlight);
     }
     if (!this.pathElem) return [];
