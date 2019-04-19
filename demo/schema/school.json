@@ -48,7 +48,8 @@
             "table": "school",
             "column": "id"
           },
-          "nn": false
+          "nn": true,
+          "uq": false
         }
       ]
     },
@@ -81,32 +82,11 @@
           "fk": {
             "table": "class",
             "column": "id"
-          }
+          },
+          "nn": true
         },
         {
           "name": "friend",
-          "fk": {
-            "table": "student",
-            "column": "id"
-          }
-        },
-        {
-          "name": "friend1",
-          "fk": {
-            "table": "student",
-            "column": "id"
-          }
-        },
-        {
-          "name": "friend2",
-          ,
-          "fk": {
-            "table": "student",
-            "column": "id"
-          }
-        },
-        {
-          "name": "friend3",
           "fk": {
             "table": "student",
             "column": "id"
