@@ -14,12 +14,10 @@ export default class Relation {
     fromPathCount,
     fromPathIndex,
     fromTable,
-    fromTablePathSide,
     toColumn,
     toPathCount,
     toPathIndex,
     toTable,
-    toTablePathSide,
   }) {
     this.fromColumn = fromColumn;
     this.fromPathCount = fromPathCount;
