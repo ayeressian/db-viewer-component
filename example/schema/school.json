@@ -48,8 +48,49 @@
             "table": "school",
             "column": "id"
           },
-          "nn": false,
+          "nn": true,
           "uq": false
+        }
+      ]
+    },
+    {
+      "name": "student",
+      "pos": {
+        "x": 1271,
+        "y": 1407
+      },
+      "columns": [
+        {
+          "name": "id",
+          "pk": true,
+          "type": "int"
+        },
+        {
+          "name": "firstname",
+          "type": "string"
+        },
+        {
+          "name": "lastname",
+          "type": "string"
+        },
+        {
+          "name": "age",
+          "type": "int"
+        },
+        {
+          "name": "class_id",
+          "fk": {
+            "table": "class",
+            "column": "id"
+          },
+          "nn": true
+        },
+        {
+          "name": "friend",
+          "fk": {
+            "table": "student",
+            "column": "id"
+          }
         }
       ]
     }
