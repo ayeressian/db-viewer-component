@@ -144,7 +144,7 @@ export default class Relation {
           dStartLine = `M ${start.x + PATH_START} `;
         }
         dStartLine += `${start.y - PATH_START} v ${PATH_START * 2}`;
-        dPath = `M ${start.x} ${start.y} V ${end.y} H ${end.x}`;
+        dPath = `M ${start.x} ${start.y} H ${end.x} V ${end.y}`;
       } else { // zero to
         if (start.x > end.x) {
           dStartLine = this._getCirclePath(start.x - PATH_START, start.y);
