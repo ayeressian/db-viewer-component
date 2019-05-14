@@ -1,3 +1,7 @@
+![npm](https://img.shields.io/npm/dt/db-viewer-component.svg)
+![NPM](https://img.shields.io/npm/l/db-viewer-component.svg)
+![npm](https://img.shields.io/npm/v/db-viewer-component.svg)
+
 # db-viewer-component
 
 Implementation of database viewer web component.
