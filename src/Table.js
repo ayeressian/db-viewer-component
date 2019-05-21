@@ -55,12 +55,11 @@ export default class Table {
   _notAllowOutOfBound(x, y) {
     if (x < 0) x = 0;
     if (y < 0) y = 0;
-    const boundingRect = this._table.getBoundingClientRect();
-    if (x + boundingRect.width / this._veiwer.getZoom() > constant.VIEWER_PAN_WIDTH) {
-      x = constant.VIEWER_PAN_WIDTH - boundingRect.width / this._veiwer.getZoom();
+    if (x + this._table.offsetWidth > constant.VIEWER_PAN_WIDTH) {
+      x = constant.VIEWER_PAN_WIDTH - this._table.offsetWidth;
     }
-    if (y + boundingRect.height / this._veiwer.getZoom() > constant.VIEWER_PAN_HEIGHT) {
-      y = constant.VIEWER_PAN_HEIGHT - boundingRect.height / this._veiwer.getZoom();
+    if (y + this._table.offsetHeight > constant.VIEWER_PAN_HEIGHT) {
+      y = constant.VIEWER_PAN_HEIGHT - this._table.offsetHeight;
     }
     return {x, y};
   }
@@ -87,6 +86,9 @@ export default class Table {
       if (event.button === 0 && this._disableMovement === false) {
         this._table.classList.add('move');
         const boundingRect = this._table.getBoundingClientRect();
+        const bbox = this._elem.getBBox();
+        console.log(boundingRect.left, 'HHHHHHHH');
+        console.log(bbox.x, 'HHHHHHHH');
         mouseDownInitialElemX = (event.clientX - boundingRect.left) / this._veiwer.getZoom();
         mouseDownInitialElemY = (event.clientY - boundingRect.top) / this._veiwer.getZoom();
 
@@ -139,62 +141,67 @@ export default class Table {
   }
 
   getCenter() {
-    const veiwerCords = this._veiwer.getCords();
-    const boundingRect = this._table.getBoundingClientRect();
+    const bbox = this._elem.getBBox();
 
-    const x = this._normalizeX(boundingRect.left - veiwerCords.x) + to3FixedNumber(boundingRect.width / this._veiwer.getZoom()) / 2;
-    const y = this._normalizeY(boundingRect.top - veiwerCords.y) + to3FixedNumber(boundingRect.height / this._veiwer.getZoom()) / 2;
-    return {
+    const x = bbox.x + this._table.offsetWidth / 2;
+    const y = bbox.y + this._table.offsetHeight / 2;
+    const a = {
       x,
       y,
     };
+    // console.log(a, 'center', this._table);
+    return a;
   }
 
   getSides() {
-    const veiwerCords = this._veiwer.getCords();
-    const boundingRect = this._table.getBoundingClientRect();
-    return {
+    const bbox = this._elem.getBBox();
+
+    const a = {
       right: {
         p1: {
-          x: this._normalizeX(boundingRect.right - veiwerCords.x),
-          y: this._normalizeY(boundingRect.top - veiwerCords.y),
+          x: bbox.x + this._table.offsetWidth,
+          y: bbox.y,
         },
         p2: {
-          x: this._normalizeX(boundingRect.right - veiwerCords.x),
-          y: this._normalizeY(boundingRect.bottom - veiwerCords.y),
+          x: bbox.x + this._table.offsetWidth,
+          y: bbox.y + this._table.offsetHeight,
         },
       },
       left: {
         p1: {
-          x: this._normalizeX(boundingRect.left - veiwerCords.x),
-          y: this._normalizeY(boundingRect.top - veiwerCords.y),
+          x: bbox.x,
+          y: bbox.y,
         },
         p2: {
-          x: this._normalizeX(boundingRect.left - veiwerCords.x),
-          y: this._normalizeY(boundingRect.bottom - veiwerCords.y),
+          x: bbox.x,
+          y: bbox.y + this._table.offsetHeight,
         },
       },
       top: {
         p1: {
-          x: this._normalizeX(boundingRect.left - veiwerCords.x),
-          y: this._normalizeY(boundingRect.top - veiwerCords.y),
+          x: bbox.x,
+          y: bbox.y,
         },
         p2: {
-          x: this._normalizeX(boundingRect.right - veiwerCords.x),
-          y: this._normalizeY(boundingRect.top - veiwerCords.y),
+          x: bbox.x + this._table.offsetWidth,
+          y: bbox.y,
         },
       },
       bottom: {
         p1: {
-          x: this._normalizeX(boundingRect.left - veiwerCords.x),
-          y: this._normalizeY(boundingRect.bottom - veiwerCords.y),
+          x: bbox.x,
+          y: bbox.y + this._table.offsetHeight,
         },
         p2: {
-          x: this._normalizeX(boundingRect.right - veiwerCords.x),
-          y: this._normalizeY(boundingRect.bottom - veiwerCords.y),
+          x: bbox.x + this._table.offsetWidth,
+          y: bbox.y + this._table.offsetHeight,
         },
       },
     };
+
+    // console.log(a, this._table);
+
+    return a;
   }
 
   render() {
@@ -284,20 +291,18 @@ export default class Table {
   }
 
   _center() {
-    const boundingRect = this._elem.getBoundingClientRect();
     const viewport = this._veiwer.getViewPort();
-    const x = viewport.x + viewport.width / 2 - boundingRect.width / this._veiwer.getZoom() / 2;
-    const y = viewport.y + viewport.height / 2 - boundingRect.height / this._veiwer.getZoom() / 2;
+    const x = viewport.x + viewport.width / 2 - this._table.offsetWidth / this._veiwer.getZoom() / 2;
+    const y = viewport.y + viewport.height / 2 - this._table.offsetHeight / this._veiwer.getZoom() / 2;
     this.setTablePos(x, y);
   }
 
   data() {
-    const boundingRect = this._table.getBoundingClientRect();
     return {
       name: this._name,
       pos: this._pos,
-      width: boundingRect.width,
-      height: boundingRect.height
+      width: this._table.offsetWidth,
+      height: this._table.offsetHeight
     };
   }
 
