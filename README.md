@@ -2,6 +2,11 @@
 ![NPM](https://img.shields.io/npm/l/db-viewer-component.svg)
 ![npm](https://img.shields.io/npm/v/db-viewer-component.svg)
 
+# Known issues
+
+It doesn't work as expected on chrome and safari mobile. On browser zoomed in state (Ctrl +/-) it doesn't render properly.
+I am working toward solving this issues.
+
 # db-viewer-component
 
 Implementation of database viewer web component.
