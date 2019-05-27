@@ -2,6 +2,7 @@ import constant from './const.js';
 import {
   to3FixedNumber
 } from './mathUtil.js';
+import {isChrome, isSafari} from './util.js';
 
 const OUT_OF_VIEW_CORD = -1000;
 
@@ -17,6 +18,7 @@ export default class Table {
     this.columns = columns;
     this._name = name;
     this._pos = pos;
+    this._browserZoom = 1;
 
     this._disableMovement = false;
   }
@@ -86,11 +88,14 @@ export default class Table {
       if (event.button === 0 && this._disableMovement === false) {
         this._table.classList.add('move');
         const boundingRect = this._table.getBoundingClientRect();
-        const bbox = this._elem.getBBox();
-        console.log(boundingRect.left, 'HHHHHHHH');
-        console.log(bbox.x, 'HHHHHHHH');
-        mouseDownInitialElemX = (event.clientX - boundingRect.left) / this._veiwer.getZoom();
-        mouseDownInitialElemY = (event.clientY - boundingRect.top) / this._veiwer.getZoom();
+        let boundingRectLeft = boundingRect.left;
+        let boundingRectTop = boundingRect.top;
+        if (isChrome() || isSafari()) {
+          boundingRectLeft /= window.devicePixelRatio;
+          boundingRectTop /= window.devicePixelRatio;
+        }
+        mouseDownInitialElemX = (event.clientX - boundingRectLeft) / this._veiwer.getZoom();
+        mouseDownInitialElemY = (event.clientY - boundingRectTop) / this._veiwer.getZoom();
 
         this._initialClientX = event.clientX;
         this._initialClientY = event.clientY;
