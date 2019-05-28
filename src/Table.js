@@ -2,7 +2,7 @@ import constant from './const.js';
 import {
   to3FixedNumber
 } from './mathUtil.js';
-import {isChrome, isSafari} from './util.js';
+import {isChrome, isSafari, isRetinaDisplay, isHighDensity} from './util.js';
 
 const OUT_OF_VIEW_CORD = -1000;
 
@@ -91,8 +91,12 @@ export default class Table {
         let boundingRectLeft = boundingRect.left;
         let boundingRectTop = boundingRect.top;
         if (isChrome() || isSafari()) {
-          boundingRectLeft /= window.devicePixelRatio;
-          boundingRectTop /= window.devicePixelRatio;
+          let devicePixelRatio = window.devicePixelRatio;
+          if (isRetinaDisplay() || isHighDensity()) {
+            devicePixelRatio /= 2;
+          }
+          boundingRectLeft /= devicePixelRatio;
+          boundingRectTop /= devicePixelRatio;
         }
         mouseDownInitialElemX = (event.clientX - boundingRectLeft) / this._veiwer.getZoom();
         mouseDownInitialElemY = (event.clientY - boundingRectTop) / this._veiwer.getZoom();
