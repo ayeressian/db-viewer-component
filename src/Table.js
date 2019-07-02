@@ -2,7 +2,6 @@ import constant from './const.js';
 import {
   to3FixedNumber
 } from './mathUtil.js';
-import {isChrome, isSafari} from './util.js';
 
 const OUT_OF_VIEW_CORD = -1000;
 
