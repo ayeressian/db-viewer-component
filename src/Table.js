@@ -94,7 +94,6 @@ export default class Table {
         this._initialClientY = event.clientY;
 
         document.addEventListener('mousemove', mouseMove);
-        document.addEventListener('touchmove', mouseMove);
 
         this._moveToTop();
 
@@ -105,8 +104,6 @@ export default class Table {
           this._table.classList.remove('move');
           document.removeEventListener('mouseup', mouseUp);
           document.removeEventListener('mousemove', mouseMove);
-          document.removeEventListener('touchend', mouseUp);
-          document.removeEventListener('touchmove', mouseMove);
         };
         document.addEventListener('mouseup', mouseUp);
       }
