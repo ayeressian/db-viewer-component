@@ -13,7 +13,7 @@
     "viewer"
   ],
   "scripts": {
-    "start": "webpack-dev-server --mode development --open --config=./webpack.config/webpack.config.js",
+    "start": "webpack-dev-server --mode development --open --config=./webpack.config/webpack.config.js --host 0.0.0.0",
     "build-prod": "webpack --mode=production --config=./webpack.config/webpack.config.js",
     "build-dev": "webpack --mode=development --watch --config=./webpack.config/webpack.config.js",
     "publish-npm": "rm -rf dist && npm run build-prod && npm publish",
