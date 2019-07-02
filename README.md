@@ -4,7 +4,7 @@
 
 # Known issues
 
-On browser zoomed in state (Ctrl +/-) moving tables works incorectlly on chrome and safari. See [this](https://stackoverflow.com/questions/56820857/incorrect-value-of-click-event-layerx-on-svg-foreignobject-element).
+On browser zoomed in state (Ctrl +/-) moving tables works incorectly on chrome and safari. See [this](https://stackoverflow.com/questions/56820857/incorrect-value-of-click-event-layerx-on-svg-foreignobject-element).
 Touch events integration is WIP.
 
 # db-viewer-component
