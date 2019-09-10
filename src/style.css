@@ -153,3 +153,17 @@ path {
   stroke-width: 12;
   stroke: transparent;
 }
+
+rect {
+  fill: white;
+  stroke:black;
+}
+
+line {
+  stroke: black;
+}
+
+text.heading {
+  font-weight: bold;
+  font-size: 1.2em; 
+}

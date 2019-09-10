@@ -153,99 +153,138 @@ export default class Table {
   }
 
   getSides() {
-    const bbox = this._elem.getBBox();
+    const bbox = this._table.getBBox();
 
     return {
       right: {
         p1: {
-          x: bbox.x + this._table.offsetWidth,
-          y: bbox.y,
+          x: this._pos.x + bbox.width,
+          y: this._pos.y,
         },
         p2: {
-          x: bbox.x + this._table.offsetWidth,
-          y: bbox.y + this._table.offsetHeight,
+          x: this._pos.x + bbox.width,
+          y: this._pos.y + bbox.height,
         },
       },
       left: {
         p1: {
-          x: bbox.x,
-          y: bbox.y,
+          x: this._pos.x,
+          y: this._pos.y,
         },
         p2: {
-          x: bbox.x,
-          y: bbox.y + this._table.offsetHeight,
+          x: this._pos.x,
+          y: this._pos.y + bbox.height,
         },
       },
       top: {
         p1: {
-          x: bbox.x,
-          y: bbox.y,
+          x: this._pos.x,
+          y: this._pos.y,
         },
         p2: {
-          x: bbox.x + this._table.offsetWidth,
-          y: bbox.y,
+          x: this._pos.x + bbox.width,
+          y: this._pos.y,
         },
       },
       bottom: {
         p1: {
-          x: bbox.x,
-          y: bbox.y + this._table.offsetHeight,
+          x: this._pos.x,
+          y: this._pos.y + bbox.height,
         },
         p2: {
-          x: bbox.x + this._table.offsetWidth,
-          y: bbox.y + this._table.offsetHeight,
+          x: this._pos.x + bbox.width,
+          y: this._pos.y + bbox.height,
         },
       },
     };
   }
 
+  _getLine(x1, y1, x2, y2) {
+    const line = document.createElementNS(constant.nsSvg, 'line');
+    line.setAttributeNS(null, 'x1', x1);
+    line.setAttributeNS(null, 'x2', x2);
+    line.setAttributeNS(null, 'y1', y1);
+    line.setAttributeNS(null, 'y2', y2);
+    return line;
+  }
+
+  _getText(x, y, text, className) {
+    const textRlem = document.createElementNS(constant.nsSvg, 'text');
+    textRlem.setAttributeNS(null, 'x', x);
+    textRlem.setAttributeNS(null, 'y', y);
+    if (className) textRlem.classList.add(className);
+    textRlem.innerHTML = text;
+    return textRlem;
+  }
+
+  _getTableWidth() {
+    return [...this.columns, this].reduce((length, column) => {
+      const columnLength = column.name.length;
+      if (columnLength > length) return columnLength;
+      return length;
+    }, -1);
+  }
+
+  _getTableHeight() {
+    return this.columns.length + 1;
+  }
+
   render() {
     this._elem = document.createElementNS(constant.nsSvg, 'g');
-    this._fo = document.createElementNS(constant.nsSvg, 'foreignObject');
-    this._elem.appendChild(this._fo);
+    this._table = document.createElementNS(constant.nsSvg, 'rect');
+    const tableWidth = `${this._getTableWidth()}em`;
+    this._table.setAttributeNS(null, 'width', tableWidth);
+    const rowHeight = 1.8;
+    this._table.setAttributeNS(null, 'height', `${this._getTableHeight() * rowHeight}em`);
+    this._elem.appendChild(this._table);
+    const rowHeightInEm = `${rowHeight}em`;
+    const headingLine = this._getLine(0, rowHeightInEm, tableWidth, rowHeightInEm);
+    this._elem.appendChild(headingLine);
+    const TEXT_PADDING_LEFT = 5;
+    const headingText = this._getText(TEXT_PADDING_LEFT, `${rowHeight - 0.7}em`, this._name, 'heading');
+    this._elem.appendChild(headingText);
 
-    this._table = document.createElementNS(constant.nsHtml, 'table');
-    this._table.className = 'table';
-    const headingTr = document.createElementNS(constant.nsHtml, 'tr');
-    this._table.appendChild(headingTr);
-    const headingTh = document.createElementNS(constant.nsHtml, 'th');
-    headingTh.setAttributeNS(null, 'colspan', 3);
-    headingTh.innerHTML = this._name;
-    headingTr.appendChild(headingTh);
-
-    this._fo.appendChild(this._table);
-
-    this.columns.forEach((column) => {
-      const columnTr = document.createElementNS(constant.nsHtml, 'tr');
-      column.elem = columnTr;
-      this._table.appendChild(columnTr);
-
-      const columnStatusTd = document.createElementNS(constant.nsHtml, 'td');
-      if (column.pk) {
-        const pdDiv = document.createElementNS(constant.nsHtml, 'div');
-        pdDiv.classList.add('pk');
-        columnStatusTd.appendChild(pdDiv);
-        columnStatusTd.classList.add('status');
-      } else if (column.fk) {
-        const fkDiv = document.createElementNS(constant.nsHtml, 'div');
-        fkDiv.classList.add('fk');
-        columnStatusTd.appendChild(fkDiv);
-        columnStatusTd.classList.add('status');
-      }
-      columnTr.appendChild(columnStatusTd);
-
-      const columnNameTd = document.createElementNS(constant.nsHtml, 'td');
-      columnNameTd.innerHTML = column.name;
-      columnTr.appendChild(columnNameTd);
-
-      const columnTypeTd = document.createElementNS(constant.nsHtml, 'td');
-      if (column.fk) {
-        columnTypeTd.innerHTML = column.fk.column.type;
-      } else {
-        columnTypeTd.innerHTML = column.type;
-      }
-      columnTr.appendChild(columnTypeTd);
+    this.columns.forEach((column, index) => {
+      if (index === this.columns.length) return;
+      const y = `${rowHeight * (index + 1)}em`;
+      const rowSeperator = this._getLine(0, y, tableWidth, y);
+      this._elem.appendChild(rowSeperator);
+      const textY = `${(rowHeight * (index + 2)) - 0.5}em`;
+      const textElem = this._getText(TEXT_PADDING_LEFT, textY, column.name);
+      this._elem.appendChild(textElem);
     });
+
+    // this.columns.forEach((column) => {
+    //   const columnTr = document.createElementNS(constant.nsHtml, 'tr');
+    //   column.elem = columnTr;
+    //   this._table.appendChild(columnTr);
+
+    //   const columnStatusTd = document.createElementNS(constant.nsHtml, 'td');
+    //   if (column.pk) {
+    //     const pdDiv = document.createElementNS(constant.nsHtml, 'div');
+    //     pdDiv.classList.add('pk');
+    //     columnStatusTd.appendChild(pdDiv);
+    //     columnStatusTd.classList.add('status');
+    //   } else if (column.fk) {
+    //     const fkDiv = document.createElementNS(constant.nsHtml, 'div');
+    //     fkDiv.classList.add('fk');
+    //     columnStatusTd.appendChild(fkDiv);
+    //     columnStatusTd.classList.add('status');
+    //   }
+    //   columnTr.appendChild(columnStatusTd);
+
+    //   const columnNameTd = document.createElementNS(constant.nsHtml, 'td');
+    //   columnNameTd.innerHTML = column.name;
+    //   columnTr.appendChild(columnNameTd);
+
+    //   const columnTypeTd = document.createElementNS(constant.nsHtml, 'td');
+    //   if (column.fk) {
+    //     columnTypeTd.innerHTML = column.fk.column.type;
+    //   } else {
+    //     columnTypeTd.innerHTML = column.type;
+    //   }
+    //   columnTr.appendChild(columnTypeTd);
+    // });
     this._clickEvents();
     this._moveEvents();
 
@@ -257,13 +296,12 @@ export default class Table {
     }
 
     // After render happened
-    setTimeout(() => {
-      let borderWidth = parseInt(getComputedStyle(this._table).borderWidth, 10);
-      borderWidth = isNaN(borderWidth)? 0: borderWidth;
-      this._fo.setAttributeNS(null, 'width', this._table.scrollWidth + borderWidth);
-      this._fo.setAttributeNS(null, 'height', this._table.scrollHeight + borderWidth);
-    });
-
+    // setTimeout(() => {
+      // let borderWidth = parseInt(getComputedStyle(this._table).borderWidth, 10);
+      // borderWidth = isNaN(borderWidth)? 0: borderWidth;
+      // this._fo.setAttributeNS(null, 'width', this._table.scrollWidth + borderWidth);
+      // this._fo.setAttributeNS(null, 'height', this._table.scrollHeight + borderWidth);
+    // });
     return this._elem;
   }
 
@@ -282,8 +320,7 @@ export default class Table {
     this._pos = {
       x, y
     };
-    this._fo.setAttributeNS(null, 'x', x);
-    this._fo.setAttributeNS(null, 'y', y);
+    this._elem.setAttributeNS(null, 'transform', `translate(${x}, ${y})`);
     this._onMove && this._onMove(this, x, y);
   }
 

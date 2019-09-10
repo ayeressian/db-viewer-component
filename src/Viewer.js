@@ -256,7 +256,6 @@ export default class Viewer {
     this._tableMinimap = new Map();
 
     this._minimap.removeTables();
-
     this.tables.forEach((table, i) => {
       this._minimap.createTable(table);
 
