@@ -3,6 +3,15 @@ export function to3FixedNumber(num) {
 }
 
 export function segmentIntersection(l1p1, l1p2, l2p1, l2p2) {
+  l1p1.x = to3FixedNumber(l1p1.x);
+  l1p1.y = to3FixedNumber(l1p1.y);
+  l1p2.x = to3FixedNumber(l1p2.x);
+  l1p2.y = to3FixedNumber(l1p2.y);
+
+  l2p1.x = to3FixedNumber(l2p1.x);
+  l2p1.y = to3FixedNumber(l2p1.y);
+  l2p2.x = to3FixedNumber(l2p2.x);
+  l2p2.y = to3FixedNumber(l2p2.y);
   const ip = lineIntersection(l1p1, l1p2, l2p1, l2p2);
 
   if (!ip) return null;
