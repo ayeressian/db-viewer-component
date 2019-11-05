@@ -11,7 +11,7 @@ module.exports = {
     publicPath: '/dist',
     watchContentBase: true
   },
-  entry: './src/index.js',
+  entry: './src/index.ts',
   output: {
     filename: 'main.js',
     path: path.resolve(__dirname, '../dist')
@@ -31,6 +31,10 @@ module.exports = {
           'url-loader?limit=10000',
           'img-loader'
         ]
+      },
+      {
+        test: /\.ts$/,
+        loader: 'ts-loader'
       }
     ]
   }

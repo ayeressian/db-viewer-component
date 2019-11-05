@@ -7,6 +7,8 @@ const NO_TABLE = new Error(`No table exist with the given name.`);
 const INVALID_FILE_FORMAT = new Error('Invalid file format.');
 
 class DBViewer extends HTMLElement {
+  private readyPromise;
+  private readyPromiseResolve;
   constructor() {
     super();
     if (this._checkWindowLoaded()) {
@@ -15,8 +17,8 @@ class DBViewer extends HTMLElement {
       window.addEventListener('load', this._whenWindowLoaded.bind(this));
     }
 
-    this._readyPromise = new Promise((resolve) => {
-      this._readyPromiseResolve = resolve;
+    this.readyPromise = new Promise((resolve) => {
+      this.readyPromiseResolve = resolve;
     });
   }
 
