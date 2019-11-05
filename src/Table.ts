@@ -6,6 +6,20 @@ import {
 const OUT_OF_VIEW_CORD = -1000;
 
 export default class Table {
+  private columns;
+  private _name;
+  private _pos;
+  private _disableMovement: boolean;
+  private _elem;
+  private _veiwer;
+  private _table;
+  private _onMove;
+  private _initialClientX;
+  private _initialClientY;
+  private _onMoveEnd: (Table) => void;
+  private _fo;
+  private _penddingCenter;
+
   constructor({
     name,
     columns = [],
@@ -17,7 +31,6 @@ export default class Table {
     this.columns = columns;
     this._name = name;
     this._pos = pos;
-    this._browserZoom = 1;
 
     this._disableMovement = false;
   }
@@ -133,11 +146,11 @@ export default class Table {
     this._onMoveEnd = onMoveEnd;
   }
 
-  _normalizeX(num) {
+  private normalizeX(num) {
     return to3FixedNumber(num / this._veiwer.getZoom() + this._veiwer.getPan().x);
   }
 
-  _normalizeY(num) {
+  private normalizeY(num) {
     return to3FixedNumber(num / this._veiwer.getZoom() + this._veiwer.getPan().y);
   }
 
@@ -209,7 +222,7 @@ export default class Table {
     const headingTr = document.createElementNS(constant.nsHtml, 'tr');
     this._table.appendChild(headingTr);
     const headingTh = document.createElementNS(constant.nsHtml, 'th');
-    headingTh.setAttributeNS(null, 'colspan', 3);
+    headingTh.setAttributeNS(null, 'colspan', 3 + '');
     headingTh.innerHTML = this._name;
     headingTr.appendChild(headingTh);
 
@@ -273,7 +286,7 @@ export default class Table {
     }
   }
 
-  setTablePos(x, y, disableOutOfBoundCheck) {
+  setTablePos(x, y, disableOutOfBoundCheck = false) {
     if (!disableOutOfBoundCheck) {
       const result = this._notAllowOutOfBound(x, y);
       x = result.x;

@@ -1,4 +1,4 @@
-import Table from './Table.js';
+import Table from './Table.ts';
 
 export default function schemaParser(schema) {
   const tablesFk = new Map();
