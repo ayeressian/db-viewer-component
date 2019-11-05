@@ -1,4 +1,4 @@
-import constant from './const.js';
+import constant from './const';
 import {
   to3FixedNumber
 } from './mathUtil.js';
@@ -273,7 +273,7 @@ export default class Table {
     }
   }
 
-  setTablePos(x, y, disableOutOfBoundCheck) {
+  setTablePos(x, y, disableOutOfBoundCheck = false) {
     if (!disableOutOfBoundCheck) {
       const result = this._notAllowOutOfBound(x, y);
       x = result.x;

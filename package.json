@@ -50,6 +50,8 @@
     "webpack-dev-server": "^3.2.1"
   },
   "dependencies": {
-    "ajv": "^6.10.0"
+    "ajv": "^6.10.0",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.6.4"
   }
 }

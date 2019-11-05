@@ -1,7 +1,9 @@
 import {
   segmentIntersection
-} from './mathUtil.js';
-import constant from './const.js';
+} from './mathUtil';
+import constant from './const';
+import Table from './Table';
+import { Point } from './Point';
 
 const PATH_ARROW_LENGTH = 9;
 const PATH_ARROW_HEIGHT = 4;
@@ -9,6 +11,22 @@ const PATH_START = 5;
 const PATH_SELF_RELATION_LENGTH = 40;
 
 export default class Relation {
+  fromColumn: object;
+  fromPathCount: number;
+  fromPathIndex: number;
+  fromTable: Table;
+  toColumn: object;
+  toPathCount: number;
+  toPathIndex: number;
+  toTable: Table;
+
+  fromTablePathSide?: string;
+  toTablePathSide?: string;
+  pathElem?: HTMLElement;
+  highlightTrigger?: HTMLElement;
+  fromIntersectPoint?: Point;
+  toIntersectPoint?: Point;
+
   constructor({
     fromColumn,
     fromPathCount,
@@ -29,51 +47,47 @@ export default class Relation {
     this.toTable = toTable;
   }
 
-  update() {
-    this._getTableRelationSide();
-  }
-
-  _getPosOnLine(pathIndex, pathCount, sideLength) {
+  private getPosOnLine(pathIndex: number, pathCount: number, sideLength: number): number {
     return (pathIndex + 1) * (sideLength / (pathCount + 1));
   }
 
-  _getLeftSidePathCord(tableSides, pathIndex, pathCount) {
+  private getLeftSidePathCord(tableSides: object, pathIndex: number, pathCount: number): object {
     const sideLength = tableSides.left.p2.y - tableSides.left.p1.y;
-    const posOnLine = this._getPosOnLine(pathIndex, pathCount, sideLength);
+    const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
       y: tableSides.left.p1.y + posOnLine,
       x: tableSides.left.p1.x
     };
   }
 
-  _getRightSidePathCord(tableSides, pathIndex, pathCount) {
+  private getRightSidePathCord(tableSides: object, pathIndex: number, pathCount: number): object {
     const sideLength = tableSides.right.p2.y - tableSides.right.p1.y;
-    const posOnLine = this._getPosOnLine(pathIndex, pathCount, sideLength);
+    const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
       y: tableSides.right.p1.y + posOnLine,
       x: tableSides.right.p1.x
     };
   }
 
-  _getTopSidePathCord(tableSides, pathIndex, pathCount) {
+  private getTopSidePathCord(tableSides: object, pathIndex: number, pathCount: number): object {
     const sideLength = tableSides.top.p2.x - tableSides.top.p1.x;
-    const posOnLine = this._getPosOnLine(pathIndex, pathCount, sideLength);
+    const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
       y: tableSides.top.p1.y,
       x: tableSides.top.p1.x + posOnLine
     };
   }
 
-  _getBottomSidePathCord(tableSides, pathIndex, pathCount) {
+  private getBottomSidePathCord(tableSides: object, pathIndex: number, pathCount: number): object {
     const sideLength = tableSides.bottom.p2.x - tableSides.bottom.p1.x;
-    const posOnLine = this._getPosOnLine(pathIndex, pathCount, sideLength);
+    const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
       y: tableSides.bottom.p1.y,
       x: tableSides.bottom.p1.x + posOnLine
     };
   }
 
-  _get2LinePathFlatTop(start, end, oneTo, toMany) {
+  private get2LinePathFlatTop(start: Point, end: Point, oneTo: boolean, toMany: boolean): object {
     let dArrow;
     let dStartLine;
     let dPath;
@@ -84,15 +98,15 @@ export default class Relation {
                       h ${2 * PATH_START}`;
         dPath = `M ${start.x} ${start.y}`;
       } else { // zero to
-        dStartLine = this._getCirclePath(start.x, start.y - PATH_START);
+        dStartLine = this.getCirclePath(start.x, start.y - PATH_START);
         dPath = `M ${start.x} ${start.y - PATH_START * 2}`;
       }
       dPath += ` V ${end.y} H ${end.x}`;
 
       if (start.x > end.x) {
-        dArrow = this._getArrow(end, toMany, 'left');
+        dArrow = this.getArrow(end, toMany, 'left');
       } else {
-        dArrow = this._getArrow(end, toMany, 'right');
+        dArrow = this.getArrow(end, toMany, 'right');
       }
     } else {
       if (oneTo) {
@@ -105,9 +119,9 @@ export default class Relation {
         dPath = `M ${start.x} ${start.y} H ${end.x} V ${end.y}`;
       } else { // zero to
         if (start.x > end.x) {
-          dStartLine = this._getCirclePath(start.x - PATH_START, start.y);
+          dStartLine = this.getCirclePath(start.x - PATH_START, start.y);
         } else {
-          dStartLine = this._getCirclePath(start.x + PATH_START, start.y);
+          dStartLine = this.getCirclePath(start.x + PATH_START, start.y);
         }
         if (start.x > end.x) {
           dPath = `M ${start.x - PATH_START * 2}`;
@@ -116,14 +130,14 @@ export default class Relation {
         }
         dPath += ` ${start.y} H ${end.x} V ${end.y}`;
       }
-      dArrow = this._getArrow(end, toMany, 'bottom');
+      dArrow = this.getArrow(end, toMany, 'bottom');
     }
 
     const d = `${dStartLine} ${dPath} ${dArrow}`;
 
-    const path = this._createPath(d);
+    const path = this.createPath(d);
 
-    const highlight = this._createHighlightTrigger(d);
+    const highlight = this.createHighlightTrigger(d);
 
     return {
       path,
@@ -131,7 +145,7 @@ export default class Relation {
     };
   }
 
-  _get2LinePathFlatBottom(start, end, oneTo, toMany) {
+  private get2LinePathFlatBottom(start: Point, end: Point, oneTo: boolean, toMany: boolean): object {
     let dArrow;
     let dStartLine;
     let dPath;
@@ -147,34 +161,34 @@ export default class Relation {
         dPath = `M ${start.x} ${start.y} H ${end.x} V ${end.y}`;
       } else { // zero to
         if (start.x > end.x) {
-          dStartLine = this._getCirclePath(start.x - PATH_START, start.y);
+          dStartLine = this.getCirclePath(start.x - PATH_START, start.y);
           dPath = `M ${start.x - PATH_START * 2} ${start.y} H ${end.x} V ${end.y}`;
         } else {
-          dStartLine = this._getCirclePath(start.x + PATH_START, start.y);
+          dStartLine = this.getCirclePath(start.x + PATH_START, start.y);
           dPath = `M ${start.x + PATH_START * 2} ${start.y} H ${end.x} V ${end.y}`;
         }
       }
-      dArrow = this._getArrow(end, toMany, 'top');
+      dArrow = this.getArrow(end, toMany, 'top');
     } else {
       if (oneTo) {
         dStartLine = `M ${start.x - PATH_START} ${start.y + PATH_START} h ${2 * PATH_START}`;
         dPath = `M ${start.x} ${start.y} V ${end.y} H ${end.x}`;
       } else { // zero to
-        dStartLine = this._getCirclePath(start.x, start.y + PATH_START);
+        dStartLine = this.getCirclePath(start.x, start.y + PATH_START);
         dPath = `M ${start.x} ${start.y + PATH_START * 2} V ${end.y} H ${end.x}`;
       }
       if (start.x > end.x) {
-        dArrow = this._getArrow(end, toMany, 'left');
+        dArrow = this.getArrow(end, toMany, 'left');
       } else {
-        dArrow = this._getArrow(end, toMany, 'right');
+        dArrow = this.getArrow(end, toMany, 'right');
       }
     }
 
     const d = `${dStartLine} ${dPath} ${dArrow}`;
 
-    const path = this._createPath(d);
+    const path = this.createPath(d);
 
-    const highlight = this._createHighlightTrigger(d);
+    const highlight = this.createHighlightTrigger(d);
 
     return {
       path,
@@ -182,29 +196,29 @@ export default class Relation {
     };
   }
 
-  _get3LinePathHoriz(start, end, oneTo, toMany) {
+  private get3LinePathHoriz(start: Point, end: Point, oneTo: boolean, toMany: boolean): object {
     let dStartLine;
     let dPath;
     const p2X = start.x + (end.x - start.x) / 2;
     let dArrow;
     if (start.x > end.x) {
-      dArrow = this._getArrow(end, toMany, 'left');
+      dArrow = this.getArrow(end, toMany, 'left');
       dPath = `M ${start.x} ${start.y}`;
       if (oneTo) {
         dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START} v ${2* PATH_START}`;
         dPath += `H ${p2X}`;
       } else { // zero to
-        dStartLine = this._getCirclePath(start.x - PATH_START, start.y);
+        dStartLine = this.getCirclePath(start.x - PATH_START, start.y);
         dPath += `m ${-PATH_START * 2} 0 H ${p2X}`;
       }
     } else {
-      dArrow = this._getArrow(end, toMany, 'right');
+      dArrow = this.getArrow(end, toMany, 'right');
       dPath = `M ${start.x} ${start.y} `;
       if (oneTo) {
         dStartLine = `M ${start.x + PATH_START} ${start.y - PATH_START} v ${2* PATH_START}`;
         dPath += `H ${p2X}`;
       } else { // zero to
-        dStartLine = this._getCirclePath(start.x + PATH_START, start.y);
+        dStartLine = this.getCirclePath(start.x + PATH_START, start.y);
         dPath += `m ${PATH_START * 2} 0 H ${p2X}`;
       }
     }
@@ -212,9 +226,9 @@ export default class Relation {
     dPath += `V ${end.y} H ${end.x}`;
 
     const d = `${dStartLine} ${dPath} ${dArrow}`;
-    const path = this._createPath(d);
+    const path = this.createPath(d);
 
-    const highlight = this._createHighlightTrigger(d);
+    const highlight = this.createHighlightTrigger(d);
 
     return {
       path,
@@ -222,37 +236,37 @@ export default class Relation {
     };
   }
 
-  _get3LinePathVert(start, end, oneTo, toMany) {
+  private get3LinePathVert(start: Point, end: Point, oneTo: boolean, toMany: boolean): object {
     let dStartLine = `M ${start.x - PATH_START} `;
 
     let dPath;
     const p2Y = start.y + (end.y - start.y) / 2;
     let dArrow;
     if (start.y > end.y) {
-      dArrow = this._getArrow(end, toMany, 'top');
+      dArrow = this.getArrow(end, toMany, 'top');
       if (oneTo) {
         dStartLine += `${start.y - PATH_START} h ${2* PATH_START}`;
         dPath = `M ${start.x} ${start.y} V ${p2Y} H ${end.x} V ${end.y}`;
       } else { // zero to
-        dStartLine = this._getCirclePath(start.x, start.y - PATH_START);
+        dStartLine = this.getCirclePath(start.x, start.y - PATH_START);
         dPath = `M ${start.x} ${start.y - PATH_START * 2} V ${p2Y} H ${end.x} V ${end.y}`;
       }
     } else {
-      dArrow = this._getArrow(end, toMany, 'bottom');
+      dArrow = this.getArrow(end, toMany, 'bottom');
       dStartLine += `${start.y + PATH_START} h ${2* PATH_START}`;
       if (oneTo) {
         dPath = `M ${start.x} ${start.y} V ${p2Y} H ${end.x} V ${end.y}`;
       } else { // zero to
-        dStartLine = this._getCirclePath(start.x, start.y + PATH_START);
+        dStartLine = this.getCirclePath(start.x, start.y + PATH_START);
         dPath = `M ${start.x} ${start.y + PATH_START * 2} V ${p2Y} H ${end.x} V ${end.y}`;
       }
     }
 
     const d = `${dStartLine} ${dPath} ${dArrow}`;
 
-    const path = this._createPath(d);
+    const path = this.createPath(d);
 
-    const highlight = this._createHighlightTrigger(d);
+    const highlight = this.createHighlightTrigger(d);
 
     return {
       path,
@@ -260,7 +274,7 @@ export default class Relation {
     };
   }
 
-  _getSelfRelationLeft(start, end, oneTo, toMany) {
+  private getSelfRelationLeft(start: Point, end: Point, oneTo: boolean, toMany: boolean): object {
     let dStartLine;
     let dPath;
 
@@ -268,17 +282,17 @@ export default class Relation {
       dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START} v ${PATH_START * 2}`;
       dPath = `M ${start.x} ${start.y} h ${-PATH_SELF_RELATION_LENGTH} V ${end.y} h ${PATH_SELF_RELATION_LENGTH}`;
     } else {
-      dStartLine = this._getCirclePath(start.x - PATH_START, start.y);
+      dStartLine = this.getCirclePath(start.x - PATH_START, start.y);
       dPath = `M ${start.x - PATH_START * 2} ${start.y} h ${-PATH_SELF_RELATION_LENGTH + PATH_START * 2} V ${end.y} h ${PATH_SELF_RELATION_LENGTH}`;
     }
 
-    const dArrow = this._getArrow(end, toMany, 'right');
+    const dArrow = this.getArrow(end, toMany, 'right');
 
     const d = `${dStartLine} ${dPath} ${dArrow}`;
 
-    const path = this._createPath(d);
+    const path = this.createPath(d);
 
-    const highlight = this._createHighlightTrigger(d);
+    const highlight = this.createHighlightTrigger(d);
 
     return {
       path,
@@ -286,7 +300,7 @@ export default class Relation {
     };
   }
 
-  _getSelfRelationRight(start, end, oneTo, toMany) {
+  private getSelfRelationRight(start: Point, end: Point, oneTo: boolean, toMany: boolean): object {
     let dStartLine;
     let dPath;
 
@@ -294,17 +308,17 @@ export default class Relation {
       dStartLine = `M ${start.x + PATH_START} ${start.y - PATH_START} v ${PATH_START * 2}`;
       dPath = `M ${start.x} ${start.y} h ${PATH_SELF_RELATION_LENGTH} V ${end.y} h ${-PATH_SELF_RELATION_LENGTH}`;
     } else {
-      dStartLine = this._getCirclePath(start.x + PATH_START, start.y);
+      dStartLine = this.getCirclePath(start.x + PATH_START, start.y);
       dPath = `M ${start.x + PATH_START * 2} ${start.y} h ${PATH_SELF_RELATION_LENGTH - PATH_START * 2} V ${end.y} h ${-PATH_SELF_RELATION_LENGTH}`;
     }
 
-    const dArrow = this._getArrow(end, toMany, 'left');
+    const dArrow = this.getArrow(end, toMany, 'left');
 
     const d = `${dStartLine} ${dPath} ${dArrow}`;
 
-    const path = this._createPath(d);
+    const path = this.createPath(d);
 
-    const highlight = this._createHighlightTrigger(d);
+    const highlight = this.createHighlightTrigger(d);
 
     return {
       path,
@@ -312,7 +326,7 @@ export default class Relation {
     };
   }
 
-  _getSelfRelationTop(start, end, oneTo, toMany) {
+  private getSelfRelationTop(start: Point, end: Point, oneTo: boolean, toMany: boolean): object {
     let dStartLine;
     let dPath;
 
@@ -320,17 +334,17 @@ export default class Relation {
       dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START} h ${PATH_START * 2}`;
       dPath = `M ${start.x} ${start.y} v ${-PATH_SELF_RELATION_LENGTH} H ${end.x} v ${PATH_SELF_RELATION_LENGTH}`;
     } else {
-      dStartLine = this._getCirclePath(start.x, start.y - PATH_START);
+      dStartLine = this.getCirclePath(start.x, start.y - PATH_START);
       dPath = `M ${start.x} ${start.y - PATH_START * 2} v ${-PATH_SELF_RELATION_LENGTH + PATH_START * 2} H ${end.x} v ${PATH_SELF_RELATION_LENGTH}`;
     }
 
-    const dArrow = this._getArrow(end, toMany, 'bottom');
+    const dArrow = this.getArrow(end, toMany, 'bottom');
 
     const d = `${dStartLine} ${dPath} ${dArrow}`;
 
-    const path = this._createPath(d);
+    const path = this.createPath(d);
 
-    const highlight = this._createHighlightTrigger(d);
+    const highlight = this.createHighlightTrigger(d);
 
     return {
       path,
@@ -338,24 +352,24 @@ export default class Relation {
     };
   }
 
-  _getSelfRelationBottom(start, end, oneTo, toMany) {
+  private getSelfRelationBottom(start: Point, end: Point, oneTo: boolean, toMany: boolean): object {
     let dStartLine;
     let dPath;
     if (oneTo) {
       dPath = `M ${start.x} ${start.y} v ${PATH_SELF_RELATION_LENGTH} H ${end.x} v ${-PATH_SELF_RELATION_LENGTH}`;
       dStartLine = `M ${start.x - PATH_START} ${start.y + PATH_START} h ${PATH_START * 2}`;
     } else {
-      dStartLine = this._getCirclePath(start.x, start.y + PATH_START);
+      dStartLine = this.getCirclePath(start.x, start.y + PATH_START);
       dPath = `M ${start.x} ${start.y + PATH_START * 2} v ${PATH_SELF_RELATION_LENGTH - PATH_START * 2} H ${end.x} v ${-PATH_SELF_RELATION_LENGTH}`;
     }
 
-    const dArrow = this._getArrow(end, toMany, 'top');
+    const dArrow = this.getArrow(end, toMany, 'top');
 
     const d = `${dStartLine} ${dPath} ${dArrow}`;
 
-    const path = this._createPath(d);
+    const path = this.createPath(d);
 
-    const highlight = this._createHighlightTrigger(d);
+    const highlight = this.createHighlightTrigger(d);
 
     return {
       path,
@@ -363,12 +377,12 @@ export default class Relation {
     };
   }
 
-  _getCirclePath(x, y) {
+  private getCirclePath(x: number, y: number): string {
     return `M ${x - PATH_START} ${y}` +
           ` a 1,1 0 1,0 ${PATH_START * 2},0 a 1,1 0 1,0 ${-PATH_START * 2},0`;
   }
 
-  _getArrow({x, y}, toMany, orientation) {
+  private getArrow({x, y}: Point, toMany: boolean, orientation: string) {
     switch (orientation) {
       case 'top':
       if (toMany) {
@@ -406,16 +420,16 @@ export default class Relation {
   }
 
   removeHoverEffect() {
-    this._onMouseLeave();
+    this.onMouseLeave();
   }
 
-  _onMouseEnter() {
-    this.pathElem.classList.add('pathHover');
+  private onMouseEnter() {
+    this.pathElem!.classList.add('pathHover');
     this.fromTable.highlightFrom(this.fromColumn);
     this.toTable.highlightTo(this.toColumn);
   }
 
-  _onMouseLeave() {
+  private onMouseLeave() {
     if (this.pathElem) {
       this.pathElem.classList.remove('pathHover');
       this.fromTable.removeHighlightFrom(this.fromColumn);
@@ -423,14 +437,14 @@ export default class Relation {
     }
   }
 
-  _setElems(elem, highlightTrigger) {
+  private setElems(elem: HTMLElement, highlightTrigger: HTMLElement) {
     this.pathElem = elem;
     this.highlightTrigger = highlightTrigger;
-    highlightTrigger.onmouseenter = this._onMouseEnter.bind(this);
-    highlightTrigger.onmouseleave = this._onMouseLeave.bind(this);
+    highlightTrigger.onmouseenter = this.onMouseEnter.bind(this);
+    highlightTrigger.onmouseleave = this.onMouseLeave.bind(this);
   }
 
-  _createHighlightTrigger(d) {
+  private createHighlightTrigger(d: string) {
     const path = document.createElementNS(constant.nsSvg, 'path');
     path.setAttributeNS(null, 'd', d);
     path.classList.add('highlight');
@@ -438,7 +452,7 @@ export default class Relation {
     return path;
   }
 
-  _createPath(d) {
+  private createPath(d: string): Element {
     const path = document.createElementNS(constant.nsSvg, 'path');
 
     path.setAttributeNS(null, 'd', d);
@@ -459,92 +473,92 @@ export default class Relation {
     switch (this.fromTablePathSide) {
       case constant.PATH_LEFT:
         {
-          startMethod = this._getLeftSidePathCord;
+          startMethod = this.getLeftSidePathCord;
           switch (this.toTablePathSide) {
             case constant.PATH_LEFT:
-              endMethod = this._getLeftSidePathCord;
-              resultMethod = this._getSelfRelationLeft;
+              endMethod = this.getLeftSidePathCord;
+              resultMethod = this.getSelfRelationLeft;
               break;
             case constant.PATH_RIGHT:
-              endMethod = this._getRightSidePathCord;
-              resultMethod = this._get3LinePathHoriz;
+              endMethod = this.getRightSidePathCord;
+              resultMethod = this.get3LinePathHoriz;
               break;
             case constant.PATH_TOP:
-              endMethod = this._getTopSidePathCord;
-              resultMethod = this._get2LinePathFlatTop;
+              endMethod = this.getTopSidePathCord;
+              resultMethod = this.get2LinePathFlatTop;
               break;
             case constant.PATH_BOTTOM:
-              endMethod = this._getBottomSidePathCord;
-              resultMethod = this._get2LinePathFlatBottom;
+              endMethod = this.getBottomSidePathCord;
+              resultMethod = this.get2LinePathFlatBottom;
               break;
           }
         }
         break;
       case constant.PATH_RIGHT:
         {
-          startMethod = this._getRightSidePathCord;
+          startMethod = this.getRightSidePathCord;
           switch (this.toTablePathSide) {
             case constant.PATH_LEFT:
-              endMethod = this._getLeftSidePathCord;
-              resultMethod = this._get3LinePathHoriz;
+              endMethod = this.getLeftSidePathCord;
+              resultMethod = this.get3LinePathHoriz;
               break;
             case constant.PATH_RIGHT:
-              endMethod = this._getRightSidePathCord;
-              resultMethod = this._getSelfRelationRight;
+              endMethod = this.getRightSidePathCord;
+              resultMethod = this.getSelfRelationRight;
               break;
             case constant.PATH_TOP:
-              endMethod = this._getTopSidePathCord;
-              resultMethod = this._get2LinePathFlatTop;
+              endMethod = this.getTopSidePathCord;
+              resultMethod = this.get2LinePathFlatTop;
               break;
             case constant.PATH_BOTTOM:
-              endMethod = this._getBottomSidePathCord;
-              resultMethod = this._get2LinePathFlatBottom;
+              endMethod = this.getBottomSidePathCord;
+              resultMethod = this.get2LinePathFlatBottom;
               break;
           }
         }
         break;
       case constant.PATH_TOP:
         {
-          startMethod = this._getTopSidePathCord;
+          startMethod = this.getTopSidePathCord;
           switch (this.toTablePathSide) {
             case constant.PATH_LEFT:
-              endMethod = this._getLeftSidePathCord;
-              resultMethod = this._get2LinePathFlatTop;
+              endMethod = this.getLeftSidePathCord;
+              resultMethod = this.get2LinePathFlatTop;
               break;
             case constant.PATH_RIGHT:
-              endMethod = this._getRightSidePathCord;
-              resultMethod = this._get2LinePathFlatTop;
+              endMethod = this.getRightSidePathCord;
+              resultMethod = this.get2LinePathFlatTop;
               break;
             case constant.PATH_TOP:
-              endMethod = this._getTopSidePathCord;
-              resultMethod = this._getSelfRelationTop;
+              endMethod = this.getTopSidePathCord;
+              resultMethod = this.getSelfRelationTop;
               break;
             case constant.PATH_BOTTOM:
-              endMethod = this._getBottomSidePathCord;
-              resultMethod = this._get3LinePathVert;
+              endMethod = this.getBottomSidePathCord;
+              resultMethod = this.get3LinePathVert;
               break;
           }
         }
         break;
       case constant.PATH_BOTTOM:
         {
-          startMethod = this._getBottomSidePathCord;
+          startMethod = this.getBottomSidePathCord;
           switch (this.toTablePathSide) {
             case constant.PATH_LEFT:
-              endMethod = this._getLeftSidePathCord;
-              resultMethod = this._get2LinePathFlatBottom;
+              endMethod = this.getLeftSidePathCord;
+              resultMethod = this.get2LinePathFlatBottom;
               break;
             case constant.PATH_RIGHT:
-              endMethod = this._getRightSidePathCord;
-              resultMethod = this._get2LinePathFlatBottom;
+              endMethod = this.getRightSidePathCord;
+              resultMethod = this.get2LinePathFlatBottom;
               break;
             case constant.PATH_TOP:
-              endMethod = this._getTopSidePathCord;
-              resultMethod = this._get3LinePathVert;
+              endMethod = this.getTopSidePathCord;
+              resultMethod = this.get3LinePathVert;
               break;
             case constant.PATH_BOTTOM:
-              endMethod = this._getBottomSidePathCord;
-              resultMethod = this._getSelfRelationBottom;
+              endMethod = this.getBottomSidePathCord;
+              resultMethod = this.getSelfRelationBottom;
               break;
           }
         }
@@ -627,8 +641,8 @@ export default class Relation {
     return [this.pathElem, this.highlightTrigger];
   }
 
-  static _sort(arr, table, axis) {
-    arr.sort((r1, r2) => {
+  private static sort(relations: Array<Relation>, table: Table, axis: string) {
+    relations.sort((r1: Relation, r2: Relation) => {
       if (r1.fromIntersectPoint == null || r2.fromIntersectPoint == null) {
         return -1;
       }
@@ -646,11 +660,11 @@ export default class Relation {
     });
   }
 
-  static ySort(arr, table) {
-    return Relation._sort(arr, table, 'y');
+  static ySort(relations: Array<Relation>, table: Table) {
+    return Relation.sort(relations, table, 'y');
   }
 
-  static xSort(arr, table) {
-    return Relation._sort(arr, table, 'x');
+  static xSort(relations: Array<Relation>, table: Table) {
+    return Relation.sort(relations, table, 'x');
   }
 }

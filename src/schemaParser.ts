@@ -1,8 +1,9 @@
-import Table from './Table.js';
+import Table from './Table';
+import { Schema, TableSchema, ColumnSchema } from './Schema';
 
-export default function schemaParser(schema) {
-  const tablesFk = new Map();
-  const tables = [];
+export default function schemaParser(schema: Schema) {
+  const tablesFk: Map<TableSchema, Array<ColumnSchema>> = new Map();
+  const tables: Array<Table> = [];
   schema.tables.forEach((table) => {
     const fks = table.columns.filter((column) => column.fk);
     tablesFk.set(table, fks);
@@ -18,10 +19,10 @@ export default function schemaParser(schema) {
 
   schema.tables.forEach((sTable) => {
     const fks = tablesFk.get(sTable);
-    fks.forEach((sFkColumn) => {
+    fks!.forEach((sFkColumn) => {
       const fkTable = tables.find((table) => table.getName() === sFkColumn.fk.table);
       const fkColumn = fkTable.columns.find((column) => column.name === sFkColumn.fk.column);
-      tables.find((table) => sTable.name === table.getName()).addColumn(
+      tables.find((table) => sTable.name === table.getName())!.addColumn(
         Object.assign(sFkColumn, {
           fk: {
             table: fkTable,
