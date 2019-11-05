@@ -9,7 +9,10 @@ module.exports = {
       index: './example/index.html'
     },
     publicPath: '/dist',
-    watchContentBase: true
+    watchContentBase: true,
+    watchOptions: {
+      poll: true
+    }
   },
   entry: './src/index.ts',
   output: {
