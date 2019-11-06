@@ -1,8 +1,10 @@
-export function to3FixedNumber(num) {
+import { Point } from './Point';
+
+export function to3FixedNumber(num: number): number {
   return Math.round(num * 1e3) / 1e3;
 }
 
-export function segmentIntersection(l1p1, l1p2, l2p1, l2p2) {
+export function segmentIntersection(l1p1: Point, l1p2: Point, l2p1: Point, l2p2: Point): Point | null {
   l1p1.x = to3FixedNumber(l1p1.x);
   l1p1.y = to3FixedNumber(l1p1.y);
   l1p2.x = to3FixedNumber(l1p2.x);
@@ -23,7 +25,7 @@ export function segmentIntersection(l1p1, l1p2, l2p1, l2p2) {
   return null;
 }
 
-export function lineIntersection(l1p1, l1p2, l2p1, l2p2) {
+export function lineIntersection(l1p1: Point, l1p2: Point, l2p1: Point, l2p2: Point): Point | null {
   const deltaXL1 = l1p1.x - l1p2.x;
   const deltaXL2 = l2p1.x - l2p2.x;
 

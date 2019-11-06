@@ -1,24 +1,34 @@
 import constant from './const.js';
 import {
   to3FixedNumber
-} from './mathUtil.js';
+} from './mathUtil.ts';
+import Viewer from './Viewer.ts';
+import { Point } from './Point.js';
 
 const OUT_OF_VIEW_CORD = -1000;
 
+interface OnMove {
+  (table: Table, x: number, y: number): void;
+}
+
+interface OnMoveEnd {
+  (Table): void;
+}
+
 export default class Table {
   private columns;
-  private _name;
-  private _pos;
-  private _disableMovement: boolean;
-  private _elem;
-  private _veiwer;
-  private _table;
-  private _onMove;
-  private _initialClientX;
-  private _initialClientY;
-  private _onMoveEnd: (Table) => void;
-  private _fo;
-  private _penddingCenter;
+  private nameValue: string;
+  private posValue;
+  private disableMovementValue: boolean;
+  private elem: SVGGraphicsElement;
+  private veiwer: Viewer;
+  private table: HTMLElement;
+  private onMove: OnMove;
+  private initialClientX: number;
+  private initialClientY: number;
+  private onMoveEnd: OnMoveEnd;
+  private foreignObject: Element;
+  private penddingCenter: boolean;
 
   constructor({
     name,
@@ -29,92 +39,92 @@ export default class Table {
     }
   }) {
     this.columns = columns;
-    this._name = name;
-    this._pos = pos;
+    this.nameValue = name;
+    this.posValue = pos;
 
-    this._disableMovement = false;
+    this.disableMovementValue = false;
   }
 
   get pos() {
-    return this._pos;
+    return this.posValue;
   }
 
   get name() {
-    return this._name;
+    return this.nameValue;
   }
 
-  _moveToTop() {
-    const parentNode = this._elem.parentNode;
-    // The reason for not using append of this._elem instead of remaining element prepend
+  private moveToTop() {
+    const parentNode = this.elem.parentNode;
+    // The reason for not using append of this.elem instead of remaining element prepend
     // is to keep event concistency. The following code is for making click and and double click to work.
     Array.from(parentNode.children).reverse().forEach((childElem) => {
-      if (childElem !== this._elem) {
+      if (childElem !== this.elem) {
         parentNode.prepend(childElem);
       }
     });
   }
 
-  _clickEvents() {
-    this._elem.addEventListener('dblclick', () => {
-      this._veiwer.tableDblClick(this.data());
+  private clickEvents() {
+    this.elem.addEventListener('dblclick', () => {
+      this.veiwer.tableDblClick(this.data());
     });
-    this._elem.addEventListener('click', () => {
-      this._veiwer.tableClick(this.data());
+    this.elem.addEventListener('click', () => {
+      this.veiwer.tableClick(this.data());
     });
-    this._elem.addEventListener('contextmenu', () => {
-      this._veiwer.tableContextMenu(this.data());
+    this.elem.addEventListener('contextmenu', () => {
+      this.veiwer.tableContextMenu(this.data());
     });
   }
 
-  _notAllowOutOfBound(x, y) {
+  private notAllowOutOfBound(x: number, y: number) {
     if (x < 0) x = 0;
     if (y < 0) y = 0;
-    if (x + this._table.offsetWidth > constant.VIEWER_PAN_WIDTH) {
-      x = constant.VIEWER_PAN_WIDTH - this._table.offsetWidth;
+    if (x + this.table.offsetWidth > constant.VIEWER_PAN_WIDTH) {
+      x = constant.VIEWER_PAN_WIDTH - this.table.offsetWidth;
     }
-    if (y + this._table.offsetHeight > constant.VIEWER_PAN_HEIGHT) {
-      y = constant.VIEWER_PAN_HEIGHT - this._table.offsetHeight;
+    if (y + this.table.offsetHeight > constant.VIEWER_PAN_HEIGHT) {
+      y = constant.VIEWER_PAN_HEIGHT - this.table.offsetHeight;
     }
     return {x, y};
   }
 
-  _moveEvents() {
+  private moveEvents() {
     let mouseDownInitialElemX;
     let mouseDownInitialElemY;
 
-    const mouseMove = (event) => {
+    const mouseMove = (event: MouseEvent) => {
       event.stopPropagation();
-      const mousePos = this._veiwer.getMousePosRelativeContainer(event);
+      const mousePos = this.veiwer.getMousePosRelativeContainer(event);
 
-      const normalizedClientX = mousePos.x / this._veiwer.getZoom() + this._veiwer.getPan().x / this._veiwer.getZoom();
-      const normalizedClientY = mousePos.y / this._veiwer.getZoom() + this._veiwer.getPan().y / this._veiwer.getZoom();
+      const normalizedClientX = mousePos.x / this.veiwer.getZoom() + this.veiwer.getPan().x / this.veiwer.getZoom();
+      const normalizedClientY = mousePos.y / this.veiwer.getZoom() + this.veiwer.getPan().y / this.veiwer.getZoom();
       const x = normalizedClientX - mouseDownInitialElemX;
       const y = normalizedClientY - mouseDownInitialElemY;
 
       this.setTablePos(x, y);
-      this._onMove && this._onMove(this, this._pos.x, this._pos.y);
+      this.onMove && this.onMove(this, this.posValue.x, this.posValue.y);
     };
 
-    const mouseDown = (event) => {
+    const mouseDown = (event: MouseEvent) => {
       event.stopPropagation();
-      if ((event.button === 0 || event.button == null) && this._disableMovement === false) {
-        this._table.classList.add('move');
-        const boundingRect = this._table.getBoundingClientRect();
-        mouseDownInitialElemX = (event.clientX - boundingRect.left) / this._veiwer.getZoom();
-        mouseDownInitialElemY = (event.clientY - boundingRect.top) / this._veiwer.getZoom();
+      if ((event.button === 0 || event.button == null) && this.disableMovementValue === false) {
+        this.table.classList.add('move');
+        const boundingRect = this.table.getBoundingClientRect();
+        mouseDownInitialElemX = (event.clientX - boundingRect.left) / this.veiwer.getZoom();
+        mouseDownInitialElemY = (event.clientY - boundingRect.top) / this.veiwer.getZoom();
 
-        this._initialClientX = event.clientX;
-        this._initialClientY = event.clientY;
+        this.initialClientX = event.clientX;
+        this.initialClientY = event.clientY;
 
         document.addEventListener('mousemove', mouseMove);
 
-        this._moveToTop();
+        this.moveToTop();
 
-        const mouseUp = (event) => {
-          if (this._initialClientX !== event.clientX || this._initialClientY !== event.clientY) {
-            this._onMoveEnd && this._onMoveEnd(this);
+        const mouseUp = (event: MouseEvent) => {
+          if (this.initialClientX !== event.clientX || this.initialClientY !== event.clientY) {
+            this.onMoveEnd && this.onMoveEnd(this);
           }
-          this._table.classList.remove('move');
+          this.table.classList.remove('move');
           document.removeEventListener('mouseup', mouseUp);
           document.removeEventListener('mousemove', mouseMove);
         };
@@ -122,43 +132,43 @@ export default class Table {
       }
     };
 
-    this._elem.addEventListener('mousedown', mouseDown);
-    this._elem.addEventListener('touchstart', mouseDown);
+    this.elem.addEventListener('mousedown', mouseDown);
+    this.elem.addEventListener('touchstart', mouseDown);
   }
 
-  setName(name) {
-    this._name = name;
+  setName(name: string) {
+    this.nameValue = name;
   }
 
   getName() {
-    return this._name;
+    return this.nameValue;
   }
 
   addColumn(column) {
     this.columns.push(column);
   }
 
-  setMoveListener(onMove) {
-    this._onMove = onMove;
+  setMoveListener(onMove: OnMove) {
+    this.onMove = onMove;
   }
 
-  setMoveEndListener(onMoveEnd) {
-    this._onMoveEnd = onMoveEnd;
+  setMoveEndListener(onMoveEnd: OnMoveEnd) {
+    this.onMoveEnd = onMoveEnd;
   }
 
-  private normalizeX(num) {
-    return to3FixedNumber(num / this._veiwer.getZoom() + this._veiwer.getPan().x);
+  private normalizeX(num: number): number {
+    return to3FixedNumber(num / this.veiwer.getZoom() + this.veiwer.getPan().x);
   }
 
-  private normalizeY(num) {
-    return to3FixedNumber(num / this._veiwer.getZoom() + this._veiwer.getPan().y);
+  private normalizeY(num: number): number {
+    return to3FixedNumber(num / this.veiwer.getZoom() + this.veiwer.getPan().y);
   }
 
-  getCenter() {
-    const bbox = this._elem.getBBox();
+  getCenter(): Point {
+    const bbox = this.elem.getBBox();
 
-    const x = bbox.x + this._table.offsetWidth / 2;
-    const y = bbox.y + this._table.offsetHeight / 2;
+    const x = bbox.x + this.table.offsetWidth / 2;
+    const y = bbox.y + this.table.offsetHeight / 2;
     return {
       x,
       y,
@@ -166,17 +176,17 @@ export default class Table {
   }
 
   getSides() {
-    const bbox = this._elem.getBBox();
+    const bbox = this.elem.getBBox();
 
     return {
       right: {
         p1: {
-          x: bbox.x + this._table.offsetWidth,
+          x: bbox.x + this.table.offsetWidth,
           y: bbox.y,
         },
         p2: {
-          x: bbox.x + this._table.offsetWidth,
-          y: bbox.y + this._table.offsetHeight,
+          x: bbox.x + this.table.offsetWidth,
+          y: bbox.y + this.table.offsetHeight,
         },
       },
       left: {
@@ -186,7 +196,7 @@ export default class Table {
         },
         p2: {
           x: bbox.x,
-          y: bbox.y + this._table.offsetHeight,
+          y: bbox.y + this.table.offsetHeight,
         },
       },
       top: {
@@ -195,43 +205,43 @@ export default class Table {
           y: bbox.y,
         },
         p2: {
-          x: bbox.x + this._table.offsetWidth,
+          x: bbox.x + this.table.offsetWidth,
           y: bbox.y,
         },
       },
       bottom: {
         p1: {
           x: bbox.x,
-          y: bbox.y + this._table.offsetHeight,
+          y: bbox.y + this.table.offsetHeight,
         },
         p2: {
-          x: bbox.x + this._table.offsetWidth,
-          y: bbox.y + this._table.offsetHeight,
+          x: bbox.x + this.table.offsetWidth,
+          y: bbox.y + this.table.offsetHeight,
         },
       },
     };
   }
 
   render() {
-    this._elem = document.createElementNS(constant.nsSvg, 'g');
-    this._fo = document.createElementNS(constant.nsSvg, 'foreignObject');
-    this._elem.appendChild(this._fo);
+    this.elem = <SVGGraphicsElement> document.createElementNS(constant.nsSvg, 'g');
+    this.foreignObject = document.createElementNS(constant.nsSvg, 'foreignObject');
+    this.elem.appendChild(this.foreignObject);
 
-    this._table = document.createElementNS(constant.nsHtml, 'table');
-    this._table.className = 'table';
+    this.table = <HTMLElement> document.createElementNS(constant.nsHtml, 'table');
+    this.table.className = 'table';
     const headingTr = document.createElementNS(constant.nsHtml, 'tr');
-    this._table.appendChild(headingTr);
+    this.table.appendChild(headingTr);
     const headingTh = document.createElementNS(constant.nsHtml, 'th');
     headingTh.setAttributeNS(null, 'colspan', 3 + '');
-    headingTh.innerHTML = this._name;
+    headingTh.innerHTML = this.nameValue;
     headingTr.appendChild(headingTh);
 
-    this._fo.appendChild(this._table);
+    this.foreignObject.appendChild(this.table);
 
     this.columns.forEach((column) => {
       const columnTr = document.createElementNS(constant.nsHtml, 'tr');
       column.elem = columnTr;
-      this._table.appendChild(columnTr);
+      this.table.appendChild(columnTr);
 
       const columnStatusTd = document.createElementNS(constant.nsHtml, 'td');
       if (column.pk) {
@@ -259,65 +269,65 @@ export default class Table {
       }
       columnTr.appendChild(columnTypeTd);
     });
-    this._clickEvents();
-    this._moveEvents();
+    this.clickEvents();
+    this.moveEvents();
 
-    if (this._pos === 'center-viewport') {
+    if (this.posValue === 'center-viewport') {
       this.setTablePos(OUT_OF_VIEW_CORD, OUT_OF_VIEW_CORD, true);
-      this._penddingCenter = true;
+      this.penddingCenter = true;
     } else {
-      this.setTablePos(this._pos.x, this._pos.y);
+      this.setTablePos(this.posValue.x, this.posValue.y);
     }
 
     // After render happened
     setTimeout(() => {
-      let borderWidth = parseInt(getComputedStyle(this._table).borderWidth, 10);
+      let borderWidth = parseInt(getComputedStyle(this.table).borderWidth, 10);
       borderWidth = isNaN(borderWidth)? 0: borderWidth;
-      this._fo.setAttributeNS(null, 'width', this._table.scrollWidth + borderWidth);
-      this._fo.setAttributeNS(null, 'height', this._table.scrollHeight + borderWidth);
+      this.foreignObject.setAttributeNS(null, 'width', (this.table.scrollWidth + borderWidth).toString());
+      this.foreignObject.setAttributeNS(null, 'height', (this.table.scrollHeight + borderWidth).toString());
     });
 
-    return this._elem;
+    return this.elem;
   }
 
   postDraw() {
-    if (this._penddingCenter) {
-      this._center();
+    if (this.penddingCenter) {
+      this.center();
     }
   }
 
-  setTablePos(x, y, disableOutOfBoundCheck = false) {
+  setTablePos(x: number, y: number, disableOutOfBoundCheck = false) {
     if (!disableOutOfBoundCheck) {
-      const result = this._notAllowOutOfBound(x, y);
+      const result = this.notAllowOutOfBound(x, y);
       x = result.x;
       y = result.y;
     }
-    this._pos = {
+    this.posValue = {
       x, y
     };
-    this._fo.setAttributeNS(null, 'x', x);
-    this._fo.setAttributeNS(null, 'y', y);
-    this._onMove && this._onMove(this, x, y);
+    this.foreignObject.setAttributeNS(null, 'x', x.toString());
+    this.foreignObject.setAttributeNS(null, 'y', y.toString());
+    this.onMove && this.onMove(this, x, y);
   }
 
-  _center() {
-    const viewport = this._veiwer.getViewPort();
-    const x = viewport.x + viewport.width / 2 - this._table.offsetWidth / this._veiwer.getZoom() / 2;
-    const y = viewport.y + viewport.height / 2 - this._table.offsetHeight / this._veiwer.getZoom() / 2;
+  private center() {
+    const viewport = this.veiwer.getViewPort();
+    const x = viewport.x + viewport.width / 2 - this.table.offsetWidth / this.veiwer.getZoom() / 2;
+    const y = viewport.y + viewport.height / 2 - this.table.offsetHeight / this.veiwer.getZoom() / 2;
     this.setTablePos(x, y);
   }
 
   data() {
     return {
-      name: this._name,
-      pos: this._pos,
-      width: this._table.offsetWidth,
-      height: this._table.offsetHeight
+      name: this.nameValue,
+      pos: this.posValue,
+      width: this.table.offsetWidth,
+      height: this.table.offsetHeight
     };
   }
 
-  setVeiwer(veiwer) {
-    this._veiwer = veiwer;
+  setVeiwer(veiwer: Viewer) {
+    this.veiwer = veiwer;
   }
 
   highlightFrom(column) {
@@ -336,7 +346,7 @@ export default class Table {
     column.elem.classList.remove('toRelation');
   }
 
-  disableMovement(value) {
-    this._disableMovement = value;
+  disableMovement(value: boolean) {
+    this.disableMovementValue = value;
   }
 }

@@ -1,21 +1,20 @@
-import Viewer from './Viewer.js';
+import Viewer from './Viewer.ts';
 import schemaParser from './schemaParser.js';
 import template from './template.js';
 import validateJson from './validate-schema';
+import {Schema} from './Schema';
+import Table from './Table';
 
 const NO_TABLE = new Error(`No table exist with the given name.`);
 const INVALID_FILE_FORMAT = new Error('Invalid file format.');
 
 class DBViewer extends HTMLElement {
   private readyPromise: Promise<null>;
-  private readyPromiseResolve: Function;
-  private viewer;
-  private tables: Array<any>;
+  private readyPromiseResolve: () => void;
+  private viewer: Viewer;
+  private tables: Array<Table>;
   private srcVal: string;
-  private notParsedSchema: {
-    arrangement: string;
-    tables: Array<any>
-  };
+  private notParsedSchema: Schema;
 
   constructor() {
     super();
