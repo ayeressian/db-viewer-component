@@ -1,7 +1,7 @@
-import Relation from './Relation.ts';
+import Relation from './Relation';
 import constant from './const.js';
-import Minimap from './Minimap.ts';
-import { Orientation } from './Orientation.ts';
+import Minimap from './Minimap';
+import { Orientation } from './Orientation';
 import Table from './Table';
 
 export default class Viewer {
@@ -174,20 +174,20 @@ export default class Viewer {
       const pendingSelfRelations = tableRelations.filter((relation) => relation.calcPathTableSides());
 
       const leftRelations = tableRelations.filter((r) =>
-        ((r.toTable === table && r.toTablePathSide === constant.PATH_LEFT) ||
-          (r.fromTable === table && r.fromTablePathSide === constant.PATH_LEFT)) &&
+        ((r.toTable === table && r.toTablePathSide === Orientation.Left) ||
+          (r.fromTable === table && r.fromTablePathSide === Orientation.Left)) &&
         !r.sameTableRelation());
       const rightRelations = tableRelations.filter((r) =>
-        ((r.toTable === table && r.toTablePathSide === constant.PATH_RIGHT) ||
-          (r.fromTable === table && r.fromTablePathSide === constant.PATH_RIGHT)) &&
+        ((r.toTable === table && r.toTablePathSide === Orientation.Right) ||
+          (r.fromTable === table && r.fromTablePathSide === Orientation.Right)) &&
         !r.sameTableRelation());
       const topRelations = tableRelations.filter((r) =>
-        ((r.toTable === table && r.toTablePathSide === constant.PATH_TOP) ||
-          (r.fromTable === table && r.fromTablePathSide === constant.PATH_TOP)) &&
+        ((r.toTable === table && r.toTablePathSide === Orientation.Top) ||
+          (r.fromTable === table && r.fromTablePathSide === Orientation.Top)) &&
         !r.sameTableRelation());
       const bottomRelations = tableRelations.filter((r) =>
-        ((r.toTable === table && r.toTablePathSide === constant.PATH_BOTTOM) ||
-          (r.fromTable === table && r.fromTablePathSide === constant.PATH_BOTTOM)) &&
+        ((r.toTable === table && r.toTablePathSide === Orientation.Bottom) ||
+          (r.fromTable === table && r.fromTablePathSide === Orientation.Bottom)) &&
         !r.sameTableRelation());
 
       Relation.ySort(leftRelations, table);
@@ -229,23 +229,23 @@ export default class Viewer {
         switch (minPathSideCount.side) {
           case Orientation.Left:
             leftRelations.push(pendingSelfRelation);
-            pendingSelfRelation.fromTablePathSide = constant.PATH_LEFT;
-            pendingSelfRelation.toTablePathSide = constant.PATH_LEFT;
+            pendingSelfRelation.fromTablePathSide = Orientation.Left;
+            pendingSelfRelation.toTablePathSide = Orientation.Left;
             break;
           case Orientation.Right:
             rightRelations.push(pendingSelfRelation);
-            pendingSelfRelation.fromTablePathSide = constant.PATH_RIGHT;
-            pendingSelfRelation.toTablePathSide = constant.PATH_RIGHT;
+            pendingSelfRelation.fromTablePathSide = Orientation.Right;
+            pendingSelfRelation.toTablePathSide = Orientation.Right;
             break;
           case Orientation.Top:
             topRelations.push(pendingSelfRelation);
-            pendingSelfRelation.fromTablePathSide = constant.PATH_TOP;
-            pendingSelfRelation.toTablePathSide = constant.PATH_TOP;
+            pendingSelfRelation.fromTablePathSide = Orientation.Top;
+            pendingSelfRelation.toTablePathSide = Orientation.Top;
             break;
           case Orientation.Bottom:
             bottomRelations.push(pendingSelfRelation);
-            pendingSelfRelation.fromTablePathSide = constant.PATH_BOTTOM;
-            pendingSelfRelation.toTablePathSide = constant.PATH_BOTTOM;
+            pendingSelfRelation.fromTablePathSide = Orientation.Bottom;
+            pendingSelfRelation.toTablePathSide = Orientation.Bottom;
             break;
         }
         minPathSideCount.count += 2;
@@ -388,7 +388,7 @@ export default class Viewer {
     return Promise.all([this.setPanX(viewportX), this.setPanY(viewportY)]);
   }
 
-  private getTableRelations(table) {
+  private getTableRelations(table: Table): Array<Relation> {
     return this.relationInfos.filter((relations) => {
       return relations.fromTable === table || relations.toTable === table;
     });

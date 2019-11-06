@@ -1,8 +1,8 @@
 import constant from './const.js';
 import {
   to3FixedNumber
-} from './mathUtil.ts';
-import Viewer from './Viewer.ts';
+} from './mathUtil';
+import Viewer from './Viewer';
 import { Point } from './Point.js';
 
 const OUT_OF_VIEW_CORD = -1000;

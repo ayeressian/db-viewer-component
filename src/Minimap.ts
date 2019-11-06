@@ -1,5 +1,5 @@
 import constant from './const.js';
-import Viewer from './Viewer.ts';
+import Viewer from './Viewer';
 
 export default class Minimap {
   private mainElem: ShadowRoot;

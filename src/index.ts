@@ -1,4 +1,4 @@
-import Viewer from './Viewer.ts';
+import Viewer from './Viewer';
 import schemaParser from './schemaParser.js';
 import template from './template.js';
 import validateJson from './validate-schema';

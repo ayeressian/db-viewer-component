@@ -3,6 +3,6 @@
     "target": "es2018",
     "module": "commonjs",
     "allowJs": true,
-    "sourceMap": true
+    "sourceMap": true,
   }
 }
