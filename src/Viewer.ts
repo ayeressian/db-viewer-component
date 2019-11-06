@@ -254,7 +254,7 @@ export default class Viewer {
       this.updatePathIndex(leftRelations, Orientation.Left, sidesAndCount, table);
       this.updatePathIndex(rightRelations, Orientation.Right, sidesAndCount, table);
       this.updatePathIndex(topRelations, Orientation.Top, sidesAndCount, table);
-      this.updatePathIndex(bottomRelations, Orientation.Left, sidesAndCount, table);
+      this.updatePathIndex(bottomRelations, Orientation.Bottom, sidesAndCount, table);
     });
 
     this.relationInfos.forEach((relation) => {
