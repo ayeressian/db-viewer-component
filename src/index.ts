@@ -1,6 +1,6 @@
 import Viewer from './Viewer';
-import schemaParser from './schemaParser.js';
-import template from './template.js';
+import schemaParser from './schemaParser';
+import template from './template';
 import validateJson from './validate-schema';
 import {Schema} from './Schema';
 import Table from './Table';
@@ -173,7 +173,7 @@ class DBViewer extends HTMLElement {
     }
     this.notParsedSchema = JSON.parse(JSON.stringify(schema));
     const schemaObj = JSON.parse(JSON.stringify(schema));
-    this.tables = schemaParser(schema);
+    this.tables = schemaParser(schemaObj);
     this.viewer.load(this.tables, schemaObj.viewport, schemaObj.arrangement);
   }
 

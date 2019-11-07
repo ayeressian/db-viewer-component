@@ -1,7 +1,7 @@
 import {
   segmentIntersection
 } from './mathUtil';
-import constant from './const.js';
+import constant from './const';
 import { Point } from './Point';
 import Table from './Table';
 import { Orientation } from './Orientation';
@@ -56,7 +56,7 @@ export default class Relation {
     throw new Error("Method not implemented.");
   }
 
-  private getPosOnLine(pathIndex, pathCount, sideLength) {
+  private getPosOnLine(pathIndex: number, pathCount: number, sideLength: number) {
     return (pathIndex + 1) * (sideLength / (pathCount + 1));
   }
 
@@ -143,7 +143,6 @@ export default class Relation {
     }
 
     const d = `${dStartLine} ${dPath} ${dArrow}`;
-    debugger;
     const path = this.createPath(d);
 
     const highlight = this.createHighlightTrigger(d);
@@ -475,9 +474,13 @@ export default class Relation {
 
     const toMany = !this.fromColumn.uq;
 
-    let startMethod;
-    let endMethod;
-    let resultMethod;
+    interface StartEndMethod {
+      (tableSides, pathIndex: number, pathCount: number): Point;
+    }
+
+    let startMethod: StartEndMethod;
+    let endMethod: StartEndMethod;
+    let resultMethod: (start: Point, end: Point, oneTo: boolean, toMany: boolean) => PathHeighlight;
 
     switch (this.fromTablePathSide) {
       case Orientation.Left:

@@ -1,5 +1,5 @@
 import Relation from './Relation';
-import constant from './const.js';
+import constant from './const';
 import Minimap from './Minimap';
 import { Orientation } from './Orientation';
 import Table from './Table';

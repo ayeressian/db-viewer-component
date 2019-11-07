@@ -1,9 +1,9 @@
-import constant from './const.js';
+import constant from './const';
 import {
   to3FixedNumber
 } from './mathUtil';
 import Viewer from './Viewer';
-import { Point } from './Point.js';
+import { Point } from './Point';
 
 const OUT_OF_VIEW_CORD = -1000;
 
@@ -51,6 +51,10 @@ export default class Table {
 
   get name() {
     return this.nameValue;
+  }
+
+  getColumns() {
+    return this.columns;
   }
 
   private moveToTop() {

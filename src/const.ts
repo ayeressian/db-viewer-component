@@ -1,8 +1,4 @@
 const constant = {
-  PATH_LEFT: 'left',
-  PATH_RIGHT: 'right',
-  PATH_TOP: 'top',
-  PATH_BOTTOM: 'bottom',
   VIEWER_PAN_HEIGHT: 3000,
   VIEWER_PAN_WIDTH: 3000,
   SPIRAL_ARRANGE_DIST_X: 200,

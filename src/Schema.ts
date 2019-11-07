@@ -1,3 +1,5 @@
+import { Point } from "./Point";
+
 export interface ColumnSchema {
   name: string;
   fk: boolean;
@@ -5,7 +7,7 @@ export interface ColumnSchema {
 
 export interface TableSchema {
   name: string;
-  pos: object;
+  pos: Point;
   columns: Array<ColumnSchema>;
 }
 

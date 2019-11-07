@@ -8,4 +8,3 @@ export default function validateJson(dbSchema) {
   const validJson = ajvCompiled(dbSchema);
   return validJson;
 }
-

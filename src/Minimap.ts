@@ -1,4 +1,4 @@
-import constant from './const.js';
+import constant from './const';
 import Viewer from './Viewer';
 
 export default class Minimap {
