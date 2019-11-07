@@ -1,4 +1,4 @@
-const context = require.context('.', true, /\.test\.js$/);
+const context = require.context('.', true, /\.test\.ts$/);
 
 context.keys().forEach(context);
 

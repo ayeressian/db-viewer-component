@@ -1,33 +1,28 @@
 import constant from './const';
 import Viewer from './Viewer';
+import Table from './Table';
 
 export default class Minimap {
-  private mainElem: ShadowRoot;
-  private viewer: any;
   private minimap: Element;
   private viewpoint: Element;
   private btnZoomIn: Element;
   private btnZoomOut: Element;
-  private svgElem: SVGGraphicsElement;
   private tableMinimap: Map<any, any>;
   private viewBoxVals: any;
 
   onContainerMouseLeave: () => void;
   onContainerMouseUp: any;
 
-  constructor(mainElem: ShadowRoot, viewer: Viewer, svgElem: SVGGraphicsElement) {
-    this.mainElem = mainElem;
-    this.viewer = viewer;
+  constructor(private mainElem: ShadowRoot, private viewer: Viewer, private svgElem: SVGGraphicsElement) {
     this.minimap = this.mainElem.getElementById('minimap');
     this.viewpoint = this.mainElem.getElementById('viewpoint');
     this.btnZoomIn = this.mainElem.getElementById('btn-zoom-in');
     this.btnZoomOut = this.mainElem.getElementById('btn-zoom-out');
-    this.svgElem = svgElem;
-    this._setUpEvents();
+    this.setUpEvents();
     this.reset();
   }
 
-  _setUpEvents() {
+  private setUpEvents() {
     this.btnZoomIn.addEventListener('click', this.viewer.zoomIn.bind(this.viewer));
     this.btnZoomOut.addEventListener('click', this.viewer.zoomOut.bind(this.viewer));
 
@@ -81,20 +76,20 @@ export default class Minimap {
     this.viewpoint.setAttributeNS(null, 'height', viewBoxVals.height);
   }
 
-  createTable(table) {
+  createTable(table: Table) {
     const tableMini = document.createElementNS(constant.nsSvg, 'rect');
     tableMini.setAttributeNS(null, 'class', 'mini_table');
     this.tableMinimap.set(table, tableMini);
     this.minimap.appendChild(tableMini);
   }
 
-  setTableDim(table, x, y) {
+  setTableDim(table: Table, x: number, y: number) {
     const miniTable = this.tableMinimap.get(table);
     miniTable.setAttributeNS(null, 'width', x);
     miniTable.setAttributeNS(null, 'height', y);
   }
 
-  onTableMove(table, deltaX, deltaY) {
+  onTableMove(table: Table, deltaX: number, deltaY: number) {
     const minimapTableElem = this.tableMinimap.get(table);
 
     minimapTableElem.setAttributeNS(null, 'x', deltaX);

@@ -1,6 +1,6 @@
 import chai from 'chai';
-import schemaParser from '../src/schemaParser.js';
-import constant from '../src/const.js';
+import schemaParser from '../src/schemaParser';
+import constant from '../src/const';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
@@ -10,14 +10,14 @@ chai.use(sinonChai);
 
 describe('Viewer', () => {
   const subject = () => {
-    delete require.cache[require.resolve('../src/Viewer.js')];
-    return require('../src/Viewer.js').default;
+    delete require.cache[require.resolve('../src/Viewer.ts')];
+    return require('../src/Viewer.ts').default;
   };
   describe('Viewer.prototype._arrangTablesSpiral', () => {
     it('Orders table in correct way', () => {
       const Viewer = subject();
       const schema = {
-        tables: Array(7).fill().map((val, i) => ({name: `${i}`, columns: []}))
+        tables: Array(7).fill(null).map((val, i) => ({name: `${i}`, columns: []}))
       };
       let tables = schemaParser(schema);
       tables.forEach((table) => table.setTablePos = sinon.fake());

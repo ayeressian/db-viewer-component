@@ -7,12 +7,12 @@ export interface ColumnSchema {
 
 export interface TableSchema {
   name: string;
-  pos: Point;
+  pos?: Point;
   columns: Array<ColumnSchema>;
 }
 
 export interface Schema {
   tables: Array<TableSchema>;
-  arrangement: string;
-  viewport: string;
+  arrangement?: string;
+  viewport?: string;
 }

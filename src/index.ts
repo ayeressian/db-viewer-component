@@ -138,7 +138,7 @@ class DBViewer extends HTMLElement {
     return ['src', 'disable-table-movement'];
   }
 
-  attributeChangedCallback(name: string, oldValue, newValue: string) {
+  attributeChangedCallback(name: string, _oldValue: string, newValue: string) {
     switch (name) {
       case 'src':
       this.srcVal = newValue;
@@ -184,7 +184,7 @@ class DBViewer extends HTMLElement {
     return JSON.stringify(this.notParsedSchema);
   }
 
-  set disableTableMovement(value) {
+  set disableTableMovement(value: boolean) {
     if (value) {
       this.setAttribute('disable-table-movement', '');
     } else {

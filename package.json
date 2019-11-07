@@ -28,6 +28,8 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.12.6",
     "babel-eslint": "^8.2.6",
     "chai": "^4.2.0",
     "css-loader": "^1.0.1",

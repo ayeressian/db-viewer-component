@@ -8,8 +8,8 @@ chai.use(sinonChai);
 
 describe('Relation', () => {
   const subject = () => {
-    delete require.cache[require.resolve('../src/Relation.js')];
-    return require('../src/Relation.js').default;
+    delete require.cache[require.resolve('../src/Relation.ts')];
+    return require('../src/Relation.ts').default;
   };
   describe('Path calculation', () => {
     const Relation = subject();

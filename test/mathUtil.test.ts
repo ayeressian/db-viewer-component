@@ -1,5 +1,5 @@
 import chai from 'chai';
-import {segmentIntersection, lineIntersection, to3FixedNumber} from '../src/mathUtil.js';
+import {segmentIntersection, lineIntersection, to3FixedNumber} from '../src/mathUtil';
 
 const expect = chai.expect;
 describe('mathUtil', () => {
