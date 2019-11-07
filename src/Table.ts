@@ -1,7 +1,4 @@
 import constant from './const';
-import {
-  to3FixedNumber
-} from './mathUtil';
 import Viewer from './Viewer';
 import Point from './Point';
 
@@ -12,7 +9,7 @@ interface OnMove {
 }
 
 interface OnMoveEnd {
-  (Table): void;
+  (table: Table): void;
 }
 
 export default class Table {
@@ -93,8 +90,8 @@ export default class Table {
   }
 
   private moveEvents() {
-    let mouseDownInitialElemX;
-    let mouseDownInitialElemY;
+    let mouseDownInitialElemX: number;
+    let mouseDownInitialElemY: number;
 
     const mouseMove = (event: MouseEvent) => {
       event.stopPropagation();
@@ -158,14 +155,6 @@ export default class Table {
 
   setMoveEndListener(onMoveEnd: OnMoveEnd) {
     this.onMoveEnd = onMoveEnd;
-  }
-
-  private normalizeX(num: number): number {
-    return to3FixedNumber(num / this.veiwer.getZoom() + this.veiwer.getPan().x);
-  }
-
-  private normalizeY(num: number): number {
-    return to3FixedNumber(num / this.veiwer.getZoom() + this.veiwer.getPan().y);
   }
 
   getCenter(): Point {

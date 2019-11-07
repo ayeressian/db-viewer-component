@@ -592,9 +592,9 @@ export default class Relation {
     return this.fromTable === this.toTable;
   }
 
-  calcPathTableSides() {
+  calcPathTableSides(): boolean {
     if (this.fromTable === this.toTable) {
-      return this;
+      return true;
     }
     const fromTableCenter = this.fromTable.getCenter();
     const toTableCenter = this.toTable.getCenter();
@@ -644,6 +644,7 @@ export default class Relation {
       this.toIntersectPoint = intersectToTableBottomSide;
       this.toTablePathSide = Orientation.Bottom;
     }
+    return false;
   }
 
   getElems() {

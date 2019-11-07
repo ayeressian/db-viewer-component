@@ -8,7 +8,6 @@ export default class Minimap {
   private btnZoomIn: Element;
   private btnZoomOut: Element;
   private tableMinimap: Map<any, any>;
-  private viewBoxVals: any;
 
   onContainerMouseLeave: () => void;
   onContainerMouseUp: any;
@@ -69,7 +68,6 @@ export default class Minimap {
   }
 
   setMinimapViewPoint(viewBoxVals) {
-    this.viewBoxVals = viewBoxVals;
     this.viewpoint.setAttributeNS(null, 'x', viewBoxVals.x);
     this.viewpoint.setAttributeNS(null, 'y', viewBoxVals.y);
     this.viewpoint.setAttributeNS(null, 'width', viewBoxVals.width);
