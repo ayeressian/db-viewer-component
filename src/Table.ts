@@ -3,7 +3,7 @@ import {
   to3FixedNumber
 } from './mathUtil';
 import Viewer from './Viewer';
-import { Point } from './Point';
+import Point from './Point';
 
 const OUT_OF_VIEW_CORD = -1000;
 

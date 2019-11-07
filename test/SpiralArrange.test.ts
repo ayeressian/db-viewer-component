@@ -10,18 +10,18 @@ chai.use(sinonChai);
 
 describe('Viewer', () => {
   const subject = () => {
-    delete require.cache[require.resolve('../src/Viewer.ts')];
-    return require('../src/Viewer.ts').default;
+    delete require.cache[require.resolve('../src/SpiralArrange.ts')];
+    return require('../src/SpiralArrange.ts').default;
   };
-  describe('Viewer.prototype._arrangTablesSpiral', () => {
+  describe('SpiralArrange.call', () => {
     it('Orders table in correct way', () => {
-      const Viewer = subject();
+      const SpiralArrange = subject();
       const schema = {
         tables: Array(7).fill(null).map((val, i) => ({name: `${i}`, columns: []}))
       };
       let tables = schemaParser(schema);
       tables.forEach((table) => table.setTablePos = sinon.fake());
-      tables = Viewer.prototype._arrangTablesSpiral(tables);
+      tables = SpiralArrange.call(tables);
 
       const centerX = constant.VIEWER_PAN_WIDTH / 2;
       const centerY = constant.VIEWER_PAN_HEIGHT / 2;

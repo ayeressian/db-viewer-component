@@ -2,9 +2,9 @@ import {
   segmentIntersection
 } from './mathUtil';
 import constant from './const';
-import { Point } from './Point';
+import Point from './Point';
 import Table from './Table';
-import { Orientation } from './Orientation';
+import Orientation from './Orientation';
 
 const PATH_ARROW_LENGTH = 9;
 const PATH_ARROW_HEIGHT = 4;
