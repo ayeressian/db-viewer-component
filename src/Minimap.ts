@@ -9,7 +9,7 @@ export default class Minimap {
   private btnZoomOut: Element;
   private tableMinimap?: Map<any, any>;
 
-  onContainerMouseLeave?: () => void;
+  onContainerMouseLeave?: (event: MouseEvent) => void;
   onContainerMouseUp: any;
 
   constructor(private mainElem: ShadowRoot, private viewer: Viewer, private svgElem: SVGGraphicsElement) {

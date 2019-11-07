@@ -2,6 +2,7 @@ import constant from './const';
 import Viewer from './Viewer';
 import Point from './Point';
 import { TableSchema } from './Schema';
+import TableData from './TableData';
 
 const OUT_OF_VIEW_CORD = -1000;
 
@@ -98,8 +99,8 @@ export default class Table {
       event.stopPropagation();
       const mousePos = this.veiwer!.getMousePosRelativeContainer(event);
 
-      const normalizedClientX = mousePos.x / this.veiwer!.getZoom() + this.veiwer!.getPan().x / this.veiwer!.getZoom();
-      const normalizedClientY = mousePos.y / this.veiwer!.getZoom() + this.veiwer!.getPan().y / this.veiwer!.getZoom();
+      const normalizedClientX = mousePos.x / this.veiwer!.getZoom()! + this.veiwer!.getPan().x / this.veiwer!.getZoom()!;
+      const normalizedClientY = mousePos.y / this.veiwer!.getZoom()! + this.veiwer!.getPan().y / this.veiwer!.getZoom()!;
       const x = normalizedClientX - mouseDownInitialElemX;
       const y = normalizedClientY - mouseDownInitialElemY;
 
@@ -112,8 +113,8 @@ export default class Table {
       if ((event.button === 0 || event.button == null) && this.disableMovementValue === false) {
         this.table!.classList.add('move');
         const boundingRect = this.table!.getBoundingClientRect();
-        mouseDownInitialElemX = (event.clientX - boundingRect.left) / this.veiwer!.getZoom();
-        mouseDownInitialElemY = (event.clientY - boundingRect.top) / this.veiwer!.getZoom();
+        mouseDownInitialElemX = (event.clientX - boundingRect.left) / this.veiwer!.getZoom()!;
+        mouseDownInitialElemY = (event.clientY - boundingRect.top) / this.veiwer!.getZoom()!;
 
         this.initialClientX = event.clientX;
         this.initialClientY = event.clientY;
@@ -306,12 +307,12 @@ export default class Table {
 
   private center() {
     const viewport = this.veiwer!.getViewPort();
-    const x = viewport.x + viewport.width / 2 - this.table!.offsetWidth / this.veiwer!.getZoom() / 2;
-    const y = viewport.y + viewport.height / 2 - this.table!.offsetHeight / this.veiwer!.getZoom() / 2;
+    const x = viewport.x + viewport.width / 2 - this.table!.offsetWidth / this.veiwer!.getZoom()! / 2;
+    const y = viewport.y + viewport.height / 2 - this.table!.offsetHeight / this.veiwer!.getZoom()! / 2;
     this.setTablePos(x, y);
   }
 
-  data() {
+  data(): TableData {
     return {
       name: this.nameValue,
       pos: this.posValue,

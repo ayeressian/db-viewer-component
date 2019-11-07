@@ -4,6 +4,7 @@ import template from './template';
 import validateJson from './validate-schema';
 import {Schema} from './Schema';
 import Table from './Table';
+import TableData from './TableData';
 
 const NO_TABLE = new Error(`No table exist with the given name.`);
 const INVALID_FILE_FORMAT = new Error('Invalid file format.');
@@ -50,7 +51,7 @@ class DBViewer extends HTMLElement {
     this.dispatchEvent(new CustomEvent('ready'));
   }
 
-  private checkWindowLoaded() {
+  private checkWindowLoaded(): boolean {
     return document.readyState === 'complete';
   }
 
@@ -58,20 +59,24 @@ class DBViewer extends HTMLElement {
     this.dispatchEvent(new CustomEvent('viewportClick', {detail: {x, y}}));
   }
 
-  private onTableClick(tableData) {
+  private onTableClick(tableData: TableData) {
     this.dispatchEvent(new CustomEvent('tableClick', {detail: tableData}));
   }
 
-  private onTableDblClick(tableData) {
+  private onTableDblClick(tableData: TableData) {
     this.dispatchEvent(new CustomEvent('tableDblClick', {detail: tableData}));
   }
 
-  private onTableContextMenu(tableData) {
+  private onTableContextMenu(tableData: TableData) {
     this.dispatchEvent(new CustomEvent('tableContextMenu', {detail: tableData}));
   }
 
-  private onTableMove(tableData) {
+  private onTableMove(tableData: TableData) {
     this.dispatchEvent(new CustomEvent('tableMove', {detail: tableData}));
+  }
+
+  private onTableMoveEnd(tableData: TableData) {
+    this.dispatchEvent(new CustomEvent('tableMoveEnd', {detail: tableData}));
   }
 
   private onZoomIn(zoom: number) {
@@ -80,10 +85,6 @@ class DBViewer extends HTMLElement {
 
   private onZoomOut(zoom: number) {
     this.dispatchEvent(new CustomEvent('zoomOut', {detail: {zoom}}));
-  }
-
-  private onTableMoveEnd(tableData) {
-    this.dispatchEvent(new CustomEvent('tableMoveEnd', {detail: tableData}));
   }
 
   get scrollLeft(): number {
@@ -103,7 +104,7 @@ class DBViewer extends HTMLElement {
   }
 
   getZoom(): number {
-    return this.viewer!.getZoom();
+    return this.viewer!.getZoom()!;
   }
 
   zoomIn() {
