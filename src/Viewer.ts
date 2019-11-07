@@ -14,18 +14,19 @@ export default class Viewer {
   private viewBoxVals: { x: number; y: number; width: any; height: any; };
   private zoom: any;
   private callbacks: any;
-  isTableMovementDisabled: boolean;
-  private relationInfos: any[];
-  tables: Array<Table>;
+  private relationInfos?: any[];
   private panXResolver: any;
   private panYResolver: any;
   private safariScale: any;
+
+  isTableMovementDisabled: boolean;
+  tables?: Array<Table>;
 
   constructor(private mainElem: ShadowRoot) {
     this.container = this.mainElem.getElementById('veiwer-container');
 
     this.svgElem = <SVGGraphicsElement><any>this.mainElem.getElementById('veiwer');
-    this.svgContainer = this.mainElem.querySelector('.svg-container');
+    this.svgContainer = <HTMLElement>this.mainElem.querySelector('.svg-container');
 
     this.minimap = new Minimap(mainElem, this, this.svgElem);
 
@@ -120,7 +121,7 @@ export default class Viewer {
   }
 
   private drawRelations() {
-    this.tables.forEach((table) => {
+    this.tables!.forEach((table) => {
       const tableRelations = this.getTableRelations(table);
 
       const pendingSelfRelations = tableRelations.filter((relation) => relation.calcPathTableSides());
@@ -209,7 +210,7 @@ export default class Viewer {
       this.updatePathIndex(bottomRelations, Orientation.Bottom, sidesAndCount, table);
     });
 
-    this.relationInfos.forEach((relation) => {
+    this.relationInfos!.forEach((relation) => {
       relation.removeHoverEffect();
       relation.getElems().forEach((elem) => this.svgElem.removeChild(elem));
       const elems = relation.render();
@@ -225,7 +226,7 @@ export default class Viewer {
 
     this.minimap.removeTables();
 
-    this.tables.forEach((table, i) => {
+    this.tables!.forEach((table, i) => {
       this.minimap.createTable(table);
 
       const tableElm = table.render();
@@ -245,7 +246,7 @@ export default class Viewer {
             toColumn: column.fk.column,
           };
           relationInfo = new Relation(relationInfo);
-          this.relationInfos.push(relationInfo);
+          this.relationInfos!.push(relationInfo);
         }
       });
 
@@ -273,7 +274,7 @@ export default class Viewer {
     // After draw happened
     setTimeout(() => {
       this.drawRelations();
-      this.setViewPort(viewport).then(() => this.tables.forEach((table) => table.postDraw && table.postDraw()));
+      this.setViewPort(viewport).then(() => this.tables!.forEach((table) => table.postDraw && table.postDraw()));
     });
   }
 
@@ -287,7 +288,7 @@ export default class Viewer {
       {
         let totalX = 0;
         let totalY = 0;
-        const filteredTables = this.tables.filter((table) => {
+        const filteredTables = this.tables!.filter((table) => {
           const data = table.data();
           return data.pos.x >= 0 && data.pos.y >= 0;
         });
@@ -312,14 +313,14 @@ export default class Viewer {
       break;
       default: // centerByTables
       {
-        if (this.tables.length === 0) {
+        if (this.tables!.length === 0) {
           return this.setViewPort('center');
         }
         let minX = Number.MAX_SAFE_INTEGER;
         let minY = Number.MAX_SAFE_INTEGER;
         let maxX = Number.MIN_SAFE_INTEGER;
         let maxY = Number.MIN_SAFE_INTEGER;
-        this.tables.forEach((table) => {
+        this.tables!.forEach((table) => {
           const data = table.data();
           if (data.pos.x >= 0 && data.pos.y >= 0) {
             if (data.pos.x < minX) minX = data.pos.x;
@@ -337,11 +338,11 @@ export default class Viewer {
       }
       break;
     }
-    return Promise.all([this.setPanX(viewportX), this.setPanY(viewportY)]);
+    return Promise.all([this.setPanX(viewportX!), this.setPanY(viewportY!)]);
   }
 
   private getTableRelations(table: Table): Array<Relation> {
-    return this.relationInfos.filter((relations) => {
+    return this.relationInfos!.filter((relations) => {
       return relations.fromTable === table || relations.toTable === table;
     });
   }
@@ -497,7 +498,7 @@ export default class Viewer {
       });
     }
 
-    this.svgContainer.addEventListener('scroll', (event: MouseEvent) => {
+    this.svgContainer.addEventListener('scroll', () => {
       if (!this.disble_scroll_event) {
         this.viewBoxVals.x = this.svgContainer.scrollLeft / this.zoom;
         this.viewBoxVals.y = this.svgContainer.scrollTop / this.zoom;
@@ -547,7 +548,7 @@ export default class Viewer {
   }
 
   getTablePos(tableName: string) {
-    return this.tables.find((table) => table.name === tableName).pos;
+    return this.tables!.find((table) => table.name === tableName)!.pos;
   }
 
   getPan() {

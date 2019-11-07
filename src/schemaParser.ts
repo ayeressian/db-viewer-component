@@ -21,8 +21,8 @@ export default function schemaParser(schema: Schema) {
     const fks = tablesFk.get(sTable);
     fks.forEach((sFkColumn) => {
       const fkTable = tables.find((table) => table.getName() === sFkColumn.fk.table);
-      const fkColumn = fkTable.getColumns().find((column) => column.name === sFkColumn.fk.column);
-      tables.find((table) => sTable.name === table.getName()).addColumn(
+      const fkColumn = fkTable!.getColumns().find((column) => column.name === sFkColumn.fk.column);
+      tables.find((table) => sTable.name === table.getName())!.addColumn(
         Object.assign(sFkColumn, {
           fk: {
             table: fkTable,

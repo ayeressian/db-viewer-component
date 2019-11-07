@@ -23,19 +23,19 @@ enum Axis {
 
 export default class Relation {
   fromColumn: any;
-  fromPathCount: number;
-  fromPathIndex: number;
+  fromPathCount?: number;
+  fromPathIndex?: number;
   fromTable: Table;
   toColumn: any;
-  toPathCount: number;
-  toPathIndex: number;
+  toPathCount?: number;
+  toPathIndex?: number;
   toTable: Table;
-  pathElem: SVGElement;
-  highlightTrigger: SVGElement;
-  fromTablePathSide: Orientation;
-  toTablePathSide: Orientation;
-  fromIntersectPoint: Point;
-  toIntersectPoint: Point;
+  pathElem?: SVGElement;
+  highlightTrigger?: SVGElement;
+  fromTablePathSide?: Orientation;
+  toTablePathSide?: Orientation;
+  fromIntersectPoint?: Point;
+  toIntersectPoint?: Point;
 
   constructor({
     fromColumn,
@@ -432,7 +432,7 @@ export default class Relation {
   }
 
   private onMouseEnter() {
-    this.pathElem.classList.add('pathHover');
+    this.pathElem!.classList.add('pathHover');
     this.fromTable.highlightFrom(this.fromColumn);
     this.toTable.highlightTo(this.toColumn);
   }
@@ -578,10 +578,10 @@ export default class Relation {
     }
 
     // In case of tables overlapping there won't be any result
-    if (startMethod && endMethod) {
-      const start = startMethod.call(this, fromTableSides, this.fromPathIndex, this.fromPathCount);
-      const end = endMethod.call(this, toTableSides, this.toPathIndex, this.toPathCount);
-      const result = resultMethod.call(this, start, end, this.fromColumn.nn, toMany);
+    if (startMethod! && endMethod!) {
+      const start = startMethod!.call(this, fromTableSides, this.fromPathIndex, this.fromPathCount);
+      const end = endMethod!.call(this, toTableSides, this.toPathIndex, this.toPathCount);
+      const result = resultMethod!.call(this, start, end, this.fromColumn.nn, toMany);
       this.setElems(result.path, result.highlight);
     }
     if (!this.pathElem) return [];
@@ -663,12 +663,12 @@ export default class Relation {
         if (r2.fromTable === table) {
           return r1.fromIntersectPoint[axis] - r2.fromIntersectPoint[axis];
         }
-        return r1.fromIntersectPoint[axis] - r2.toIntersectPoint[axis];
+        return r1.fromIntersectPoint[axis] - r2.toIntersectPoint![axis];
       } else {
         if (r2.fromTable === table) {
-          return r1.toIntersectPoint[axis] - r2.fromIntersectPoint[axis];
+          return r1.toIntersectPoint![axis] - r2.fromIntersectPoint[axis];
         }
-        return r1.toIntersectPoint[axis] - r2.toIntersectPoint[axis];
+        return r1.toIntersectPoint![axis] - r2.toIntersectPoint![axis];
       }
     });
   }

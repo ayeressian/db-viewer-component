@@ -10,11 +10,11 @@ const INVALID_FILE_FORMAT = new Error('Invalid file format.');
 
 class DBViewer extends HTMLElement {
   private readyPromise: Promise<null>;
-  private readyPromiseResolve: () => void;
-  private viewer: Viewer;
-  private tables: Array<Table>;
-  private srcVal: string;
-  private notParsedSchema: Schema;
+  private readyPromiseResolve?: () => void;
+  private viewer?: Viewer;
+  private tables?: Array<Table>;
+  private srcVal?: string;
+  private notParsedSchema?: Schema;
 
   constructor() {
     super();
@@ -46,7 +46,7 @@ class DBViewer extends HTMLElement {
       tableMoveEnd: this.onTableMoveEnd.bind(this)
     });
 
-    this.readyPromiseResolve();
+    this.readyPromiseResolve!();
     this.dispatchEvent(new CustomEvent('ready'));
   }
 
@@ -87,31 +87,31 @@ class DBViewer extends HTMLElement {
   }
 
   get scrollLeft(): number {
-    return this.viewer.getPan().x;
+    return this.viewer!.getPan().x;
   }
 
   get scrollTop(): number {
-    return this.viewer.getPan().y;
+    return this.viewer!.getPan().y;
   }
 
   set scrollLeft(value: number) {
-    this.viewer.setPanX(value);
+    this.viewer!.setPanX(value);
   }
 
   set scrollTop(value: number) {
-    this.viewer.setPanY(value);
+    this.viewer!.setPanY(value);
   }
 
   getZoom(): number {
-    return this.viewer.getZoom();
+    return this.viewer!.getZoom();
   }
 
   zoomIn() {
-    this.viewer.zoomIn();
+    this.viewer!.zoomIn();
   }
 
   zoomOut() {
-    this.viewer.zoomOut();
+    this.viewer!.zoomOut();
   }
 
   set src(src) {
@@ -119,7 +119,7 @@ class DBViewer extends HTMLElement {
   }
 
   getTableInfo(name: string) {
-    const table = this.tables.find((table) => table.name === name);
+    const table = this.tables!.find((table) => table.name === name);
     if (table == null) {
       throw NO_TABLE;
     }
@@ -127,7 +127,7 @@ class DBViewer extends HTMLElement {
   }
 
   setTablePos(name: string, xCord: number, yCord: number) {
-    const table = this.tables.find((table) => table.name === name);
+    const table = this.tables!.find((table) => table.name === name);
     if (table == null) {
       throw NO_TABLE;
     }
@@ -143,14 +143,14 @@ class DBViewer extends HTMLElement {
       case 'src':
       this.srcVal = newValue;
       this.readyPromise.then(() => {
-        fetch(this.srcVal).then((response) => response.json()).
+        fetch(this.srcVal!).then((response) => response.json()).
         then((response) => {
           if (!validateJson(response)) {
             throw INVALID_FILE_FORMAT;
           }
           this.notParsedSchema = JSON.parse(JSON.stringify(response));
           this.tables = schemaParser(response);
-          this.viewer.load(this.tables, response.viewport, this.notParsedSchema.arrangement);
+          this.viewer!.load(this.tables, response.viewport, this.notParsedSchema!.arrangement);
           setTimeout(() => {
             this.dispatchEvent(new CustomEvent('load'));
           });
@@ -159,9 +159,9 @@ class DBViewer extends HTMLElement {
       break;
       case 'disable-table-movement':
         if (this.hasAttribute('disable-table-movement')) {
-          this.readyPromise.then(() => this.viewer.disableTableMovement(true));
+          this.readyPromise.then(() => this.viewer!.disableTableMovement(true));
         } else {
-          this.readyPromise.then(() => this.viewer.disableTableMovement(false));
+          this.readyPromise.then(() => this.viewer!.disableTableMovement(false));
         }
       break;
     }
@@ -174,12 +174,12 @@ class DBViewer extends HTMLElement {
     this.notParsedSchema = JSON.parse(JSON.stringify(schema));
     const schemaObj = JSON.parse(JSON.stringify(schema));
     this.tables = schemaParser(schemaObj);
-    this.viewer.load(this.tables, schemaObj.viewport, schemaObj.arrangement);
+    this.viewer!.load(this.tables, schemaObj.viewport, schemaObj.arrangement);
   }
 
   get schema() {
-    this.notParsedSchema.tables.forEach((notParsedTable) => {
-      notParsedTable.pos = this.tables.find((table) => table.name === notParsedTable.name).pos;
+    this.notParsedSchema!.tables.forEach((notParsedTable) => {
+      notParsedTable.pos = this.tables!.find((table) => table.name === notParsedTable.name)!.pos;
     });
     return JSON.stringify(this.notParsedSchema);
   }
@@ -193,7 +193,7 @@ class DBViewer extends HTMLElement {
   }
 
   get disableTableMovement(): boolean {
-    return this.viewer.isTableMovementDisabled;
+    return this.viewer!.isTableMovementDisabled;
   }
 }
 

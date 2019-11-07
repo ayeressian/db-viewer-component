@@ -17,7 +17,7 @@ describe('Viewer', () => {
     it('Orders table in correct way', () => {
       const SpiralArrange = subject();
       const schema = {
-        tables: Array(7).fill(null).map((val, i) => ({name: `${i}`, columns: []}))
+        tables: Array(7).fill(null).map((_val, i) => ({name: `${i}`, columns: []}))
       };
       let tables = schemaParser(schema);
       tables.forEach((table) => table.setTablePos = sinon.fake());
