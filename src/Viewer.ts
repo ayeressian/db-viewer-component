@@ -491,7 +491,7 @@ export default class Viewer {
       this.mainElem.removeEventListener('mousemove', mouseMove);
     });
 
-    this.container.addEventListener('mouseleave', this.minimap.onContainerMouseLeave);
+    this.container.addEventListener('mouseleave', this.minimap.onContainerMouseLeave!);
     this.container.addEventListener('mouseup', this.minimap.onContainerMouseUp);
 
     if (this.tables) {
