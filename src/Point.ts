@@ -1,4 +1,4 @@
-export default interface Point {
+export default interface IPoint {
   x: number;
   y: number;
 }

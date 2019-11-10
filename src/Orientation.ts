@@ -2,7 +2,7 @@ enum Orientation {
   Top,
   Bottom,
   Left,
-  Right
+  Right,
 }
 
 export default Orientation;

@@ -1,10 +1,10 @@
+import { ISchema, ITableSchema } from './Schema';
 import Table from './Table';
-import { TableSchema, Schema } from './Schema';
 
-export default function schemaParser(schema: Schema) {
+export default function schemaParser(schema: ISchema) {
   const tablesFk = new Map();
-  const tables: Array<Table> = [];
-  schema.tables.forEach((table: TableSchema) => {
+  const tables: Table[] = [];
+  schema.tables.forEach((table: ITableSchema) => {
     const fks = table.columns.filter((column) => column.fk);
     tablesFk.set(table, fks);
     for (let i = 0; i < table.columns.length;) {
@@ -25,10 +25,10 @@ export default function schemaParser(schema: Schema) {
       tables.find((table) => sTable.name === table.getName())!.addColumn(
         Object.assign(sFkColumn, {
           fk: {
-            table: fkTable,
             column: fkColumn,
+            table: fkTable,
           },
-        })
+        }),
       );
     });
   });

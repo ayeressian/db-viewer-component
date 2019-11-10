@@ -1,18 +1,21 @@
-import Relation from './Relation';
+import Callbacks from './Callbacks';
 import constant from './const';
 import Minimap from './Minimap';
 import Orientation from './Orientation';
-import Table from './Table';
+import Relation from './Relation';
 import SpiralArrange from './SpiralArrange';
-import TableData from './TableData';
-import Callbacks from './Callbacks';
+import Table from './Table';
+import ITableData from './TableData';
 
 export default class Viewer {
+
+  public isTableMovementDisabled: boolean;
+  public tables?: Table[];
   private container: HTMLElement;
   private svgElem: SVGGraphicsElement;
   private svgContainer: HTMLElement;
   private minimap: Minimap;
-  private disble_scroll_event: boolean;
+  private disbleScrollEvent: boolean;
   private viewBoxVals: { x: number; y: number; width: any; height: any; };
   private zoom?: number;
   private callbacks?: Callbacks;
@@ -21,28 +24,25 @@ export default class Viewer {
   private panYResolver?: () => void;
   private safariScale?: number;
 
-  isTableMovementDisabled: boolean;
-  tables?: Array<Table>;
-
   constructor(private mainElem: ShadowRoot) {
     this.container = this.mainElem.getElementById('veiwer-container')!;
 
-    this.svgElem = <SVGGraphicsElement><any>this.mainElem.getElementById('veiwer');
-    this.svgContainer = <HTMLElement>this.mainElem.querySelector('.svg-container');
+    this.svgElem = this.mainElem.querySelector<SVGGraphicsElement>('#veiwer')!;
+    this.svgContainer = this.mainElem.querySelector<HTMLElement>('.svg-container')!;
 
     this.minimap = new Minimap(mainElem, this, this.svgElem);
 
     this.setUpEvents();
 
-    this.disble_scroll_event = false;
+    this.disbleScrollEvent = false;
 
     const width = this.svgContainer.clientWidth;
     const height = this.svgContainer.clientHeight;
     this.viewBoxVals = {
+      height,
+      width,
       x: 0,
       y: 0,
-      width,
-      height
     };
     this.minimap.setMinimapViewPoint(this.viewBoxVals);
 
@@ -56,19 +56,7 @@ export default class Viewer {
     this.isTableMovementDisabled = false;
   }
 
-  private reset() {
-    this.zoom = 1;
-
-    this.svgElem.style.height = constant.VIEWER_PAN_HEIGHT + 'px';
-    this.svgElem.style.width = constant.VIEWER_PAN_WIDTH + 'px';
-    this.svgElem.setAttribute('viewBox', `0 0 ${constant.VIEWER_PAN_WIDTH} ${constant.VIEWER_PAN_HEIGHT}`);
-
-    this.relationInfos = [];
-
-    this.minimap.reset();
-  }
-
-  load(tables: Array<Table>, viewport, tableArrang) {
+  public load(tables: Table[], viewport, tableArrang) {
     this.relationInfos = [];
     this.svgElem.innerHTML = '';
     this.tables = tables;
@@ -87,7 +75,7 @@ export default class Viewer {
     this.draw(viewport);
   }
 
-  onTableMove(table: Table, deltaX: number, deltaY: number) {
+  public onTableMove(table: Table, deltaX: number, deltaY: number) {
     this.drawRelations();
 
     this.minimap.onTableMove(table, deltaX, deltaY);
@@ -95,11 +83,190 @@ export default class Viewer {
     this.callbacks!.tableMove(table.data());
   }
 
-  onTableMoveEnd(table: Table) {
+  public onTableMoveEnd(table: Table) {
     this.callbacks!.tableMoveEnd(table.data());
   }
 
-  private updatePathIndex(relations: Array<Relation>, side: Orientation, sidesAndCount, table: Table) {
+  public draw(viewport) {
+    let minX = Number.MAX_SAFE_INTEGER;
+    let maxX = Number.MIN_SAFE_INTEGER;
+    let minY = Number.MAX_SAFE_INTEGER;
+    let maxY = Number.MIN_SAFE_INTEGER;
+
+    this.minimap.removeTables();
+
+    this.tables!.forEach((table, i) => {
+      this.minimap.createTable(table);
+
+      const tableElm = table.render();
+      tableElm.setAttribute('id', i + 'table');
+      this.svgElem.appendChild(tableElm);
+
+      const sides = table.getSides();
+
+      this.minimap.setTableDim(table, sides.top.p2.x - sides.top.p1.x, sides.left.p2.y - sides.left.p1.y);
+
+      table.getColumns().forEach((column) => {
+        if (column.fk) {
+          let relationInfo = {
+            fromColumn: column,
+            fromTable: table,
+            toColumn: column.fk.column,
+            toTable: column.fk.table,
+          };
+          relationInfo = new Relation(relationInfo);
+          this.relationInfos!.push(relationInfo);
+        }
+      });
+
+      const rightX = table.getSides().right.p1.x;
+      if (rightX > maxX) {
+        maxX = rightX;
+      }
+
+      const leftX = table.getSides().left.p1.x;
+      if (leftX < minX) {
+        minX = leftX;
+      }
+
+      const topY = table.getSides().top.p1.y;
+      if (topY < minY) {
+        minY = topY;
+      }
+
+      const bottomY = table.getSides().bottom.p1.y;
+      if (bottomY > maxY) {
+        maxY = bottomY;
+      }
+    });
+
+    // After draw happened
+    setTimeout(() => {
+      this.drawRelations();
+      this.setViewPort(viewport).then(() => this.tables!.forEach((table) => table.postDraw && table.postDraw()));
+    });
+  }
+
+  public getCords() {
+    const bRect = this.svgElem.getBoundingClientRect();
+    return {
+      x: bRect.left + this.svgContainer.scrollLeft * this.zoom!,
+      y: bRect.top + this.svgContainer.scrollTop * this.zoom!,
+    };
+  }
+
+  public viewportAddjustment() {
+    if (this.viewBoxVals.x < 0) {
+      this.viewBoxVals.x = 0;
+    } else {
+      const offsetWidth = this.viewBoxVals.width + this.viewBoxVals.x - constant.VIEWER_PAN_WIDTH;
+      if (offsetWidth > 0) {
+        this.viewBoxVals.x -= offsetWidth;
+      }
+    }
+
+    if (this.viewBoxVals.y < 0) {
+      this.viewBoxVals.y = 0;
+    } else {
+      const offsetHeight = this.viewBoxVals.height + this.viewBoxVals.y - constant.VIEWER_PAN_HEIGHT;
+      if (offsetHeight > 0) {
+        this.viewBoxVals.y -= offsetHeight;
+      }
+    }
+  }
+
+  public zoomIn() {
+    this.setZoom(this.zoom! * constant.ZOOM);
+  }
+
+  public zoomOut() {
+    this.setZoom(this.zoom! / constant.ZOOM);
+  }
+
+  public getZoom() {
+    return this.zoom;
+  }
+
+  public getTablePos(tableName: string) {
+    return this.tables!.find((table) => table.name === tableName)!.pos;
+  }
+
+  public getPan() {
+    return {
+      x: this.svgContainer.scrollLeft,
+      y: this.svgContainer.scrollTop,
+    };
+  }
+
+  public getViewPort() {
+    return this.viewBoxVals;
+  }
+
+  public setPanX(value: number) {
+    this.viewBoxVals.x = value / this.zoom!;
+    const originalScrollLeft = this.svgContainer.scrollLeft;
+    this.svgContainer.scrollLeft = value;
+    if (this.svgContainer.scrollLeft === originalScrollLeft) {
+      return Promise.resolve();
+    } else {
+      return new Promise((resolve) => this.panXResolver = resolve);
+    }
+  }
+
+  public setPanY(value: number) {
+    this.viewBoxVals.y = value / this.zoom!;
+    const originalScrollTop = this.svgContainer.scrollTop;
+    this.svgContainer.scrollTop = value;
+    if (this.svgContainer.scrollTop === originalScrollTop) {
+      return Promise.resolve();
+    } else {
+      return new Promise((resolve) => this.panYResolver = resolve);
+    }
+  }
+
+  public getMousePosRelativeContainer(event: MouseEvent) {
+    return {
+      x: event.clientX - this.container.getBoundingClientRect().left,
+      y: event.clientY - this.container.getBoundingClientRect().top,
+    };
+  }
+
+  public setCallbacks(callbacks: Callbacks) {
+    this.callbacks = callbacks;
+  }
+
+  public tableDblClick(table: ITableData) {
+    this.callbacks!.tableDblClick(table);
+  }
+
+  public tableClick(table: ITableData) {
+    this.callbacks!.tableClick(table);
+  }
+
+  public tableContextMenu(table: ITableData) {
+    this.callbacks!.tableContextMenu(table);
+  }
+
+  public disableTableMovement(value: boolean) {
+    this.isTableMovementDisabled = value;
+    if (this.tables) {
+      this.tables.forEach((table) => table.disableMovement(value));
+    }
+  }
+
+  private reset() {
+    this.zoom = 1;
+
+    this.svgElem.style.height = constant.VIEWER_PAN_HEIGHT + 'px';
+    this.svgElem.style.width = constant.VIEWER_PAN_WIDTH + 'px';
+    this.svgElem.setAttribute('viewBox', `0 0 ${constant.VIEWER_PAN_WIDTH} ${constant.VIEWER_PAN_HEIGHT}`);
+
+    this.relationInfos = [];
+
+    this.minimap.reset();
+  }
+
+  private updatePathIndex(relations: Relation[], side: Orientation, sidesAndCount, table: Table) {
     let pathIndex = 0;
     relations.forEach((relation) => {
       const count = sidesAndCount.find((item) => item.side === side).count;
@@ -151,24 +318,24 @@ export default class Viewer {
       Relation.xSort(bottomRelations, table);
 
       const sidesAndCount = [{
-          side: Orientation.Left,
-          order: 1,
           count: leftRelations.length,
+          order: 1,
+          side: Orientation.Left,
         },
         {
-          side: Orientation.Right,
-          order: 2,
           count: rightRelations.length,
+          order: 2,
+          side: Orientation.Right,
         },
         {
-          side: Orientation.Top,
-          order: 3,
           count: topRelations.length,
+          order: 3,
+          side: Orientation.Top,
         },
         {
-          side: Orientation.Bottom,
-          order: 4,
           count: bottomRelations.length,
+          order: 4,
+          side: Orientation.Bottom,
         },
       ];
 
@@ -217,66 +384,6 @@ export default class Viewer {
       relation.getElems().forEach((elem) => this.svgElem.removeChild(elem));
       const elems = relation.render();
       elems.forEach((elem) => this.svgElem.prepend(elem));
-    });
-  }
-
-  draw(viewport) {
-    let minX = Number.MAX_SAFE_INTEGER;
-    let maxX = Number.MIN_SAFE_INTEGER;
-    let minY = Number.MAX_SAFE_INTEGER;
-    let maxY = Number.MIN_SAFE_INTEGER;
-
-    this.minimap.removeTables();
-
-    this.tables!.forEach((table, i) => {
-      this.minimap.createTable(table);
-
-      const tableElm = table.render();
-      tableElm.setAttribute('id', i + 'table');
-      this.svgElem.appendChild(tableElm);
-
-      const sides = table.getSides();
-
-      this.minimap.setTableDim(table, sides.top.p2.x - sides.top.p1.x, sides.left.p2.y - sides.left.p1.y);
-
-      table.getColumns().forEach((column) => {
-        if (column.fk) {
-          let relationInfo = {
-            fromTable: table,
-            toTable: column.fk.table,
-            fromColumn: column,
-            toColumn: column.fk.column,
-          };
-          relationInfo = new Relation(relationInfo);
-          this.relationInfos!.push(relationInfo);
-        }
-      });
-
-      const rightX = table.getSides().right.p1.x;
-      if (rightX > maxX) {
-        maxX = rightX;
-      }
-
-      const leftX = table.getSides().left.p1.x;
-      if (leftX < minX) {
-        minX = leftX;
-      }
-
-      const topY = table.getSides().top.p1.y;
-      if (topY < minY) {
-        minY = topY;
-      }
-
-      const bottomY = table.getSides().bottom.p1.y;
-      if (bottomY > maxY) {
-        maxY = bottomY;
-      }
-    });
-
-    // After draw happened
-    setTimeout(() => {
-      this.drawRelations();
-      this.setViewPort(viewport).then(() => this.tables!.forEach((table) => table.postDraw && table.postDraw()));
     });
   }
 
@@ -343,38 +450,10 @@ export default class Viewer {
     return Promise.all([this.setPanX(viewportX!), this.setPanY(viewportY!)]);
   }
 
-  private getTableRelations(table: Table): Array<Relation> {
+  private getTableRelations(table: Table): Relation[] {
     return this.relationInfos!.filter((relations) => {
       return relations.fromTable === table || relations.toTable === table;
     });
-  }
-
-  getCords() {
-    const bRect = this.svgElem.getBoundingClientRect();
-    return {
-      x: bRect.left + this.svgContainer.scrollLeft * this.zoom!,
-      y: bRect.top + this.svgContainer.scrollTop * this.zoom!,
-    };
-  }
-
-  public viewportAddjustment() {
-    if (this.viewBoxVals.x < 0) {
-      this.viewBoxVals.x = 0;
-    } else {
-      const offsetWidth = this.viewBoxVals.width + this.viewBoxVals.x - constant.VIEWER_PAN_WIDTH;
-      if (offsetWidth > 0) {
-        this.viewBoxVals.x -= offsetWidth;
-      }
-    }
-
-    if (this.viewBoxVals.y < 0) {
-      this.viewBoxVals.y = 0;
-    } else {
-      const offsetHeight = this.viewBoxVals.height + this.viewBoxVals.y - constant.VIEWER_PAN_HEIGHT;
-      if (offsetHeight > 0) {
-        this.viewBoxVals.y -= offsetHeight;
-      }
-    }
   }
 
   private windowResizeEvent() {
@@ -386,7 +465,10 @@ export default class Viewer {
     this.minimap.setMinimapViewPoint(this.viewBoxVals);
   }
 
-  private setZoom(zoom: number, targetX = this.svgContainer.clientWidth / 2, targetY = this.svgContainer.clientHeight / 2) {
+  private setZoom(
+    zoom: number,
+    targetX = this.svgContainer.clientWidth / 2,
+    targetY = this.svgContainer.clientHeight / 2) {
     let minZoomValue: number;
     if (this.svgContainer.offsetWidth > this.svgContainer.offsetHeight) {
       minZoomValue = this.svgContainer.clientWidth / constant.VIEWER_PAN_WIDTH;
@@ -425,7 +507,7 @@ export default class Viewer {
 
       this.viewportAddjustment();
 
-      this.disble_scroll_event = true;
+      this.disbleScrollEvent = true;
       this.svgContainer.scrollLeft = this.viewBoxVals.x * zoom;
       this.svgContainer.scrollTop = this.viewBoxVals.y * zoom;
 
@@ -438,14 +520,6 @@ export default class Viewer {
       }
       this.zoom = zoom;
     }
-  }
-
-  zoomIn() {
-    this.setZoom(this.zoom! * constant.ZOOM);
-  }
-
-  zoomOut() {
-    this.setZoom(this.zoom! / constant.ZOOM);
   }
 
   private setUpEvents() {
@@ -501,7 +575,7 @@ export default class Viewer {
     }
 
     this.svgContainer.addEventListener('scroll', () => {
-      if (!this.disble_scroll_event) {
+      if (!this.disbleScrollEvent) {
         this.viewBoxVals.x = this.svgContainer.scrollLeft / this.zoom!;
         this.viewBoxVals.y = this.svgContainer.scrollTop / this.zoom!;
         this.minimap.setMinimapViewPoint(this.viewBoxVals);
@@ -514,7 +588,7 @@ export default class Viewer {
           delete this.panYResolver;
         }
       }
-      this.disble_scroll_event = false;
+      this.disbleScrollEvent = false;
     });
 
     this.container.addEventListener('wheel', (event: MouseWheelEvent) => {
@@ -527,18 +601,18 @@ export default class Viewer {
       }
     });
 
-    interface GestureEvent extends MouseEvent {
+    interface IGestureEvent extends MouseEvent {
       scale: number;
     }
 
     // safari
-    this.container.addEventListener('gesturestart', (event: GestureEvent) => {
+    this.container.addEventListener('gesturestart', (event: IGestureEvent) => {
       if (event.scale != null) {
         this.safariScale = event.scale;
       }
       event.preventDefault();
     });
-    this.container.addEventListener('gesturechange', (event: GestureEvent) => {
+    this.container.addEventListener('gesturechange', (event: IGestureEvent) => {
       event.preventDefault();
       const clientRect = this.svgContainer.getBoundingClientRect();
       const targetX = event.clientX - clientRect.left;
@@ -547,76 +621,5 @@ export default class Viewer {
       this.setZoom(this.zoom! + scaleChange, targetX, targetY);
       this.safariScale = event.scale;
     }, true);
-  }
-
-  getZoom() {
-    return this.zoom;
-  }
-
-  getTablePos(tableName: string) {
-    return this.tables!.find((table) => table.name === tableName)!.pos;
-  }
-
-  getPan() {
-    return {
-      x: this.svgContainer.scrollLeft,
-      y: this.svgContainer.scrollTop,
-    };
-  }
-
-  getViewPort() {
-    return this.viewBoxVals;
-  }
-
-  setPanX(value: number) {
-    this.viewBoxVals.x = value / this.zoom!;
-    const originalScrollLeft = this.svgContainer.scrollLeft;
-    this.svgContainer.scrollLeft = value;
-    if (this.svgContainer.scrollLeft === originalScrollLeft) {
-      return Promise.resolve();
-    } else {
-      return new Promise((resolve) => this.panXResolver = resolve);
-    }
-  }
-
-  setPanY(value: number) {
-    this.viewBoxVals.y = value / this.zoom!;
-    const originalScrollTop = this.svgContainer.scrollTop;
-    this.svgContainer.scrollTop = value;
-    if (this.svgContainer.scrollTop === originalScrollTop) {
-      return Promise.resolve();
-    } else {
-      return new Promise((resolve) => this.panYResolver = resolve);
-    }
-  }
-
-  getMousePosRelativeContainer(event: MouseEvent) {
-    return {
-      x: event.clientX - this.container.getBoundingClientRect().left,
-      y: event.clientY - this.container.getBoundingClientRect().top
-    };
-  }
-
-  setCallbacks(callbacks: Callbacks) {
-    this.callbacks = callbacks;
-  }
-
-  tableDblClick(table: TableData) {
-    this.callbacks!.tableDblClick(table);
-  }
-
-  tableClick(table: TableData) {
-    this.callbacks!.tableClick(table);
-  }
-
-  tableContextMenu(table: TableData) {
-    this.callbacks!.tableContextMenu(table);
-  }
-
-  disableTableMovement(value: boolean) {
-    this.isTableMovementDisabled = value;
-    if (this.tables) {
-      this.tables.forEach((table) => table.disableMovement(value));
-    }
   }
 }

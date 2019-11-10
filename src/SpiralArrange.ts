@@ -2,7 +2,7 @@ import constant from './const';
 import Table from './table';
 
 export default class SpiralArrange {
-  static call(tables: Array<Table>) {
+  public static call(tables: Table[]) {
     let currentX = constant.VIEWER_PAN_WIDTH / 2;
     let currentY = constant.VIEWER_PAN_HEIGHT / 2;
     tables[0].setTablePos(currentX, currentY);

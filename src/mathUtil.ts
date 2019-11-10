@@ -1,10 +1,10 @@
-import Point from './Point';
+import IPoint from './Point';
 
 export function to3FixedNumber(num: number): number {
   return Math.round(num * 1e3) / 1e3;
 }
 
-export function segmentIntersection(l1p1: Point, l1p2: Point, l2p1: Point, l2p2: Point): Point | null {
+export function segmentIntersection(l1p1: IPoint, l1p2: IPoint, l2p1: IPoint, l2p2: IPoint): IPoint | null {
   l1p1.x = to3FixedNumber(l1p1.x);
   l1p1.y = to3FixedNumber(l1p1.y);
   l1p2.x = to3FixedNumber(l1p2.x);
@@ -25,9 +25,10 @@ export function segmentIntersection(l1p1: Point, l1p2: Point, l2p1: Point, l2p2:
   return null;
 }
 
-export function lineIntersection(l1p1: Point, l1p2: Point, l2p1: Point, l2p2: Point): Point | null {
+export function lineIntersection(l1p1: IPoint, l1p2: IPoint, l2p1: IPoint, l2p2: IPoint): IPoint | null {
   const deltaXL1 = l1p1.x - l1p2.x;
   const deltaXL2 = l2p1.x - l2p2.x;
+  let result: IPoint | null;
 
   if (deltaXL1 === 0 && deltaXL2 === 0) {
     // Parallel both horizontal
@@ -42,35 +43,39 @@ export function lineIntersection(l1p1: Point, l1p2: Point, l2p1: Point, l2p2: Po
 
     const intersectY = m2 * l1p1.x + b2;
 
-    return {
-      y: intersectY,
+    result = {
       x: l1p1.x,
-    };
-  }
-  const deltaYL1 = l1p1.y - l1p2.y;
-  const m1 = deltaYL1 / deltaXL1;
-  const b1 = l1p1.y - m1 * l1p1.x;
-
-  if (deltaXL2 === 0) {
-    const intersectY = m1 * l2p1.x + b1;
-    return {
       y: intersectY,
-      x: l2p1.x,
     };
+  } else {
+    const deltaYL1 = l1p1.y - l1p2.y;
+    const m1 = deltaYL1 / deltaXL1;
+    const b1 = l1p1.y - m1 * l1p1.x;
+
+    if (deltaXL2 === 0) {
+      const intersectY = m1 * l2p1.x + b1;
+      result = {
+        x: l2p1.x,
+        y: intersectY,
+      };
+    } else {
+      const deltaYL2 = l2p1.y - l2p2.y;
+      const m2 = deltaYL2 / deltaXL2;
+
+      // Parallel
+      if (m1 === m2) result = null;
+      else {
+        const b2 = l2p1.y - m2 * l2p1.x;
+
+        const intersectX = (b1 - b2) / (m2 - m1);
+        const intersectY = m1 * intersectX + b1;
+
+        result = {
+          x: to3FixedNumber(intersectX),
+          y: to3FixedNumber(intersectY),
+        };
+      }
+    }
   }
-  const deltaYL2 = l2p1.y - l2p2.y;
-  const m2 = deltaYL2 / deltaXL2;
-
-  // Parallel
-  if (m1 === m2) return null;
-
-  const b2 = l2p1.y - m2 * l2p1.x;
-
-  const intersectX = (b1 - b2) / (m2 - m1);
-  const intersectY = m1 * intersectX + b1;
-
-  return {
-    x: to3FixedNumber(intersectX),
-    y: to3FixedNumber(intersectY),
-  };
+  return result;
 }

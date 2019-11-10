@@ -1,7 +1,7 @@
-import Point from './Point';
-export default interface TableData {
+import IPoint from './Point';
+export default interface ITableData {
   name: string;
-  pos: Point;
+  pos: IPoint;
   width: number;
   height: number;
 }

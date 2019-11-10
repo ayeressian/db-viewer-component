@@ -1,18 +1,18 @@
-import Point from "./Point";
+import IPoint from './Point';
 
-export interface ColumnSchema {
+export interface IColumnSchema {
   name: string;
   fk: boolean;
 }
 
-export interface TableSchema {
+export interface ITableSchema {
   name: string;
-  pos?: Point;
-  columns: Array<ColumnSchema>;
+  pos?: IPoint;
+  columns: IColumnSchema[];
 }
 
-export interface Schema {
-  tables: Array<TableSchema>;
+export interface ISchema {
+  tables: ITableSchema[];
   arrangement?: string;
   viewport?: string;
 }

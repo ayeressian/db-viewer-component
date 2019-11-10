@@ -1,11 +1,11 @@
-import TableData from './TableData';
+import ITableData from './TableData';
 
 export default interface Callbacks {
-  tableDblClick: (tableData: TableData) => void;
-  tableClick: (tableData: TableData) => void;
-  tableContextMenu: (tableData: TableData) => void;
-  tableMove: (tableData: TableData) => void;
-  tableMoveEnd: (tableData: TableData) => void;
+  tableDblClick: (tableData: ITableData) => void;
+  tableClick: (tableData: ITableData) => void;
+  tableContextMenu: (tableData: ITableData) => void;
+  tableMove: (tableData: ITableData) => void;
+  tableMoveEnd: (tableData: ITableData) => void;
   zoomIn: (zoom: number) => void;
   zoomOut: (zoom: number) => void;
   viewportClick: (x: number, y: number) => void;
