@@ -475,7 +475,7 @@ export default class Viewer {
     } else {
       minZoomValue = this.svgContainer.clientHeight / constant.VIEWER_PAN_HEIGHT;
     }
-    if (minZoomValue != null && minZoomValue > zoom) {
+    if (minZoomValue > zoom) {
       zoom = minZoomValue;
     }
 
