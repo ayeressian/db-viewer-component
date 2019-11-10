@@ -1,5 +1,5 @@
 import chai from 'chai';
-import {segmentIntersection, lineIntersection, to3FixedNumber} from '../src/mathUtil.js';
+import {lineIntersection, segmentIntersection, to3FixedNumber} from '../src/mathUtil';
 
 const expect = chai.expect;
 describe('mathUtil', () => {
@@ -9,7 +9,7 @@ describe('mathUtil', () => {
       const l1p2 = {x: 1, y: 0};
       const l2p1 = {x: 0, y: 1};
       const l2p2 = {x: 1, y: 1};
-      expect(lineIntersection(l1p1, l1p2, l2p1, l2p2)).to.be.null;
+      expect(lineIntersection(l1p1, l1p2, l2p1, l2p2)).eq(null);
     });
 
     it('will return correct value', () => {
@@ -27,7 +27,7 @@ describe('mathUtil', () => {
       const l1p2 = {x: 1, y: 0};
       const l2p1 = {x: 0, y: 1};
       const l2p2 = {x: 1, y: 1};
-      expect(segmentIntersection(l1p1, l1p2, l2p1, l2p2)).to.be.null;
+      expect(segmentIntersection(l1p1, l1p2, l2p1, l2p2)).eq(null);
     });
 
     it('will return null when segments don\'t intersect', () => {
@@ -35,7 +35,7 @@ describe('mathUtil', () => {
       const l1p2 = {x: 2, y: 0};
       const l2p1 = {x: 1, y: 2};
       const l2p2 = {x: 1, y: 1};
-      expect(segmentIntersection(l1p1, l1p2, l2p1, l2p2)).to.be.null;
+      expect(segmentIntersection(l1p1, l1p2, l2p1, l2p2)).eq(null);
     });
   });
 
