@@ -1,20 +1,21 @@
 import path from 'path';
-import config from './webpack.test.config';
+import { Configuration } from 'webpack';
+import testConfig from './webpack.test.config';
 
-config.devServer = {
-  contentBase: 'test/dist',
-  port: 10001,
+const testDebugConfig: Configuration = {
+  ...testConfig,
+  devServer: {
+    contentBase: 'test/dist',
+    port: 10001,
+  },
+  entry: {
+    test: [`mocha-loader!./test/index.ts`],
+  },
+  output: {
+    filename: 'test.build.js',
+    path: path.resolve(__dirname, '../test/dist'),
+  },
+  target: 'web',
 };
 
-config.entry = {
-  test: [`mocha-loader!./test/index.ts`],
-};
-
-config.target = 'web';
-
-config.output = {
-  filename: 'test.build.js',
-  path: path.resolve(__dirname, '../test/dist'),
-};
-
-export default config;
+export default testDebugConfig;

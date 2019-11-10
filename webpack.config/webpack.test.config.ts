@@ -1,7 +1,10 @@
+import { Configuration } from 'webpack';
 import config from './webpack.config';
 
-config.mode = 'development';
+const testConfig: Configuration = {
+  ...config,
+  mode: 'development',
+  target: 'node',
+};
 
-config.target = 'node';
-
-export default config;
+export default testConfig;

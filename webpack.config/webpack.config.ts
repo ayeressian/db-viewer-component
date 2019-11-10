@@ -1,7 +1,7 @@
 import path from 'path';
-import * as webpack from 'webpack';
+import { Configuration } from 'webpack';
 
-const config: webpack.Configuration = {
+const config: Configuration = {
   devServer: {
     contentBase: './',
     historyApiFallback: {
