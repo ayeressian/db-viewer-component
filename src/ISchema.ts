@@ -1,4 +1,4 @@
-import IPoint from './Point';
+import IPoint from './IPoint';
 
 export interface IColumnSchema {
   name: string;
@@ -11,7 +11,7 @@ export interface ITableSchema {
   columns: IColumnSchema[];
 }
 
-export interface ISchema {
+export default interface ISchema {
   tables: ITableSchema[];
   arrangement?: string;
   viewport?: string;

@@ -1,7 +1,7 @@
 import constant from './const';
-import IPoint from './Point';
-import { ITableSchema } from './Schema';
-import ITableData from './TableData';
+import IPoint from './IPoint';
+import { ITableSchema } from './ISchema';
+import ITableData from './ITableData';
 import Viewer from './Viewer';
 
 const OUT_OF_VIEW_CORD = -1000;

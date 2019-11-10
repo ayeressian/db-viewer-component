@@ -1,6 +1,6 @@
-import ITableData from './TableData';
+import ITableData from './ITableData';
 
-export default interface Callbacks {
+export default interface ICallbacks {
   tableDblClick: (tableData: ITableData) => void;
   tableClick: (tableData: ITableData) => void;
   tableContextMenu: (tableData: ITableData) => void;

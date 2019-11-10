@@ -1,4 +1,4 @@
-import { ISchema, ITableSchema } from './Schema';
+import ISchema, { ITableSchema } from './ISchema';
 import Table from './Table';
 
 export default function schemaParser(schema: ISchema) {

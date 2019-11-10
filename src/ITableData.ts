@@ -1,4 +1,4 @@
-import IPoint from './Point';
+import IPoint from './IPoint';
 export default interface ITableData {
   name: string;
   pos: IPoint;

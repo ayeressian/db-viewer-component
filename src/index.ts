@@ -1,7 +1,7 @@
-import {ISchema} from './Schema';
+import ISchema from './ISchema';
+import ITableData from './ITableData';
 import schemaParser from './schemaParser';
 import Table from './Table';
-import ITableData from './TableData';
 import template from './template';
 import validateJson from './validate-schema';
 import Viewer from './Viewer';
@@ -96,7 +96,7 @@ class DBViewer extends HTMLElement {
   }
 
   public getTableInfo(name: string) {
-    const table = this.tables!.find((table) => table.name === name);
+    const table = this.tables!.find((tableItem) => tableItem.name === name);
     if (table == null) {
       throw NO_TABLE;
     }
@@ -104,13 +104,14 @@ class DBViewer extends HTMLElement {
   }
 
   public setTablePos(name: string, xCord: number, yCord: number) {
-    const table = this.tables!.find((table) => table.name === name);
+    const table = this.tables!.find((tableItem) => tableItem.name === name);
     if (table == null) {
       throw NO_TABLE;
     }
     table.setTablePos(xCord, yCord);
   }
 
+  // tslint:disable-next-line: variable-name
   public attributeChangedCallback(name: string, _oldValue: string, newValue: string) {
     switch (name) {
       case 'src':

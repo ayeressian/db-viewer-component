@@ -1,8 +1,8 @@
 import chai from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import Orientation from '../src/Orientation';
-import IPoint from '../src/Point';
+import Orientation from '../src/IOrientation';
+import IPoint from '../src/IPoint';
 
 const expect = chai.expect;
 

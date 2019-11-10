@@ -1,11 +1,11 @@
-import Callbacks from './Callbacks';
 import constant from './const';
+import ICallbacks from './ICallbacks';
+import Orientation from './IOrientation';
+import ITableData from './ITableData';
 import Minimap from './Minimap';
-import Orientation from './Orientation';
 import Relation from './Relation';
 import SpiralArrange from './SpiralArrange';
 import Table from './Table';
-import ITableData from './TableData';
 
 export default class Viewer {
 
@@ -18,7 +18,7 @@ export default class Viewer {
   private disbleScrollEvent: boolean;
   private viewBoxVals: { x: number; y: number; width: any; height: any; };
   private zoom?: number;
-  private callbacks?: Callbacks;
+  private callbacks?: ICallbacks;
   private relationInfos?: any[];
   private panXResolver?: () => void;
   private panYResolver?: () => void;
@@ -231,7 +231,7 @@ export default class Viewer {
     };
   }
 
-  public setCallbacks(callbacks: Callbacks) {
+  public setCallbacks(callbacks: ICallbacks) {
     this.callbacks = callbacks;
   }
 
