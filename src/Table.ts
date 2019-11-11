@@ -1,3 +1,4 @@
+import CommonEventListener from './CommonEventListener';
 import constant from './const';
 import IPoint from './IPoint';
 import { ITableSchema } from './ISchema';
@@ -316,7 +317,7 @@ export default class Table {
         this.initialClientX = event.clientX;
         this.initialClientY = event.clientY;
 
-        document.addEventListener('mousemove', mouseMove);
+        document.addEventListener('mousemove', mouseMove as CommonEventListener);
 
         this.moveToTop();
 
@@ -326,15 +327,15 @@ export default class Table {
             this.onMoveEnd(this);
           }
           this.table!.classList.remove('move');
-          document.removeEventListener('mouseup', mouseUp);
-          document.removeEventListener('mousemove', mouseMove);
+          document.removeEventListener('mouseup', mouseUp as CommonEventListener);
+          document.removeEventListener('mousemove', mouseMove as CommonEventListener);
         };
-        document.addEventListener('mouseup', mouseUp);
+        document.addEventListener('mouseup', mouseUp as CommonEventListener);
       }
     };
 
-    this.elem!.addEventListener('mousedown', mouseDown);
-    this.elem!.addEventListener('touchstart', mouseDown);
+    this.elem!.addEventListener('mousedown', mouseDown as CommonEventListener);
+    this.elem!.addEventListener('touchstart', mouseDown as CommonEventListener);
   }
 
   private center() {

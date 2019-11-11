@@ -1,3 +1,4 @@
+import CommonEventListener from './CommonEventListener';
 import constant from './const';
 import Table from './Table';
 import Viewer from './Viewer';
@@ -81,15 +82,15 @@ export default class Minimap {
 
     const minimapMouseMove = this.minimapPositionFromMouse.bind(this);
 
-    this.minimap.addEventListener('mousedown', (event: MouseEvent) => {
+    this.minimap.addEventListener('mousedown', ((event: MouseEvent) => {
       if (event.button === 0) {
         minimapMouseMove(event);
-        this.minimap.addEventListener('mousemove', minimapMouseMove);
+        this.minimap.addEventListener('mousemove', minimapMouseMove as CommonEventListener);
       }
-    });
+    }) as CommonEventListener);
 
     this.onContainerMouseLeave = () => {
-      this.minimap.removeEventListener('mousemove', minimapMouseMove);
+      this.minimap.removeEventListener('mousemove', minimapMouseMove as CommonEventListener);
     };
 
     this.onContainerMouseUp = this.onContainerMouseLeave;

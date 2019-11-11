@@ -1,3 +1,4 @@
+import CommonEventListener from './CommonEventListener';
 import constant from './const';
 import ICallbacks from './ICallbacks';
 import Orientation from './IOrientation';
@@ -548,7 +549,7 @@ export default class Viewer {
 
     this.container.addEventListener('mouseleave', () => {
       this.svgElem.classList.remove('pan');
-      this.mainElem.removeEventListener('mousemove', mouseMove);
+      this.mainElem.removeEventListener('mousemove', mouseMove as CommonEventListener);
     });
 
     this.container.addEventListener('mousedown', (event: MouseEvent) => {
@@ -556,13 +557,13 @@ export default class Viewer {
         this.svgElem.classList.add('pan');
         prevMouseCordX = event.clientX;
         prevMouseCordY = event.clientY;
-        this.mainElem.addEventListener('mousemove', mouseMove);
+        this.mainElem.addEventListener('mousemove', mouseMove as CommonEventListener);
       }
     });
 
     this.mainElem.addEventListener('mouseup', () => {
       this.svgElem.classList.remove('pan');
-      this.mainElem.removeEventListener('mousemove', mouseMove);
+      this.mainElem.removeEventListener('mousemove', mouseMove as CommonEventListener);
     });
 
     this.container.addEventListener('mouseleave', this.minimap.onContainerMouseLeave!);
@@ -606,13 +607,13 @@ export default class Viewer {
     }
 
     // safari
-    this.container.addEventListener('gesturestart', (event: IGestureEvent) => {
+    this.container.addEventListener('gesturestart', ((event: IGestureEvent) => {
       if (event.scale != null) {
         this.safariScale = event.scale;
       }
       event.preventDefault();
-    });
-    this.container.addEventListener('gesturechange', (event: IGestureEvent) => {
+    }) as CommonEventListener);
+    this.container.addEventListener('gesturechange', ((event: IGestureEvent) => {
       event.preventDefault();
       const clientRect = this.svgContainer.getBoundingClientRect();
       const targetX = event.clientX - clientRect.left;
@@ -620,6 +621,6 @@ export default class Viewer {
       const scaleChange = event.scale - this.safariScale!;
       this.setZoom(this.zoom! + scaleChange, targetX, targetY);
       this.safariScale = event.scale;
-    }, true);
+    }) as CommonEventListener, true);
   }
 }
