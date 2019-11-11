@@ -1,5 +1,6 @@
 import CommonEventListener from './CommonEventListener';
 import constant from './const';
+import IViewBoxVals from './IViewBoxVals';
 import Table from './Table';
 import Viewer from './Viewer';
 
@@ -49,11 +50,11 @@ export default class Minimap {
     this.minimap.setAttribute('viewBox', `0 0 ${constant.VIEWER_PAN_WIDTH} ${constant.VIEWER_PAN_HEIGHT}`);
   }
 
-  public setMinimapViewPoint(viewBoxVals) {
-    this.viewpoint.setAttributeNS(null, 'x', viewBoxVals.x);
-    this.viewpoint.setAttributeNS(null, 'y', viewBoxVals.y);
-    this.viewpoint.setAttributeNS(null, 'width', viewBoxVals.width);
-    this.viewpoint.setAttributeNS(null, 'height', viewBoxVals.height);
+  public setMinimapViewPoint(viewBoxVals: IViewBoxVals) {
+    this.viewpoint.setAttributeNS(null, 'x', viewBoxVals.x.toString());
+    this.viewpoint.setAttributeNS(null, 'y', viewBoxVals.y.toString());
+    this.viewpoint.setAttributeNS(null, 'width', viewBoxVals.width.toString());
+    this.viewpoint.setAttributeNS(null, 'height', viewBoxVals.height.toString());
   }
 
   public createTable(table: Table) {

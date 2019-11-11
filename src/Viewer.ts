@@ -3,6 +3,7 @@ import constant from './const';
 import ICallbacks from './ICallbacks';
 import Orientation from './IOrientation';
 import ITableData from './ITableData';
+import IViewBoxVals from './IViewBoxVals';
 import Minimap from './Minimap';
 import Relation from './Relation';
 import SpiralArrange from './SpiralArrange';
@@ -17,7 +18,7 @@ export default class Viewer {
   private svgContainer: HTMLElement;
   private minimap: Minimap;
   private disbleScrollEvent: boolean;
-  private viewBoxVals: { x: number; y: number; width: any; height: any; };
+  private viewBoxVals: IViewBoxVals;
   private zoom?: number;
   private callbacks?: ICallbacks;
   private relationInfos?: any[];

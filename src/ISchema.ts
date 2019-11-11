@@ -7,7 +7,7 @@ export interface IColumnSchema {
 
 export interface ITableSchema {
   name: string;
-  pos?: IPoint;
+  pos?: IPoint| string;
   columns: IColumnSchema[];
 }
 
