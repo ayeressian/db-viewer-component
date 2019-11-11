@@ -12,8 +12,8 @@ const PATH_START = 5;
 const PATH_SELF_RELATION_LENGTH = 40;
 
 interface IPathHeighlight {
-  path: Element;
-  highlight: Element;
+  path: SVGGraphicsElement;
+  highlight: SVGGraphicsElement;
 }
 
 enum Axis {
@@ -193,8 +193,8 @@ export default class Relation {
 
     // In case of tables overlapping there won't be any result
     if (startMethod! && endMethod!) {
-      const start = startMethod!.call(this, fromTableSides, this.fromPathIndex, this.fromPathCount);
-      const end = endMethod!.call(this, toTableSides, this.toPathIndex, this.toPathCount);
+      const start = startMethod!.call(this, fromTableSides!, this.fromPathIndex!, this.fromPathCount!);
+      const end = endMethod!.call(this, toTableSides!, this.toPathIndex!, this.toPathCount!);
       const result = resultMethod!.call(this, start, end, this.fromColumn.nn, toMany);
       this.setElems(result.path, result.highlight);
     }
@@ -667,23 +667,23 @@ export default class Relation {
     }
   }
 
-  private setElems(elem: SVGElement, highlightTrigger: SVGElement) {
+  private setElems(elem: SVGGraphicsElement, highlightTrigger: SVGGraphicsElement) {
     this.pathElem = elem;
     this.highlightTrigger = highlightTrigger;
     highlightTrigger.onmouseenter = this.onMouseEnter.bind(this);
     highlightTrigger.onmouseleave = this.onMouseLeave.bind(this);
   }
 
-  private createHighlightTrigger(d: string) {
-    const path = document.createElementNS(constant.nsSvg, 'path');
+  private createHighlightTrigger(d: string): SVGGraphicsElement {
+    const path = document.createElementNS(constant.nsSvg, 'path') as SVGGraphicsElement;
     path.setAttributeNS(null, 'd', d);
     path.classList.add('highlight');
 
     return path;
   }
 
-  private createPath(d: string) {
-    const path = document.createElementNS(constant.nsSvg, 'path');
+  private createPath(d: string): SVGGraphicsElement {
+    const path = document.createElementNS(constant.nsSvg, 'path') as SVGGraphicsElement;
 
     path.setAttributeNS(null, 'd', d);
 

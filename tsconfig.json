@@ -11,6 +11,7 @@
     "noImplicitThis": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
+    "strictBindCallApply": true,
     "strictPropertyInitialization": true
   }
 }
