@@ -6,6 +6,7 @@ import {
   segmentIntersection,
 } from './mathUtil';
 import Table from './Table';
+import IVertices from './IVertices';
 
 const PATH_ARROW_LENGTH = 9;
 const PATH_ARROW_HEIGHT = 4;
@@ -92,12 +93,12 @@ export default class Relation {
   }
 
   public render() {
-    const fromTableSides = this.fromTable.getSides();
-    const toTableSides = this.toTable.getSides();
+    const fromTableSides = this.fromTable.getVertices();
+    const toTableSides = this.toTable.getVertices();
 
     const toMany = !this.fromColumn.uq;
 
-    type StartEndMethod = (tableSides, pathIndex: number, pathCount: number) => IPoint;
+    type StartEndMethod = (tableSides: IVertices, pathIndex: number, pathCount: number) => IPoint;
 
     let startMethod: StartEndMethod;
     let endMethod: StartEndMethod;
@@ -222,55 +223,55 @@ export default class Relation {
     const fromTableCenter = this.fromTable.getCenter();
     const toTableCenter = this.toTable.getCenter();
 
-    const fromTableSides = this.fromTable.getSides();
+    const fromTableSides = this.fromTable.getVertices();
 
     const intersectFromTableRightSide =
-      segmentIntersection(fromTableCenter, toTableCenter, fromTableSides.right.p1, fromTableSides.right.p2);
+      segmentIntersection(fromTableCenter, toTableCenter, fromTableSides.topRight, fromTableSides.bottomRight);
     if (intersectFromTableRightSide) {
       this.fromIntersectPoint = intersectFromTableRightSide;
       this.fromTablePathSide = Orientation.Right;
     }
     const intersectFromTableLeftSide =
-      segmentIntersection(fromTableCenter, toTableCenter, fromTableSides.left.p1, fromTableSides.left.p2);
+      segmentIntersection(fromTableCenter, toTableCenter, fromTableSides.topLeft, fromTableSides.bottomLeft);
     if (intersectFromTableLeftSide) {
       this.fromIntersectPoint = intersectFromTableLeftSide;
       this.fromTablePathSide = Orientation.Left;
     }
     const intersectFromTableTopSide =
-      segmentIntersection(fromTableCenter, toTableCenter, fromTableSides.top.p1, fromTableSides.top.p2);
+      segmentIntersection(fromTableCenter, toTableCenter, fromTableSides.topLeft, fromTableSides.topRight);
     if (intersectFromTableTopSide) {
       this.fromIntersectPoint = intersectFromTableTopSide;
       this.fromTablePathSide = Orientation.Top;
     }
     const intersectFromTableBottomSide =
-      segmentIntersection(fromTableCenter, toTableCenter, fromTableSides.bottom.p1, fromTableSides.bottom.p2);
+      segmentIntersection(fromTableCenter, toTableCenter, fromTableSides.bottomLeft, fromTableSides.bottomRight);
     if (intersectFromTableBottomSide) {
       this.fromIntersectPoint = intersectFromTableBottomSide;
       this.fromTablePathSide = Orientation.Bottom;
     }
 
-    const toTableSides = this.toTable.getSides();
+    const toTableSides = this.toTable.getVertices();
 
     const intersectToTableRightSide =
-      segmentIntersection(fromTableCenter, toTableCenter, toTableSides.right.p1, toTableSides.right.p2);
+      segmentIntersection(fromTableCenter, toTableCenter, toTableSides.topRight, toTableSides.bottomRight);
     if (intersectToTableRightSide) {
       this.toIntersectPoint = intersectToTableRightSide;
       this.toTablePathSide = Orientation.Right;
     }
     const intersectToTableLeftSide =
-      segmentIntersection(fromTableCenter, toTableCenter, toTableSides.left.p1, toTableSides.left.p2);
+      segmentIntersection(fromTableCenter, toTableCenter, toTableSides.topLeft, toTableSides.bottomLeft);
     if (intersectToTableLeftSide) {
       this.toIntersectPoint = intersectToTableLeftSide;
       this.toTablePathSide = Orientation.Left;
     }
     const intersectToTableTopSide =
-      segmentIntersection(fromTableCenter, toTableCenter, toTableSides.top.p1, toTableSides.top.p2);
+      segmentIntersection(fromTableCenter, toTableCenter, toTableSides.topLeft, toTableSides.topRight);
     if (intersectToTableTopSide) {
       this.toIntersectPoint = intersectToTableTopSide;
       this.toTablePathSide = Orientation.Top;
     }
     const intersectToTableBottomSide =
-      segmentIntersection(fromTableCenter, toTableCenter, toTableSides.bottom.p1, toTableSides.bottom.p2);
+      segmentIntersection(fromTableCenter, toTableCenter, toTableSides.bottomRight, toTableSides.bottomLeft);
     if (intersectToTableBottomSide) {
       this.toIntersectPoint = intersectToTableBottomSide;
       this.toTablePathSide = Orientation.Bottom;
@@ -293,39 +294,39 @@ export default class Relation {
     return (pathIndex + 1) * (sideLength / (pathCount + 1));
   }
 
-  private getLeftSidePathCord(tableSides, pathIndex: number, pathCount: number): IPoint {
-    const sideLength = tableSides.left.p2.y - tableSides.left.p1.y;
+  private getLeftSidePathCord(tableSides: IVertices, pathIndex: number, pathCount: number): IPoint {
+    const sideLength = tableSides.bottomLeft.y - tableSides.topLeft.y;
     const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
-      x: tableSides.left.p1.x,
-      y: tableSides.left.p1.y + posOnLine,
+      x: tableSides.topLeft.x,
+      y: tableSides.topLeft.y + posOnLine,
     };
   }
 
-  private getRightSidePathCord(tableSides, pathIndex: number, pathCount: number): IPoint {
-    const sideLength = tableSides.right.p2.y - tableSides.right.p1.y;
+  private getRightSidePathCord(tableSides: IVertices, pathIndex: number, pathCount: number): IPoint {
+    const sideLength = tableSides.bottomRight.y - tableSides.topRight.y;
     const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
-      x: tableSides.right.p1.x,
-      y: tableSides.right.p1.y + posOnLine,
+      x: tableSides.topRight.x,
+      y: tableSides.topRight.y + posOnLine,
     };
   }
 
-  private getTopSidePathCord(tableSides, pathIndex: number, pathCount: number): IPoint {
-    const sideLength = tableSides.top.p2.x - tableSides.top.p1.x;
+  private getTopSidePathCord(tableSides: IVertices, pathIndex: number, pathCount: number): IPoint {
+    const sideLength = tableSides.topRight.x - tableSides.topLeft.x;
     const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
-      x: tableSides.top.p1.x + posOnLine,
-      y: tableSides.top.p1.y,
+      x: tableSides.topLeft.x + posOnLine,
+      y: tableSides.topLeft.y,
     };
   }
 
-  private getBottomSidePathCord(tableSides, pathIndex: number, pathCount: number): IPoint {
-    const sideLength = tableSides.bottom.p2.x - tableSides.bottom.p1.x;
+  private getBottomSidePathCord(tableSides: IVertices, pathIndex: number, pathCount: number): IPoint {
+    const sideLength = tableSides.bottomRight.x - tableSides.bottomLeft.x;
     const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
-      x: tableSides.bottom.p1.x + posOnLine,
-      y: tableSides.bottom.p1.y,
+      x: tableSides.bottomLeft.x + posOnLine,
+      y: tableSides.bottomLeft.y,
     };
   }
 

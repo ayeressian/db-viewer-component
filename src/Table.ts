@@ -1,10 +1,11 @@
 import CommonEventListener from './CommonEventListener';
 import constant from './const';
-import IPoint from './IPoint';
-import { ITableSchema, IColumnSchema } from './ISchema';
-import ITableData from './ITableData';
-import Viewer from './Viewer';
 import IColumn from './IColumn';
+import IPoint from './IPoint';
+import { IColumnSchema, ITableSchema } from './ISchema';
+import ITableData from './ITableData';
+import IVertices from './IVertices';
+import Viewer from './Viewer';
 
 const OUT_OF_VIEW_CORD = -1000;
 
@@ -85,49 +86,24 @@ export default class Table {
     };
   }
 
-  public getSides() {
+  public getVertices(): IVertices {
     const bbox = this.elem!.getBBox();
-
     return {
-      bottom: {
-        p1: {
-          x: bbox.x,
-          y: bbox.y + this.table!.offsetHeight,
-        },
-        p2: {
-          x: bbox.x + this.table!.offsetWidth,
-          y: bbox.y + this.table!.offsetHeight,
-        },
+      bottomLeft: {
+        x: bbox.x,
+        y: bbox.y + this.table!.offsetHeight,
       },
-      left: {
-        p1: {
-          x: bbox.x,
-          y: bbox.y,
-        },
-        p2: {
-          x: bbox.x,
-          y: bbox.y + this.table!.offsetHeight,
-        },
+      bottomRight: {
+        x: bbox.x + this.table!.offsetWidth,
+        y: bbox.y + this.table!.offsetHeight,
       },
-      right: {
-        p1: {
-          x: bbox.x + this.table!.offsetWidth,
-          y: bbox.y,
-        },
-        p2: {
-          x: bbox.x + this.table!.offsetWidth,
-          y: bbox.y + this.table!.offsetHeight,
-        },
+      topLeft: {
+        x: bbox.x,
+        y: bbox.y,
       },
-      top: {
-        p1: {
-          x: bbox.x,
-          y: bbox.y,
-        },
-        p2: {
-          x: bbox.x + this.table!.offsetWidth,
-          y: bbox.y,
-        },
+      topRight: {
+        x: bbox.x + this.table!.offsetWidth,
+        y: bbox.y,
       },
     };
   }

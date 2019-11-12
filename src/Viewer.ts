@@ -7,9 +7,9 @@ import IViewBoxVals from './IViewBoxVals';
 import Minimap from './Minimap';
 import Relation from './Relation';
 import SpiralArrange from './SpiralArrange';
-import Viewport from './Viewport';
 import Table from './Table';
 import TableArrang from './TableArrang';
+import Viewport from './Viewport';
 
 export default class Viewer {
 
@@ -106,9 +106,9 @@ export default class Viewer {
       tableElm.setAttribute('id', i + 'table');
       this.svgElem.appendChild(tableElm);
 
-      const sides = table.getSides();
+      const sides = table.getVertices();
 
-      this.minimap.setTableDim(table, sides.top.p2.x - sides.top.p1.x, sides.left.p2.y - sides.left.p1.y);
+      this.minimap.setTableDim(table, sides.topRight.x - sides.topLeft.x, sides.bottomLeft.y - sides.topLeft.y);
 
       table.getColumns().forEach((column) => {
         if (column.fk) {
@@ -123,22 +123,22 @@ export default class Viewer {
         }
       });
 
-      const rightX = table.getSides().right.p1.x;
+      const rightX = table.getVertices().topRight.x;
       if (rightX > maxX) {
         maxX = rightX;
       }
 
-      const leftX = table.getSides().left.p1.x;
+      const leftX = table.getVertices().topLeft.x;
       if (leftX < minX) {
         minX = leftX;
       }
 
-      const topY = table.getSides().top.p1.y;
+      const topY = table.getVertices().topLeft.y;
       if (topY < minY) {
         minY = topY;
       }
 
-      const bottomY = table.getSides().bottom.p1.y;
+      const bottomY = table.getVertices().bottomLeft.y;
       if (bottomY > maxY) {
         maxY = bottomY;
       }
