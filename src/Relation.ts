@@ -93,12 +93,12 @@ export default class Relation {
   }
 
   public render() {
-    const fromTableSides = this.fromTable.getVertices();
-    const toTableSides = this.toTable.getVertices();
+    const fromTableVertices = this.fromTable.getVertices();
+    const toTableVertices = this.toTable.getVertices();
 
     const toMany = !this.fromColumn.uq;
 
-    type StartEndMethod = (tableSides: IVertices, pathIndex: number, pathCount: number) => IPoint;
+    type StartEndMethod = (tableVertices: IVertices, pathIndex: number, pathCount: number) => IPoint;
 
     let startMethod: StartEndMethod;
     let endMethod: StartEndMethod;
@@ -201,8 +201,8 @@ export default class Relation {
 
     // In case of tables overlapping there won't be any result
     if (startMethod! && endMethod!) {
-      const start = startMethod!.call(this, fromTableSides!, this.fromPathIndex!, this.fromPathCount!);
-      const end = endMethod!.call(this, toTableSides!, this.toPathIndex!, this.toPathCount!);
+      const start = startMethod!.call(this, fromTableVertices!, this.fromPathIndex!, this.fromPathCount!);
+      const end = endMethod!.call(this, toTableVertices!, this.toPathIndex!, this.toPathCount!);
       const result = resultMethod!.call(this, start, end, this.fromColumn.nn, toMany);
       this.setElems(result.path, result.highlight);
     }
@@ -294,39 +294,39 @@ export default class Relation {
     return (pathIndex + 1) * (sideLength / (pathCount + 1));
   }
 
-  private getLeftSidePathCord(tableSides: IVertices, pathIndex: number, pathCount: number): IPoint {
-    const sideLength = tableSides.bottomLeft.y - tableSides.topLeft.y;
+  private getLeftSidePathCord(tableVertices: IVertices, pathIndex: number, pathCount: number): IPoint {
+    const sideLength = tableVertices.bottomLeft.y - tableVertices.topLeft.y;
     const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
-      x: tableSides.topLeft.x,
-      y: tableSides.topLeft.y + posOnLine,
+      x: tableVertices.topLeft.x,
+      y: tableVertices.topLeft.y + posOnLine,
     };
   }
 
-  private getRightSidePathCord(tableSides: IVertices, pathIndex: number, pathCount: number): IPoint {
-    const sideLength = tableSides.bottomRight.y - tableSides.topRight.y;
+  private getRightSidePathCord(tableVertices: IVertices, pathIndex: number, pathCount: number): IPoint {
+    const sideLength = tableVertices.bottomRight.y - tableVertices.topRight.y;
     const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
-      x: tableSides.topRight.x,
-      y: tableSides.topRight.y + posOnLine,
+      x: tableVertices.topRight.x,
+      y: tableVertices.topRight.y + posOnLine,
     };
   }
 
-  private getTopSidePathCord(tableSides: IVertices, pathIndex: number, pathCount: number): IPoint {
-    const sideLength = tableSides.topRight.x - tableSides.topLeft.x;
+  private getTopSidePathCord(tableVertices: IVertices, pathIndex: number, pathCount: number): IPoint {
+    const sideLength = tableVertices.topRight.x - tableVertices.topLeft.x;
     const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
-      x: tableSides.topLeft.x + posOnLine,
-      y: tableSides.topLeft.y,
+      x: tableVertices.topLeft.x + posOnLine,
+      y: tableVertices.topLeft.y,
     };
   }
 
-  private getBottomSidePathCord(tableSides: IVertices, pathIndex: number, pathCount: number): IPoint {
-    const sideLength = tableSides.bottomRight.x - tableSides.bottomLeft.x;
+  private getBottomSidePathCord(tableVertices: IVertices, pathIndex: number, pathCount: number): IPoint {
+    const sideLength = tableVertices.bottomRight.x - tableVertices.bottomLeft.x;
     const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
-      x: tableSides.bottomLeft.x + posOnLine,
-      y: tableSides.bottomLeft.y,
+      x: tableVertices.bottomLeft.x + posOnLine,
+      y: tableVertices.bottomLeft.y,
     };
   }
 

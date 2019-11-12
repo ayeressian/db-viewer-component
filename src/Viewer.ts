@@ -106,9 +106,10 @@ export default class Viewer {
       tableElm.setAttribute('id', i + 'table');
       this.svgElem.appendChild(tableElm);
 
-      const sides = table.getVertices();
+      const vertices = table.getVertices();
 
-      this.minimap.setTableDim(table, sides.topRight.x - sides.topLeft.x, sides.bottomLeft.y - sides.topLeft.y);
+      this.minimap.setTableDim(
+        table, vertices.topRight.x - vertices.topLeft.x, vertices.bottomLeft.y - vertices.topLeft.y);
 
       table.getColumns().forEach((column) => {
         if (column.fk) {
