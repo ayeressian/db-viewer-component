@@ -1,4 +1,4 @@
-import ISchema, { ITableSchema } from './ISchema';
+import ISchema, { ITableSchema, IColumnFkSchema } from './ISchema';
 import Table from './Table';
 
 export default function schemaParser(schema: ISchema) {
@@ -19,9 +19,9 @@ export default function schemaParser(schema: ISchema) {
 
   schema.tables.forEach((sTable) => {
     const fks = tablesFk.get(sTable);
-    fks.forEach((sFkColumn) => {
-      const fkTable = tables.find((table) => table.getName() === sFkColumn.fk.table);
-      const fkColumn = fkTable!.getColumns().find((column) => column.name === sFkColumn.fk.column);
+    fks.forEach((sFkColumn: IColumnFkSchema) => {
+      const fkTable = tables.find((table) => table.getName() === sFkColumn.fk!.table)!;
+      const fkColumn = fkTable!.getColumns().find((column) => column.name === sFkColumn.fk!.column);
       tables.find((table) => sTable.name === table.getName())!.addColumn(
         Object.assign(sFkColumn, {
           fk: {

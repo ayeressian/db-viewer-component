@@ -1,4 +1,5 @@
 import constant from './const';
+import IColumn from './IColumn';
 import Orientation from './IOrientation';
 import IPoint from './IPoint';
 import {
@@ -21,6 +22,12 @@ enum Axis {
   y = 'y',
 }
 
+interface IBasicRelation {
+  fromColumn: IColumn;
+  fromTable: Table;
+  toColumn: IColumn;
+  toTable: Table;
+}
 export default class Relation {
 
   public static ySort(arr: Relation[], table: Table) {
@@ -49,16 +56,16 @@ export default class Relation {
       }
     });
   }
-  public fromColumn: any;
+  public fromColumn: IColumn;
   public fromPathCount?: number;
   public fromPathIndex?: number;
   public fromTable: Table;
-  public toColumn: any;
+  public toColumn: IColumn;
   public toPathCount?: number;
   public toPathIndex?: number;
   public toTable: Table;
-  public pathElem?: SVGElement;
-  public highlightTrigger?: SVGElement;
+  public pathElem?: SVGGraphicsElement;
+  public highlightTrigger?: SVGGraphicsElement;
   public fromTablePathSide?: Orientation;
   public toTablePathSide?: Orientation;
   public fromIntersectPoint?: IPoint;
@@ -69,7 +76,7 @@ export default class Relation {
     fromTable,
     toColumn,
     toTable,
-  }) {
+  }: IBasicRelation) {
     this.fromColumn = fromColumn;
     this.fromTable = fromTable;
     this.toColumn = toColumn;
@@ -94,7 +101,7 @@ export default class Relation {
 
     let startMethod: StartEndMethod;
     let endMethod: StartEndMethod;
-    let resultMethod: (start: IPoint, end: IPoint, oneTo: boolean, toMany: boolean) => IPathHeighlight;
+    let resultMethod: (start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean) => IPathHeighlight;
 
     switch (this.fromTablePathSide) {
       case Orientation.Left:
@@ -271,11 +278,11 @@ export default class Relation {
     return false;
   }
 
-  public getElems() {
+  public getElems(): Element[] {
     if (!this.pathElem) {
       return [];
     }
-    return [this.pathElem, this.highlightTrigger];
+    return [this.pathElem, this.highlightTrigger!];
   }
 
   private getTableRelationSide() {
@@ -322,7 +329,7 @@ export default class Relation {
     };
   }
 
-  private get2LinePathFlatTop(start: IPoint, end: IPoint, oneTo: boolean, toMany: boolean): IPathHeighlight {
+  private get2LinePathFlatTop(start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean): IPathHeighlight {
     let dArrow: string;
     let dStartLine: string;
     let dPath: string;
@@ -379,7 +386,7 @@ export default class Relation {
     };
   }
 
-  private get2LinePathFlatBottom(start: IPoint, end: IPoint, oneTo: boolean, toMany: boolean): IPathHeighlight {
+  private get2LinePathFlatBottom(start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean): IPathHeighlight {
     let dArrow: string;
     let dStartLine: string;
     let dPath: string;
@@ -430,11 +437,11 @@ export default class Relation {
     };
   }
 
-  private get3LinePathHoriz(start: IPoint, end: IPoint, oneTo: boolean, toMany: boolean): IPathHeighlight {
+  private get3LinePathHoriz(start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean): IPathHeighlight {
     let dStartLine: string;
     let dPath: string;
     const p2X = start.x + (end.x - start.x) / 2;
-    let dArrow;
+    let dArrow: string;
     if (start.x > end.x) {
       dArrow = this.getArrow(end, toMany, Orientation.Left);
       dPath = `M ${start.x} ${start.y}`;
@@ -470,12 +477,12 @@ export default class Relation {
     };
   }
 
-  private get3LinePathVert(start: IPoint, end: IPoint, oneTo: boolean, toMany: boolean): IPathHeighlight {
+  private get3LinePathVert(start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean): IPathHeighlight {
     let dStartLine = `M ${start.x - PATH_START} `;
 
     let dPath: string;
     const p2Y = start.y + (end.y - start.y) / 2;
-    let dArrow;
+    let dArrow: string;
     if (start.y > end.y) {
       dArrow = this.getArrow(end, toMany, Orientation.Top);
       if (oneTo) {
@@ -508,9 +515,9 @@ export default class Relation {
     };
   }
 
-  private getSelfRelationLeft(start: IPoint, end: IPoint, oneTo: boolean, toMany: boolean): IPathHeighlight {
-    let dStartLine;
-    let dPath;
+  private getSelfRelationLeft(start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean): IPathHeighlight {
+    let dStartLine: string;
+    let dPath: string;
 
     if (oneTo) {
       dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START} v ${PATH_START * 2}`;
@@ -534,7 +541,7 @@ export default class Relation {
     };
   }
 
-  private getSelfRelationRight(start: IPoint, end: IPoint, oneTo: boolean, toMany: boolean): IPathHeighlight {
+  private getSelfRelationRight(start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean): IPathHeighlight {
     let dStartLine: string;
     let dPath: string;
 
@@ -560,7 +567,7 @@ export default class Relation {
     };
   }
 
-  private getSelfRelationTop(start: IPoint, end: IPoint, oneTo: boolean, toMany: boolean): IPathHeighlight {
+  private getSelfRelationTop(start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean): IPathHeighlight {
     let dStartLine: string;
     let dPath: string;
 
@@ -586,7 +593,7 @@ export default class Relation {
     };
   }
 
-  private getSelfRelationBottom(start: IPoint, end: IPoint, oneTo: boolean, toMany: boolean): IPathHeighlight {
+  private getSelfRelationBottom(start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean): IPathHeighlight {
     let dStartLine: string;
     let dPath: string;
     if (oneTo) {
@@ -616,7 +623,7 @@ export default class Relation {
           ` a 1,1 0 1,0 ${PATH_START * 2},0 a 1,1 0 1,0 ${-PATH_START * 2},0`;
   }
 
-  private getArrow({x, y}: IPoint, toMany: boolean, orientation: Orientation) {
+  private getArrow({x, y}: IPoint, toMany: boolean | undefined, orientation: Orientation) {
     switch (orientation) {
       case Orientation.Top:
       if (toMany) {

@@ -2,6 +2,7 @@ import ISchema from './ISchema';
 import ITableData from './ITableData';
 import schemaParser from './schemaParser';
 import Table from './Table';
+import TableArrang from './TableArrang';
 import template from './template';
 import validateJson from './validate-schema';
 import Viewer from './Viewer';
@@ -27,11 +28,11 @@ class DBViewer extends HTMLElement {
     this.viewer!.setPanY(value);
   }
 
-  set src(src) {
+  set src(src: string) {
     this.setAttribute('src', src);
   }
 
-  static get observedAttributes() {
+  static get observedAttributes(): string[] {
     return ['src', 'disable-table-movement'];
   }
 
@@ -124,7 +125,12 @@ class DBViewer extends HTMLElement {
           }
           this.notParsedSchema = JSON.parse(JSON.stringify(response));
           this.tables = schemaParser(response);
-          this.viewer!.load(this.tables, response.viewport, this.notParsedSchema!.arrangement);
+
+          let arrangement: TableArrang;
+          if (!this.notParsedSchema!.arrangement) arrangement = TableArrang.default;
+          else arrangement = TableArrang[this.notParsedSchema!.arrangement];
+
+          this.viewer!.load(this.tables, response.viewport, arrangement);
           setTimeout(() => {
             this.dispatchEvent(new CustomEvent('load'));
           });

@@ -1,9 +1,10 @@
 import CommonEventListener from './CommonEventListener';
 import constant from './const';
 import IPoint from './IPoint';
-import { ITableSchema } from './ISchema';
+import { ITableSchema, IColumnSchema } from './ISchema';
 import ITableData from './ITableData';
 import Viewer from './Viewer';
+import IColumn from './IColumn';
 
 const OUT_OF_VIEW_CORD = -1000;
 
@@ -20,7 +21,7 @@ export default class Table {
   get name() {
     return this.nameValue;
   }
-  private columns;
+  private columns: IColumn[];
   private nameValue: string;
   private posValue;
   private disableMovementValue: boolean;
@@ -42,14 +43,14 @@ export default class Table {
       y: 0,
     },
   }: ITableSchema) {
-    this.columns = columns;
+    this.columns = columns as IColumnSchema[];
     this.nameValue = name;
     this.posValue = pos;
 
     this.disableMovementValue = false;
   }
 
-  public getColumns() {
+  public getColumns(): IColumn[] {
     return this.columns;
   }
 
@@ -61,7 +62,7 @@ export default class Table {
     return this.nameValue;
   }
 
-  public addColumn(column) {
+  public addColumn(column: IColumn) {
     this.columns.push(column);
   }
 
@@ -148,7 +149,7 @@ export default class Table {
     this.foreignObject.appendChild(this.table);
 
     this.columns.forEach((column) => {
-      const columnTr = document.createElementNS(constant.nsHtml, 'tr');
+      const columnTr = document.createElementNS(constant.nsHtml, 'tr') as HTMLTableRowElement;
       column.elem = columnTr;
       this.table!.appendChild(columnTr);
 
@@ -232,20 +233,20 @@ export default class Table {
     this.veiwer = veiwer;
   }
 
-  public highlightFrom(column) {
-    column.elem.classList.add('fromRelation');
+  public highlightFrom(column: IColumn) {
+    column.elem!.classList.add('fromRelation');
   }
 
-  public removeHighlightFrom(column) {
-    column.elem.classList.remove('fromRelation');
+  public removeHighlightFrom(column: IColumn) {
+    column.elem!.classList.remove('fromRelation');
   }
 
-  public highlightTo(column) {
-    column.elem.classList.add('toRelation');
+  public highlightTo(column: IColumn) {
+    column.elem!.classList.add('toRelation');
   }
 
-  public removeHighlightTo(column) {
-    column.elem.classList.remove('toRelation');
+  public removeHighlightTo(column: IColumn) {
+    column.elem!.classList.remove('toRelation');
   }
 
   public disableMovement(value: boolean) {

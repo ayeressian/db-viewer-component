@@ -7,7 +7,9 @@ import IViewBoxVals from './IViewBoxVals';
 import Minimap from './Minimap';
 import Relation from './Relation';
 import SpiralArrange from './SpiralArrange';
+import Viewport from './Viewport';
 import Table from './Table';
+import TableArrang from './TableArrang';
 
 export default class Viewer {
 
@@ -58,7 +60,7 @@ export default class Viewer {
     this.isTableMovementDisabled = false;
   }
 
-  public load(tables: Table[], viewport, tableArrang) {
+  public load(tables: Table[], viewport: Viewport, tableArrang: TableArrang) {
     this.relationInfos = [];
     this.svgElem.innerHTML = '';
     this.tables = tables;
@@ -69,7 +71,7 @@ export default class Viewer {
       table.disableMovement(this.isTableMovementDisabled);
     });
 
-    if (tableArrang === 'spiral') {
+    if (tableArrang === TableArrang.spiral) {
       // wait for table render to happen
       setTimeout(() => SpiralArrange.call(tables));
     }
@@ -89,7 +91,7 @@ export default class Viewer {
     this.callbacks!.tableMoveEnd(table.data());
   }
 
-  public draw(viewport) {
+  public draw(viewport: Viewport) {
     let minX = Number.MAX_SAFE_INTEGER;
     let maxX = Number.MIN_SAFE_INTEGER;
     let minY = Number.MAX_SAFE_INTEGER;
@@ -204,7 +206,7 @@ export default class Viewer {
     return this.viewBoxVals;
   }
 
-  public setPanX(value: number) {
+  public setPanX(value: number): Promise<void> {
     this.viewBoxVals.x = value / this.zoom!;
     const originalScrollLeft = this.svgContainer.scrollLeft;
     this.svgContainer.scrollLeft = value;
@@ -215,7 +217,7 @@ export default class Viewer {
     }
   }
 
-  public setPanY(value: number) {
+  public setPanY(value: number): Promise<void> {
     this.viewBoxVals.y = value / this.zoom!;
     const originalScrollTop = this.svgContainer.scrollTop;
     this.svgContainer.scrollTop = value;
@@ -381,21 +383,21 @@ export default class Viewer {
       this.updatePathIndex(bottomRelations, Orientation.Bottom, sidesAndCount, table);
     });
 
-    this.relationInfos!.forEach((relation) => {
+    this.relationInfos!.forEach((relation: Relation) => {
       relation.removeHoverEffect();
       relation.getElems().forEach((elem) => this.svgElem.removeChild(elem));
       const elems = relation.render();
-      elems.forEach((elem) => this.svgElem.prepend(elem));
+      elems.forEach((elem) => this.svgElem.prepend(elem!));
     });
   }
 
-  private setViewPort(type) {
+  private setViewPort(type: Viewport): Promise<[void, void]> {
     let viewportX: number;
     let viewportY: number;
     switch (type) {
-      case 'noChange':
+      case Viewport.noChange:
       break;
-      case 'centerByTablesWeight':
+      case Viewport.centerByTablesWeight:
       {
         let totalX = 0;
         let totalY = 0;
@@ -414,7 +416,7 @@ export default class Viewer {
         viewportY = centerY - this.viewBoxVals.height / 2;
       }
       break;
-      case 'center':
+      case Viewport.center:
       {
         const width = this.svgContainer.clientWidth;
         const height = this.svgContainer.clientHeight;
@@ -425,7 +427,7 @@ export default class Viewer {
       default: // centerByTables
       {
         if (this.tables!.length === 0) {
-          return this.setViewPort('center');
+          return this.setViewPort(Viewport.center);
         }
         let minX = Number.MAX_SAFE_INTEGER;
         let minY = Number.MAX_SAFE_INTEGER;
