@@ -2,11 +2,11 @@ import constant from './const';
 import IColumn from './IColumn';
 import Orientation from './IOrientation';
 import IPoint from './IPoint';
+import IVertices from './IVertices';
 import {
   segmentIntersection,
 } from './mathUtil';
 import Table from './Table';
-import IVertices from './IVertices';
 
 const PATH_ARROW_LENGTH = 9;
 const PATH_ARROW_HEIGHT = 4;
