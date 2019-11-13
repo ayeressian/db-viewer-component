@@ -128,7 +128,7 @@ class DBViewer extends HTMLElement {
 
           let arrangement: TableArrang;
           if (!this.notParsedSchema!.arrangement) arrangement = TableArrang.default;
-          else arrangement = TableArrang[this.notParsedSchema!.arrangement];
+          else arrangement = TableArrang[this.notParsedSchema!.arrangement as keyof typeof TableArrang];
 
           this.viewer!.load(this.tables, response.viewport, arrangement);
           setTimeout(() => {
