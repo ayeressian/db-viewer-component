@@ -1,7 +1,7 @@
 import ISchema, { IColumnFkSchema, ITableSchema } from './ISchema';
 import Table from './Table';
 
-export default function schemaParser(schema: ISchema) {
+export default function schemaParser(schema: ISchema): Table[] {
   const tablesFk = new Map();
   const tables: Table[] = [];
   schema.tables.forEach((table: ITableSchema) => {

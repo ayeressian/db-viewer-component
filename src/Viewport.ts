@@ -1,8 +1,8 @@
 enum ViewPort {
-  noChange = 'noChange',
-  centerByTablesWeight = 'centerByTablesWeight',
-  center = 'center',
-  centerByTables = 'centerByTables',
+  noChange,
+  centerByTablesWeight,
+  center,
+  centerByTables,
 }
 
 export default ViewPort;
