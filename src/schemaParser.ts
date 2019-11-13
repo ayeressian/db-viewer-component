@@ -1,4 +1,4 @@
-import ISchema, { ITableSchema, IColumnFkSchema } from './ISchema';
+import ISchema, { IColumnFkSchema, ITableSchema } from './ISchema';
 import Table from './Table';
 
 export default function schemaParser(schema: ISchema) {
