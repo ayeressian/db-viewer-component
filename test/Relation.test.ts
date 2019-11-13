@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import Orientation from '../src/IOrientation';
 import IPoint from '../src/IPoint';
+import IVertices from '../src/IVertices';
 
 const expect = chai.expect;
 
@@ -93,45 +94,21 @@ describe('Relation', () => {
       const fakeRlationObj = Object.create(Relation.prototype);
       fakeRlationObj.fromTable = {
         getCenter: sinon.fake.returns({x: 100, y: 100}),
-        getSides: sinon.fake.returns({
-          bottom: {
-            p1: {x: 50, y: 150},
-            p2: {x: 150, y: 150},
-          },
-          left: {
-            p1: {x: 50, y: 50},
-            p2: {x: 50, y: 150},
-          },
-          right: {
-            p1: {x: 150, y: 50},
-            p2: {x: 150, y: 150},
-          },
-          top: {
-            p1: {x: 50, y: 50},
-            p2: {x: 150, y: 50},
-          },
-        }),
+        getVertices: sinon.fake.returns({
+          bottomLeft: {x: 50, y: 150},
+          bottomRight: {x: 150, y: 150},
+          topLeft: {x: 50, y: 50},
+          topRight: {x: 150, y: 150},
+        } as IVertices),
       };
       fakeRlationObj.toTable = {
         getCenter: sinon.fake.returns({x: 500, y: 500}),
-        getSides: sinon.fake.returns({
-          bottom: {
-            p1: {x: 450, y: 550},
-            p2: {x: 550, y: 550},
-          },
-          left: {
-            p1: {x: 450, y: 450},
-            p2: {x: 450, y: 550},
-          },
-          right: {
-            p1: {x: 550, y: 450},
-            p2: {x: 550, y: 550},
-          },
-          top: {
-            p1: {x: 450, y: 450},
-            p2: {x: 550, y: 450},
-          },
-        }),
+        getVertices: sinon.fake.returns({
+          bottomLeft: {x: 450, y: 550},
+          bottomRight: {x: 550, y: 550},
+          topLeft: {x: 450, y: 450},
+          topRight: {x: 550, y: 450},
+        } as IVertices),
       };
 
       fakeRlationObj.calcPathTableSides();
