@@ -24,7 +24,7 @@ export default class Table {
   }
   private columns: IColumn[];
   private nameValue: string;
-  private posValue;
+  private posValue: IPoint | string;
   private disableMovementValue: boolean;
   private elem?: SVGGraphicsElement;
   private veiwer?: Viewer;
@@ -162,7 +162,8 @@ export default class Table {
       this.setTablePos(OUT_OF_VIEW_CORD, OUT_OF_VIEW_CORD, true);
       this.penddingCenter = true;
     } else {
-      this.setTablePos(this.posValue.x, this.posValue.y);
+      const point = this.posValue as IPoint;
+      this.setTablePos(point.x, point.y);
     }
 
     // After render happened
@@ -200,7 +201,7 @@ export default class Table {
     return {
       height: this.table!.offsetHeight,
       name: this.nameValue,
-      pos: this.posValue,
+      pos: this.posValue as IPoint,
       width: this.table!.offsetWidth,
     };
   }
@@ -280,7 +281,8 @@ export default class Table {
       const y = normalizedClientY - mouseDownInitialElemY;
 
       this.setTablePos(x, y);
-      if (this.onMove) this.onMove(this, this.posValue.x, this.posValue.y);
+      const pos = this.posValue as IPoint;
+      if (this.onMove) this.onMove(this, pos.x, pos.y);
     };
 
     const mouseDown = (event: MouseEvent) => {

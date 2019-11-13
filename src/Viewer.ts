@@ -11,6 +11,12 @@ import Table from './Table';
 import TableArrang from './TableArrang';
 import Viewport from './Viewport';
 
+interface ISideAndCount {
+  side: Orientation;
+  order: number;
+  count: number;
+}
+
 export default class Viewer {
 
   public isTableMovementDisabled: boolean;
@@ -271,10 +277,10 @@ export default class Viewer {
     this.minimap.reset();
   }
 
-  private updatePathIndex(relations: Relation[], side: Orientation, sidesAndCount, table: Table) {
+  private updatePathIndex(relations: Relation[], side: Orientation, sidesAndCount: ISideAndCount[], table: Table) {
     let pathIndex = 0;
     relations.forEach((relation) => {
-      const count = sidesAndCount.find((item) => item.side === side).count;
+      const count = sidesAndCount.find((item) => item.side === side)!.count;
       if (relation.fromTable !== relation.toTable) {
         if (relation.fromTable === table) {
           relation.fromPathIndex = pathIndex;
@@ -322,7 +328,7 @@ export default class Viewer {
       Relation.xSort(topRelations, table);
       Relation.xSort(bottomRelations, table);
 
-      const sidesAndCount = [{
+      const sidesAndCount: ISideAndCount[] = [{
           count: leftRelations.length,
           order: 1,
           side: Orientation.Left,
