@@ -1,15 +1,15 @@
-import CommonEventListener from './CommonEventListener';
 import constant from './const';
-import ICallbacks from './ICallbacks';
-import Orientation from './IOrientation';
-import ITableData from './ITableData';
-import IViewBoxVals from './IViewBoxVals';
 import Minimap from './Minimap';
 import Relation from './Relation';
 import SpiralArrange from './SpiralArrange';
 import Table from './Table';
-import TableArrang from './TableArrang';
-import Viewport from './Viewport';
+import CommonEventListener from './types/CommonEventListener';
+import ICallbacks from './types/ICallbacks';
+import Orientation from './types/IOrientation';
+import ITableData from './types/ITableData';
+import IViewBoxVals from './types/IViewBoxVals';
+import TableArrang from './types/TableArrang';
+import Viewport from './types/Viewport';
 
 interface ISideAndCount {
   side: Orientation;

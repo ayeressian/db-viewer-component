@@ -1,10 +1,10 @@
-import CommonEventListener from './CommonEventListener';
 import constant from './const';
-import IColumn from './IColumn';
-import IPoint from './IPoint';
-import { IColumnSchema, ITableSchema } from './ISchema';
-import ITableData from './ITableData';
-import IVertices from './IVertices';
+import CommonEventListener from './types/CommonEventListener';
+import IColumn from './types/IColumn';
+import IPoint from './types/IPoint';
+import { IColumnSchema, ITableSchema } from './types/ISchema';
+import ITableData from './types/ITableData';
+import IVertices from './types/IVertices';
 import Viewer from './Viewer';
 
 const OUT_OF_VIEW_CORD = -1000;

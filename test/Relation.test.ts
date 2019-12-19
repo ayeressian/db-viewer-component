@@ -1,9 +1,9 @@
 import chai from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import Orientation from '../src/IOrientation';
-import IPoint from '../src/IPoint';
-import IVertices from '../src/IVertices';
+import Orientation from '../src/types/IOrientation';
+import IPoint from '../src/types/IPoint';
+import IVertices from '../src/types/IVertices';
 
 const expect = chai.expect;
 

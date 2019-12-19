@@ -1,7 +1,7 @@
-import CommonEventListener from './CommonEventListener';
 import constant from './const';
-import IViewBoxVals from './IViewBoxVals';
 import Table from './Table';
+import CommonEventListener from './types/CommonEventListener';
+import IViewBoxVals from './types/IViewBoxVals';
 import Viewer from './Viewer';
 
 export default class Minimap {

@@ -1,9 +1,9 @@
-import ISchema from './ISchema';
-import ITableData from './ITableData';
 import schemaParser from './schemaParser';
 import Table from './Table';
-import TableArrang from './TableArrang';
 import template from './template';
+import ISchema from './types/ISchema';
+import ITableData from './types/ITableData';
+import TableArrang from './types/TableArrang';
 import validateJson from './validate-schema';
 import Viewer from './Viewer';
 
@@ -206,3 +206,5 @@ class DBViewer extends HTMLElement {
 }
 
 customElements.define('db-viewer', DBViewer);
+
+export default DBViewer;

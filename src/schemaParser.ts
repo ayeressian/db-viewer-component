@@ -1,5 +1,5 @@
-import ISchema, { IColumnFkSchema, ITableSchema } from './ISchema';
 import Table from './Table';
+import ISchema, { IColumnFkSchema, ITableSchema } from './types/ISchema';
 
 export default function schemaParser(schema: ISchema): Table[] {
   const tablesFk = new Map();
