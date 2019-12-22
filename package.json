@@ -25,6 +25,7 @@
     "test:debug": "webpack-dev-server --config webpack.config/webpack.test.debug.config.ts --hot --inline"
   },
   "main": "dist/main.js",
+  "types": "dist/index.d.ts",
   "author": "",
   "license": "MIT",
   "devDependencies": {

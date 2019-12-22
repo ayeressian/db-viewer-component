@@ -7,10 +7,10 @@ import TableArrang from './types/TableArrang';
 import validateJson from './validate-schema';
 import Viewer from './Viewer';
 
-const NO_TABLE = new Error(`No table exist with the given name.`);
+const NO_TABLE = new Error('No table exist with the given name.');
 const INVALID_FILE_FORMAT = new Error('Invalid file format.');
 
-class DBViewer extends HTMLElement {
+class DbViewer extends HTMLElement {
 
   get scrollLeft(): number {
     return this.viewer!.getPan().x;
@@ -205,6 +205,4 @@ class DBViewer extends HTMLElement {
   }
 }
 
-customElements.define('db-viewer', DBViewer);
-
-export default DBViewer;
+customElements.define('db-viewer', DbViewer);
