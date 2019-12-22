@@ -1,3 +1,4 @@
+import CopyPlugin from 'copy-webpack-plugin';
 import path from 'path';
 import { Configuration } from 'webpack';
 
@@ -42,6 +43,14 @@ const config: Configuration = {
   resolve: {
     extensions: ['.ts', '.js'],
   },
+  plugins: [
+    new CopyPlugin([
+      {
+        from: './src/index.d.ts',
+        to: '../dist/',
+      },
+    ]),
+  ],
 };
 
 export default config;
