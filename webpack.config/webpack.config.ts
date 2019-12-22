@@ -40,9 +40,6 @@ const config: Configuration = {
     filename: 'main.js',
     path: path.resolve(__dirname, '../dist'),
   },
-  resolve: {
-    extensions: ['.ts', '.js'],
-  },
   plugins: [
     new CopyPlugin([
       {
@@ -51,6 +48,9 @@ const config: Configuration = {
       },
     ]),
   ],
+  resolve: {
+    extensions: ['.ts', '.js'],
+  },
 };
 
 export default config;
