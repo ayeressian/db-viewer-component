@@ -43,16 +43,11 @@ interface IDbViewer extends HTMLElement {
   scrollLeft: number;
   scrollTop: number;
   src: string;
-  schema: string;
+  schema: ISchema;
   disableTableMovement: boolean;
   getZoom(): number;
   zoomIn(): void;
   zoomOut(): void;
   getTableInfo(name: string): ITableData;
   setTablePos(name: string, xCord: number, yCord: number): void;
-  attributeChangedCallback(
-    name: string,
-    _oldValue: string,
-    newValue: string
-  ): void;
 }

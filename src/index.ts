@@ -8,7 +8,7 @@ import validateJson from './validate-schema';
 import Viewer from './Viewer';
 
 const NO_TABLE = new Error('No table exist with the given name.');
-const INVALID_FILE_FORMAT = new Error('Invalid file format.');
+const INVALID_SCHEMA = new Error('Invalid schema.');
 
 class DbViewer extends HTMLElement {
 
@@ -36,9 +36,9 @@ class DbViewer extends HTMLElement {
     return ['src', 'disable-table-movement'];
   }
 
-  set schema(schema: string) {
-    if (!validateJson(schema)) {
-      throw INVALID_FILE_FORMAT;
+  set schema(schema: ISchema | undefined) {
+    if (schema == null || !validateJson(schema)) {
+      throw INVALID_SCHEMA;
     }
     this.notParsedSchema = JSON.parse(JSON.stringify(schema));
     const schemaObj = JSON.parse(JSON.stringify(schema));
@@ -46,11 +46,13 @@ class DbViewer extends HTMLElement {
     this.viewer!.load(this.tables, schemaObj.viewport, schemaObj.arrangement);
   }
 
-  get schema() {
-    this.notParsedSchema!.tables.forEach((notParsedTable) => {
-      notParsedTable.pos = this.tables!.find((table) => table.name === notParsedTable.name)!.pos;
-    });
-    return JSON.stringify(this.notParsedSchema);
+  get schema(): ISchema | undefined {
+    if (this.notParsedSchema != null) {
+      this.notParsedSchema.tables.forEach((notParsedTable) => {
+        notParsedTable.pos = this.tables!.find((table) => table.name === notParsedTable.name)!.pos;
+      });
+    }
+    return this.notParsedSchema;
   }
 
   set disableTableMovement(value: boolean) {
@@ -121,7 +123,7 @@ class DbViewer extends HTMLElement {
         fetch(this.srcVal!).then((response) => response.json()).
         then((response) => {
           if (!validateJson(response)) {
-            throw INVALID_FILE_FORMAT;
+            throw INVALID_SCHEMA;
           }
           this.notParsedSchema = JSON.parse(JSON.stringify(response));
           this.tables = schemaParser(response);
