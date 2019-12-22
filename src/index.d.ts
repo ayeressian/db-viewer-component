@@ -39,6 +39,19 @@ interface IPoint {
   y: number;
 }
 
+interface IDbViewerEventMap extends HTMLElementEventMap {
+  'ready': CustomEvent;
+  'load': CustomEvent;
+  'viewportClick': CustomEvent;
+  'tableClick': CustomEvent;
+  'tableDblClick': CustomEvent;
+  'tableContextMenu': CustomEvent;
+  'tableMove': CustomEvent;
+  'tableMoveEnd': CustomEvent;
+  'zoomIn': CustomEvent;
+  'zoomOut': CustomEvent;
+}
+
 interface IDbViewer extends HTMLElement {
   scrollLeft: number;
   scrollTop: number;
@@ -50,4 +63,9 @@ interface IDbViewer extends HTMLElement {
   zoomOut(): void;
   getTableInfo(name: string): ITableData;
   setTablePos(name: string, xCord: number, yCord: number): void;
+
+  addEventListener<K extends keyof IDbViewerEventMap>(type: K, listener: (this: IDbViewer, ev: IDbViewerEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+  removeEventListener<K extends keyof IDbViewerEventMap>(type: K, listener: (this: HTMLFormElement, ev: IDbViewerEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+  removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }
