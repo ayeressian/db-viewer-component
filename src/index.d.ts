@@ -52,6 +52,7 @@ interface IDbViewerEventMap extends HTMLElementEventMap {
   'zoomOut': CustomEvent;
 }
 
+/** DbViewer element */
 interface IDbViewer extends HTMLElement {
   scrollLeft: number;
   scrollTop: number;

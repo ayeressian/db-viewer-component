@@ -16,6 +16,7 @@ const schoolDbSetup = () => {
 
   dbViewerSchoolElem.src = '/example/schema/school.json';
 
+  dbViewerSchoolElem.addEventListener('ready', () => console.log('ready'));
   dbViewerSchoolElem.addEventListener('tableClick', (event) => console.log('tableClick', event.detail));
   dbViewerSchoolElem.addEventListener('tableDblClick', (event) => console.log('tableDblClick', event.detail));
   dbViewerSchoolElem.addEventListener('tableContextMenu', (event) => console.log('tableContextMenu', event.detail));

@@ -37,13 +37,15 @@ class DbViewer extends HTMLElement {
   }
 
   set schema(schema: ISchema | undefined) {
-    if (schema == null || !validateJson(schema)) {
-      throw INVALID_SCHEMA;
-    }
-    this.notParsedSchema = JSON.parse(JSON.stringify(schema));
-    const schemaObj = JSON.parse(JSON.stringify(schema));
-    this.tables = schemaParser(schemaObj);
-    this.viewer!.load(this.tables, schemaObj.viewport, schemaObj.arrangement);
+    this.readyPromise.then(() => {
+      if (schema == null || !validateJson(schema)) {
+        throw INVALID_SCHEMA;
+      }
+      this.notParsedSchema = JSON.parse(JSON.stringify(schema));
+      const schemaObj = JSON.parse(JSON.stringify(schema));
+      this.tables = schemaParser(schemaObj);
+      this.viewer!.load(this.tables, schemaObj.viewport, schemaObj.arrangement);
+    });
   }
 
   get schema(): ISchema | undefined {
