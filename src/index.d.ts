@@ -3,7 +3,7 @@ interface IFkSchema {
   column: string;
 }
 
-interface IColumnSchema {
+interface IColumnNoneFkSchema {
   name: string;
   type: string;
   pk?: boolean;
@@ -11,14 +11,16 @@ interface IColumnSchema {
   nn?: boolean;
 }
 
-interface IColumnFkSchema extends IColumnSchema {
+interface IColumnFkSchema extends Omit<IColumnNoneFkSchema, 'type'> {
   fk?: IFkSchema;
 }
+
+type IColumnSchema = IColumnFkSchema | IColumnNoneFkSchema
 
 interface ITableSchema {
   name: string;
   pos?: IPoint | string;
-  columns: IColumnFkSchema[];
+  columns: IColumnSchema[];
 }
 
 interface ISchema {
