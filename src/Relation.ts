@@ -3,7 +3,7 @@ import {
   segmentIntersection,
 } from './mathUtil';
 import Table from './Table';
-import IColumn from './types/IColumn';
+import { Column } from './types/Column';
 import Orientation from './types/IOrientation';
 import IPoint from './types/IPoint';
 import IVertices from './types/IVertices';
@@ -24,9 +24,9 @@ enum Axis {
 }
 
 interface IBasicRelation {
-  fromColumn: IColumn;
+  fromColumn: Column;
   fromTable: Table;
-  toColumn: IColumn;
+  toColumn: Column;
   toTable: Table;
 }
 export default class Relation {
@@ -57,11 +57,11 @@ export default class Relation {
       }
     });
   }
-  public fromColumn: IColumn;
+  public fromColumn: Column;
   public fromPathCount?: number;
   public fromPathIndex?: number;
   public fromTable: Table;
-  public toColumn: IColumn;
+  public toColumn: Column;
   public toPathCount?: number;
   public toPathIndex?: number;
   public toTable: Table;

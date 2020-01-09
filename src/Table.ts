@@ -1,8 +1,8 @@
 import constant from './const';
+import { Column, IColumnFk, isColumnFk } from './types/Column';
 import CommonEventListener from './types/CommonEventListener';
-import IColumn from './types/IColumn';
 import IPoint from './types/IPoint';
-import { IColumnSchema, ITableSchema } from './types/ISchema';
+import { ITableSchema } from './types/ISchema';
 import ITableData from './types/ITableData';
 import IVertices from './types/IVertices';
 import Viewer from './Viewer';
@@ -22,7 +22,7 @@ export default class Table {
   get name() {
     return this.nameValue;
   }
-  private columns: IColumn[];
+  private columns: Column[];
   private nameValue: string;
   private posValue: IPoint | string;
   private disableMovementValue: boolean;
@@ -44,14 +44,14 @@ export default class Table {
       y: 0,
     },
   }: ITableSchema) {
-    this.columns = columns as IColumnSchema[];
+    this.columns = columns as Column[];
     this.nameValue = name;
     this.posValue = pos;
 
     this.disableMovementValue = false;
   }
 
-  public getColumns(): IColumn[] {
+  public getColumns(): Column[] {
     return this.columns;
   }
 
@@ -63,7 +63,7 @@ export default class Table {
     return this.nameValue;
   }
 
-  public addColumn(column: IColumn) {
+  public addColumn(column: Column) {
     this.columns.push(column);
   }
 
@@ -135,7 +135,7 @@ export default class Table {
         pdDiv.classList.add('pk');
         columnStatusTd.appendChild(pdDiv);
         columnStatusTd.classList.add('status');
-      } else if (column.fk) {
+      } else if ((column as IColumnFk).fk) {
         const fkDiv = document.createElementNS(constant.nsHtml, 'div');
         fkDiv.classList.add('fk');
         columnStatusTd.appendChild(fkDiv);
@@ -148,10 +148,10 @@ export default class Table {
       columnTr.appendChild(columnNameTd);
 
       const columnTypeTd = document.createElementNS(constant.nsHtml, 'td');
-      if (column.fk) {
-        columnTypeTd.innerHTML = column.fk.column.type;
+      if (isColumnFk(column)) {
+        columnTypeTd.innerHTML = column.fk!.column.type!;
       } else {
-        columnTypeTd.innerHTML = column.type;
+        columnTypeTd.innerHTML = column.type!;
       }
       columnTr.appendChild(columnTypeTd);
     });
@@ -210,19 +210,19 @@ export default class Table {
     this.veiwer = veiwer;
   }
 
-  public highlightFrom(column: IColumn) {
+  public highlightFrom(column: Column) {
     column.elem!.classList.add('fromRelation');
   }
 
-  public removeHighlightFrom(column: IColumn) {
+  public removeHighlightFrom(column: Column) {
     column.elem!.classList.remove('fromRelation');
   }
 
-  public highlightTo(column: IColumn) {
+  public highlightTo(column: Column) {
     column.elem!.classList.add('toRelation');
   }
 
-  public removeHighlightTo(column: IColumn) {
+  public removeHighlightTo(column: Column) {
     column.elem!.classList.remove('toRelation');
   }
 

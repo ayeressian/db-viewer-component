@@ -3,6 +3,7 @@ import Minimap from './Minimap';
 import Relation from './Relation';
 import SpiralArrange from './SpiralArrange';
 import Table from './Table';
+import { isColumnFk } from './types/Column';
 import CommonEventListener from './types/CommonEventListener';
 import ICallbacks from './types/ICallbacks';
 import Orientation from './types/IOrientation';
@@ -118,15 +119,15 @@ export default class Viewer {
         table, vertices.topRight.x - vertices.topLeft.x, vertices.bottomLeft.y - vertices.topLeft.y);
 
       table.getColumns().forEach((column) => {
-        if (column.fk) {
-          let relationInfo = {
+        if (isColumnFk(column)) {
+          const relationInfo = {
             fromColumn: column,
             fromTable: table,
-            toColumn: column.fk.column,
-            toTable: column.fk.table,
+            toColumn: column.fk!.column,
+            toTable: column.fk!.table,
           };
-          relationInfo = new Relation(relationInfo);
-          this.relationInfos!.push(relationInfo);
+          const relation = new Relation(relationInfo);
+          this.relationInfos!.push(relation);
         }
       });
 
