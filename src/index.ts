@@ -77,15 +77,14 @@ class DbViewer extends HTMLElement {
 
   constructor() {
     super();
+    this.readyPromise = new Promise((resolve) => {
+      this.readyPromiseResolve = resolve;
+    });
     if (this.checkWindowLoaded()) {
       this.whenWindowLoaded();
     } else {
       window.addEventListener('load', this.whenWindowLoaded.bind(this));
     }
-
-    this.readyPromise = new Promise((resolve) => {
-      this.readyPromiseResolve = resolve;
-    });
   }
 
   public getZoom(): number {
