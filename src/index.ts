@@ -149,26 +149,39 @@ class DbViewer extends HTMLElement {
         break;
     }
   }
+  private shadowDomLoaded(shadowDom: ShadowRoot) {
+    return new Promise((resolve) => {
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.addedNodes) {
+            resolve();
+          }
+        });
+      });
+      observer.observe(shadowDom, { childList: true });
+    });
+  }
 
   private whenWindowLoaded() {
     const shadowDom = this.attachShadow({
       mode: 'open',
     });
-    shadowDom.innerHTML = template;
-    this.viewer = new Viewer(shadowDom);
-    this.viewer.setCallbacks({
-      tableClick: this.onTableClick.bind(this),
-      tableContextMenu: this.onTableContextMenu.bind(this),
-      tableDblClick: this.onTableDblClick.bind(this),
-      tableMove: this.onTableMove.bind(this),
-      tableMoveEnd: this.onTableMoveEnd.bind(this),
-      viewportClick: this.onViewportClick.bind(this),
-      zoomIn: this.onZoomIn.bind(this),
-      zoomOut: this.onZoomOut.bind(this),
+    this.shadowDomLoaded(shadowDom).then(() => {
+      this.viewer = new Viewer(shadowDom);
+      this.viewer.setCallbacks({
+        tableClick: this.onTableClick.bind(this),
+        tableContextMenu: this.onTableContextMenu.bind(this),
+        tableDblClick: this.onTableDblClick.bind(this),
+        tableMove: this.onTableMove.bind(this),
+        tableMoveEnd: this.onTableMoveEnd.bind(this),
+        viewportClick: this.onViewportClick.bind(this),
+        zoomIn: this.onZoomIn.bind(this),
+        zoomOut: this.onZoomOut.bind(this),
+      });
+      this.readyPromiseResolve!();
+      this.dispatchEvent(new CustomEvent('ready'));
     });
-
-    this.readyPromiseResolve!();
-    this.dispatchEvent(new CustomEvent('ready'));
+    shadowDom.innerHTML = template;
   }
 
   private checkWindowLoaded(): boolean {
