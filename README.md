@@ -9,9 +9,10 @@ Touch events integration is WIP.
 
 # db-viewer-component
 
-Implementation of database viewer web component.
-See the [demo](https://ayeressian.github.io/db-viewer-component/).
-Note: This component doesn't work in Edge browser, since Edge browser doesn't have native support for web component.
+Database viewer web component. This web component can be used to view database diagrams.
+See an [example](https://codesandbox.io/s/vanila-6f3zz).
+
+Note: This component doesn't work on Edge browser, since Edge browser doesn't have native support for web component.
 
 ### Usage
 In the case of webpack, import the package in your main js file.
@@ -28,6 +29,9 @@ The schema for viewer can be specified either with src attribute as shown above 
 document.querySelector('db-viewer').schema = awesomeSchema;
 ```
 The json schema for db-veiwer schema can be found [here](https://raw.githubusercontent.com/ayeressian/db-viewer-component/new-events-methods/src/validation-schema.json). An example of schema can be found [here](https://raw.githubusercontent.com/ayeressian/db-viewer-component/master/example/schema/school.json).
+
+A simple usage example can be found [here](https://codesandbox.io/s/vanila-6f3zz).
+An example usage with the React can be found [here](https://codesandbox.io/s/react-5tob7). An example usage with the Svelte can be found [here](https://codesandbox.io/s/white-fast-uvdk2).
 
 ### API
 #### Attributes
