@@ -289,7 +289,7 @@ export default class Table {
       event.stopPropagation();
       if ((event.button === 0 || event.button == null) && this.disableMovementValue === false) {
         this.table!.classList.add('move');
-        const boundingRect = this.table!.getBoundingClientRect();
+        const boundingRect = this.elem!.getBoundingClientRect();
         mouseDownInitialElemX = (event.clientX - boundingRect.left) / this.veiwer!.getZoom()!;
         mouseDownInitialElemY = (event.clientY - boundingRect.top) / this.veiwer!.getZoom()!;
 
