@@ -5,8 +5,8 @@ import IPoint from './types/IPoint';
 import { ITableSchema } from './types/ISchema';
 import ITableData from './types/ITableData';
 import IVertices from './types/IVertices';
-import Viewer from './Viewer';
 import { isTouchEvent, normalizeEvent } from './util';
+import Viewer from './Viewer';
 
 const OUT_OF_VIEW_CORD = -1000;
 
