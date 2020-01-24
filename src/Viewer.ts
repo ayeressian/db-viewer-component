@@ -11,6 +11,7 @@ import ITableData from './types/ITableData';
 import IViewBoxVals from './types/IViewBoxVals';
 import TableArrang from './types/TableArrang';
 import Viewport from './types/Viewport';
+import { normalizeEvent } from './util';
 
 interface ISideAndCount {
   side: Orientation;
@@ -236,10 +237,11 @@ export default class Viewer {
     }
   }
 
-  public getMousePosRelativeContainer(event: MouseEvent) {
+  public getMousePosRelativeContainer(event: MouseEvent | TouchEvent) {
+    const eventVals = normalizeEvent(event);
     return {
-      x: event.clientX - this.container.getBoundingClientRect().left,
-      y: event.clientY - this.container.getBoundingClientRect().top,
+      x: eventVals.clientX - this.container.getBoundingClientRect().left,
+      y: eventVals.clientY - this.container.getBoundingClientRect().top,
     };
   }
 

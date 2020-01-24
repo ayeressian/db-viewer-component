@@ -6,6 +6,7 @@ import { ITableSchema } from './types/ISchema';
 import ITableData from './types/ITableData';
 import IVertices from './types/IVertices';
 import Viewer from './Viewer';
+import { isTouchEvent, normalizeEvent } from './util';
 
 const OUT_OF_VIEW_CORD = -1000;
 
@@ -245,9 +246,11 @@ export default class Table {
     this.elem!.addEventListener('dblclick', () => {
       this.veiwer!.tableDblClick(this.data());
     });
-    this.elem!.addEventListener('click', () => {
+    const onClick = () => {
       this.veiwer!.tableClick(this.data());
-    });
+    };
+    this.elem!.addEventListener('click', onClick);
+    this.elem!.addEventListener('touch', onClick);
     this.elem!.addEventListener('contextmenu', () => {
       this.veiwer!.tableContextMenu(this.data());
     });
@@ -262,14 +265,14 @@ export default class Table {
     if (y + this.table!.offsetHeight > constant.VIEWER_PAN_HEIGHT) {
       y = constant.VIEWER_PAN_HEIGHT - this.table!.offsetHeight;
     }
-    return {x, y};
+    return { x, y };
   }
 
   private moveEvents() {
     let mouseDownInitialElemX: number;
     let mouseDownInitialElemY: number;
 
-    const mouseMove = (event: MouseEvent) => {
+    const mouseMove = (event: MouseEvent | TouchEvent) => {
       event.stopPropagation();
       const mousePos = this.veiwer!.getMousePosRelativeContainer(event);
 
@@ -285,18 +288,24 @@ export default class Table {
       if (this.onMove) this.onMove(this, pos.x, pos.y);
     };
 
-    const mouseDown = (event: MouseEvent) => {
+    const mouseDown = (event: MouseEvent | TouchEvent) => {
       event.stopPropagation();
-      if ((event.button === 0 || event.button == null) && this.disableMovementValue === false) {
+      event.preventDefault();
+
+      if ((!isTouchEvent(event) && ((event as MouseEvent).button === 0 || (event as MouseEvent).button == null))
+        && this.disableMovementValue === false) {
+        const eventVal = normalizeEvent(event);
         this.table!.classList.add('move');
         const boundingRect = this.elem!.getBoundingClientRect();
-        mouseDownInitialElemX = (event.clientX - boundingRect.left) / this.veiwer!.getZoom()!;
-        mouseDownInitialElemY = (event.clientY - boundingRect.top) / this.veiwer!.getZoom()!;
+        const zoom = this.veiwer!.getZoom()!;
+        mouseDownInitialElemX = (eventVal.clientX - boundingRect.left) / zoom;
+        mouseDownInitialElemY = (eventVal.clientY - boundingRect.top) / zoom;
 
-        this.initialClientX = event.clientX;
-        this.initialClientY = event.clientY;
+        this.initialClientX = eventVal.clientX;
+        this.initialClientY = eventVal.clientY;
 
         document.addEventListener('mousemove', mouseMove as CommonEventListener);
+        document.addEventListener('touchmove', mouseMove as CommonEventListener);
 
         this.moveToTop();
 
@@ -307,9 +316,12 @@ export default class Table {
           }
           this.table!.classList.remove('move');
           document.removeEventListener('mouseup', mouseUp as CommonEventListener);
+          document.removeEventListener('touchend', mouseUp as CommonEventListener);
           document.removeEventListener('mousemove', mouseMove as CommonEventListener);
+          document.removeEventListener('touchmove', mouseMove as CommonEventListener);
         };
         document.addEventListener('mouseup', mouseUp as CommonEventListener);
+        document.addEventListener('touchend', mouseUp as CommonEventListener);
       }
     };
 
