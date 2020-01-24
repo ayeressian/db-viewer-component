@@ -5,8 +5,8 @@ import IPoint from './types/IPoint';
 import { ITableSchema } from './types/ISchema';
 import ITableData from './types/ITableData';
 import IVertices from './types/IVertices';
-import Viewer from './Viewer';
 import { isTouchEvent, normalizeEvent } from './util';
+import Viewer from './Viewer';
 
 const OUT_OF_VIEW_CORD = -1000;
 
@@ -291,8 +291,8 @@ export default class Table {
     const mouseDown = (event: MouseEvent | TouchEvent) => {
       event.stopPropagation();
       event.preventDefault();
-
-      if ((!isTouchEvent(event) && ((event as MouseEvent).button === 0 || (event as MouseEvent).button == null))
+      const touchEvent = isTouchEvent(event);
+      if ((!touchEvent && ((event as MouseEvent).button === 0 || (event as MouseEvent).button == null) || touchEvent)
         && this.disableMovementValue === false) {
         const eventVal = normalizeEvent(event);
         this.table!.classList.add('move');
