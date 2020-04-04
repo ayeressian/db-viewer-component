@@ -25,10 +25,8 @@ export interface TableSchema {
   columns: ColumnSchema[];
 }
 
-interface Schema {
+export interface Schema {
   tables: TableSchema[];
   arrangement?: string;
   viewport?: string;
 }
-
-export default Schema;

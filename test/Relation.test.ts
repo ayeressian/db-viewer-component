@@ -4,6 +4,7 @@ import sinonChai from 'sinon-chai';
 import Orientation from '../src/types/Orientation';
 import Point from '../src/types/Point';
 import Vertices from '../src/types/Vertices';
+import Relation from '../dist/src/Relation';
 
 const expect = chai.expect;
 
@@ -12,6 +13,7 @@ chai.use(sinonChai);
 describe('Relation', () => {
   const subject = (): Function => {
     delete require.cache[require.resolve('../src/Relation.ts')];
+    import('../src/Relation');
     return require('../src/Relation.ts').default;
   };
   describe('Path calculation', () => {
@@ -24,6 +26,7 @@ describe('Relation', () => {
     });
     describe('Relation.prototype.get2LinePathFlatTop', () => {
       it('Calls correct methods with correct arguments', () => {
+        console.log(Relation.prototype);
         Relation.prototype.get2LinePathFlatTop(start, end);
         const argument = 'M 100 100 a 1,1 0 1,0 10,0 a 1,1 0 1,0 -10,0 M 110 100 H 500 V 500 M 500 500 l 4 -9 M 500 500 l -4 -9';
         expect(Relation.prototype.createPath).to.have.been.calledWith(argument);

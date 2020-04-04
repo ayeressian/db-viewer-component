@@ -1,6 +1,6 @@
 import Table from './Table';
 import { ColumnFk } from './types/Column';
-import Schema, { ColumnFkSchema, TableSchema } from './types/Schema';
+import { ColumnFkSchema, TableSchema, Schema } from './types/Schema';
 
 export default function schemaParser(schema: Schema): Table[] {
   const tablesFk = new Map();

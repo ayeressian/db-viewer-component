@@ -1,14 +1,13 @@
 import schemaParser from './schemaParser';
 import Table from './Table';
 import template from './template';
-import Schema from './types/Schema';
+import { Schema } from './types/Schema';
 import TableData from './types/TableData';
 import TableArrang from './types/TableArrang';
 import validateJson from './validate-schema';
 import Viewer from './Viewer';
 
 import {
-  DbViewerEventListeners,
   LoadEvent,
   ReadyEvent,
   ViewportClickEvent,
@@ -18,16 +17,13 @@ import {
   TableMoveEvent,
   TableMoveEndEvent,
   ZoomInEvent,
-  ZoomOutEvent
+  ZoomOutEvent,
 } from './events';
-
-export * from './types/Schema';
-export * from './types/Point';
 
 const NO_TABLE = new Error('No table exist with the given name.');
 const INVALID_SCHEMA = new Error('Invalid schema.');
 
-export default class DbViewer extends HTMLElement implements DbViewerEventListeners {
+class DbViewer extends HTMLElement {
   get scrollLeft(): number {
     return this.viewer!.getPan().x;
   }
@@ -237,3 +233,8 @@ export default class DbViewer extends HTMLElement implements DbViewerEventListen
 }
 
 customElements.define('db-viewer', DbViewer);
+
+export * from './types/Schema';
+export * from './types/Point';
+export * from './events';
+export default DbViewer;

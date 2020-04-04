@@ -69,7 +69,8 @@ export class ReadyEvent extends CustomEvent<void> {
   }
 }
 
-interface DbViewerEventMap extends HTMLElementEventMap {
+// TODO find a way to make event mapping work
+/*export interface DbViewerEventMap extends HTMLElementEventMap {
   'ready': ReadyEvent;
   'load': LoadEvent;
   'viewportClick': ViewportClickEvent;
@@ -83,8 +84,8 @@ interface DbViewerEventMap extends HTMLElementEventMap {
 }
 
 export interface DbViewerEventListeners {
-  addEventListener<K extends keyof DbViewerEventMap>(type: K, listener: (this: DbViewerEventListeners, ev: DbViewerEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions): void;
+  addEventListener<K extends keyof DbViewerEventMap>(type: K, listener: (this: DbViewer, ev: DbViewerEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions): void;
   addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
   removeEventListener<K extends keyof DbViewerEventMap>(type: K, listener: (this: HTMLFormElement, ev: DbViewerEventMap[K]) => unknown, options?: boolean | EventListenerOptions): void;
   removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-}
+}*/
