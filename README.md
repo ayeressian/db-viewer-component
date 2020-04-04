@@ -2,17 +2,12 @@
 ![NPM](https://img.shields.io/npm/l/db-viewer-component.svg)
 ![npm](https://img.shields.io/npm/v/db-viewer-component.svg)
 
-# Known issues
-
-On browser zoomed in state (Ctrl +/-) moving tables works incorectly on chrome and safari. See [this](https://stackoverflow.com/questions/56820857/incorrect-value-of-click-event-layerx-on-svg-foreignobject-element).
-Touch events integration is WIP.
-
 # db-viewer-component
 
 Database viewer web component. This web component can be used to view database diagrams.
 See an [example](https://codesandbox.io/s/vanila-6f3zz).
 
-Note: This component doesn't work on Edge browser, since Edge browser doesn't have native support for web component.
+Note: This component doesn't work on old browsers that don't support web components.
 
 ### Usage
 In the case of webpack, import the package in your main js file.

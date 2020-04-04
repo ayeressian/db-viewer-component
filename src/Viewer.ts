@@ -12,6 +12,7 @@ import ViewBoxVals from './types/ViewBoxVals';
 import TableArrang from './types/TableArrang';
 import Viewport from './types/Viewport';
 import Point from './types/Point';
+import { normalizeEvent } from './util';
 
 interface SideAndCount {
   side: Orientation;
@@ -237,10 +238,11 @@ export default class Viewer {
     }
   }
 
-  public getMousePosRelativeContainer(event: MouseEvent): Point {
+  public getMousePosRelativeContainer(event: MouseEvent | TouchEvent): Point {
+    const eventVals = normalizeEvent(event);
     return {
-      x: event.clientX - this.container.getBoundingClientRect().left,
-      y: event.clientY - this.container.getBoundingClientRect().top,
+      x: eventVals.clientX - this.container.getBoundingClientRect().left,
+      y: eventVals.clientY - this.container.getBoundingClientRect().top,
     };
   }
 
