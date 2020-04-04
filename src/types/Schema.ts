@@ -13,7 +13,7 @@ export interface ColumnNoneFkSchema {
   nn?: boolean;
 }
 
-export interface ColumnFkSchema extends Omit<ColumnNoneFkSchema, 'type'> {
+export declare interface ColumnFkSchema extends Omit<ColumnNoneFkSchema, 'type'> {
   fk?: FkSchema;
 }
 
@@ -25,8 +25,10 @@ export interface TableSchema {
   columns: ColumnSchema[];
 }
 
-export default interface Schema {
+interface Schema {
   tables: TableSchema[];
   arrangement?: string;
   viewport?: string;
 }
+
+export default Schema;

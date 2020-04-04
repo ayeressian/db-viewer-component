@@ -6,6 +6,7 @@ import TableData from './types/TableData';
 import TableArrang from './types/TableArrang';
 import validateJson from './validate-schema';
 import Viewer from './Viewer';
+
 import {
   DbViewerEventListeners,
   LoadEvent,
@@ -19,6 +20,9 @@ import {
   ZoomInEvent,
   ZoomOutEvent
 } from './events';
+
+export * from './types/Schema';
+export * from './types/Point';
 
 const NO_TABLE = new Error('No table exist with the given name.');
 const INVALID_SCHEMA = new Error('Invalid schema.');

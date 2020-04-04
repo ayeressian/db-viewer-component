@@ -1,6 +1,6 @@
 import TableData from './types/TableData';
 import Point from './types/Point';
-import DbViewer from './index';
+
 export class ViewportClickEvent extends CustomEvent<Point> {
   constructor(point: Point) {
     super('viewportClick', { detail: point });
@@ -76,7 +76,7 @@ interface DbViewerEventMap extends HTMLElementEventMap {
   'zoomOut': ZoomOutEvent;
 }
 export interface DbViewerEventListeners {
-  addEventListener<K extends keyof DbViewerEventMap>(type: K, listener: (this: DbViewer, ev: DbViewerEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions): void;
+  addEventListener<K extends keyof DbViewerEventMap>(type: K, listener: (this: DbViewerEventListeners, ev: DbViewerEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions): void;
   addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
   removeEventListener<K extends keyof DbViewerEventMap>(type: K, listener: (this: HTMLFormElement, ev: DbViewerEventMap[K]) => unknown, options?: boolean | EventListenerOptions): void;
   removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
