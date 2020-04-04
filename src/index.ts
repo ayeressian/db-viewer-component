@@ -6,12 +6,24 @@ import TableData from './types/TableData';
 import TableArrang from './types/TableArrang';
 import validateJson from './validate-schema';
 import Viewer from './Viewer';
+import {
+  DbViewerEventListeners,
+  LoadEvent,
+  ReadyEvent,
+  ViewportClickEvent,
+  TableClickEvent,
+  TableDblClickEvent,
+  TableContextMenuEvent,
+  TableMoveEvent,
+  TableMoveEndEvent,
+  ZoomInEvent,
+  ZoomOutEvent
+} from './events';
 
 const NO_TABLE = new Error('No table exist with the given name.');
 const INVALID_SCHEMA = new Error('Invalid schema.');
 
-class DbViewer extends HTMLElement {
-
+export default class DbViewer extends HTMLElement implements DbViewerEventListeners {
   get scrollLeft(): number {
     return this.viewer!.getPan().x;
   }
@@ -134,7 +146,7 @@ class DbViewer extends HTMLElement {
 
           this.viewer!.load(this.tables, response.viewport, arrangement);
           setTimeout(() => {
-            this.dispatchEvent(new CustomEvent('load'));
+            this.dispatchEvent(new LoadEvent());
           });
         });
       });
@@ -178,7 +190,7 @@ class DbViewer extends HTMLElement {
         zoomOut: this.onZoomOut.bind(this),
       });
       this.readyPromiseResolve!();
-      this.dispatchEvent(new CustomEvent('ready'));
+      this.dispatchEvent(new ReadyEvent());
     });
     shadowDom.innerHTML = template;
   }
@@ -188,35 +200,35 @@ class DbViewer extends HTMLElement {
   }
 
   private onViewportClick(x: number, y: number): void {
-    this.dispatchEvent(new CustomEvent('viewportClick', {detail: {x, y}}));
+    this.dispatchEvent(new ViewportClickEvent({x, y}));
   }
 
   private onTableClick(tableData: TableData): void {
-    this.dispatchEvent(new CustomEvent('tableClick', {detail: tableData}));
+    this.dispatchEvent(new TableClickEvent(tableData));
   }
 
   private onTableDblClick(tableData: TableData): void {
-    this.dispatchEvent(new CustomEvent('tableDblClick', {detail: tableData}));
+    this.dispatchEvent(new TableDblClickEvent(tableData));
   }
 
   private onTableContextMenu(tableData: TableData): void {
-    this.dispatchEvent(new CustomEvent('tableContextMenu', {detail: tableData}));
+    this.dispatchEvent(new TableContextMenuEvent(tableData));
   }
 
   private onTableMove(tableData: TableData): void {
-    this.dispatchEvent(new CustomEvent('tableMove', {detail: tableData}));
+    this.dispatchEvent(new TableMoveEvent(tableData));
   }
 
   private onTableMoveEnd(tableData: TableData): void {
-    this.dispatchEvent(new CustomEvent('tableMoveEnd', {detail: tableData}));
+    this.dispatchEvent(new TableMoveEndEvent(tableData));
   }
 
   private onZoomIn(zoom: number): void {
-    this.dispatchEvent(new CustomEvent('zoomIn', {detail: {zoom}}));
+    this.dispatchEvent(new ZoomInEvent(zoom));
   }
 
   private onZoomOut(zoom: number): void {
-    this.dispatchEvent(new CustomEvent('zoomOut', {detail: {zoom}}));
+    this.dispatchEvent(new ZoomOutEvent(zoom));
   }
 }
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 const schoolDbSetup = () => {
   const dbViewerSchoolElem = document.querySelector('#school-db');
   dbViewerSchoolElem.addEventListener('ready', () => {

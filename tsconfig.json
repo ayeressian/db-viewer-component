@@ -15,6 +15,7 @@
     "strictBindCallApply": true,
     "strictPropertyInitialization": true,
     "strictFunctionTypes": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "declaration": true,
   }
 }

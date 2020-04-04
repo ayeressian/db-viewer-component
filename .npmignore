@@ -1,9 +1,8 @@
 node_modules/
 .vscode/
 .DS_Store
-demo/
 src/
 test/
 webpack.config/
-demo/
 example/
+.editorconfig
