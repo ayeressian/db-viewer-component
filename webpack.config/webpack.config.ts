@@ -10,7 +10,6 @@ const config: Configuration = {
     },
     port: 9998,
     publicPath: '/dist',
-    watchContentBase: true,
   },
   devtool: 'source-map',
   entry: './src/index.ts',

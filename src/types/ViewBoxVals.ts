@@ -1,4 +1,4 @@
-export default interface IViewBoxVals {
+export default interface ViewBoxVals {
   x: number;
   y: number;
   height: number;

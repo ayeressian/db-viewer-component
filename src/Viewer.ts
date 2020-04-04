@@ -5,14 +5,15 @@ import SpiralArrange from './SpiralArrange';
 import Table from './Table';
 import { isColumnFk } from './types/Column';
 import CommonEventListener from './types/CommonEventListener';
-import ICallbacks from './types/ICallbacks';
-import Orientation from './types/IOrientation';
-import ITableData from './types/ITableData';
-import IViewBoxVals from './types/IViewBoxVals';
+import Callbacks from './types/Callbacks';
+import Orientation from './types/Orientation';
+import TableData from './types/TableData';
+import ViewBoxVals from './types/ViewBoxVals';
 import TableArrang from './types/TableArrang';
 import Viewport from './types/Viewport';
+import Point from './types/Point';
 
-interface ISideAndCount {
+interface SideAndCount {
   side: Orientation;
   order: number;
   count: number;
@@ -27,10 +28,10 @@ export default class Viewer {
   private svgContainer: HTMLElement;
   private minimap: Minimap;
   private disbleScrollEvent: boolean;
-  private viewBoxVals: IViewBoxVals;
+  private viewBoxVals: ViewBoxVals;
   private zoom?: number;
-  private callbacks?: ICallbacks;
-  private relationInfos?: any[];
+  private callbacks?: Callbacks;
+  private relationInfos?: Relation[];
   private panXResolver?: () => void;
   private panYResolver?: () => void;
   private safariScale?: number;
@@ -60,14 +61,14 @@ export default class Viewer {
     this.svgContainer.addEventListener('click', (event: MouseEvent) => {
       const x = event.offsetX / this.zoom!;
       const y = event.offsetY / this.zoom!;
-      this.callbacks!.viewportClick(x, y);
+      this.callbacks?.viewportClick(x, y);
     });
     this.reset();
 
     this.isTableMovementDisabled = false;
   }
 
-  public load(tables: Table[], viewport: Viewport, tableArrang: TableArrang) {
+  public load(tables: Table[], viewport: Viewport, tableArrang: TableArrang): void {
     this.relationInfos = [];
     this.svgElem.innerHTML = '';
     this.tables = tables;
@@ -86,19 +87,19 @@ export default class Viewer {
     this.draw(viewport);
   }
 
-  public onTableMove(table: Table, deltaX: number, deltaY: number) {
+  public onTableMove(table: Table, deltaX: number, deltaY: number): void {
     this.drawRelations();
 
     this.minimap.onTableMove(table, deltaX, deltaY);
 
-    this.callbacks!.tableMove(table.data());
+    this.callbacks?.tableMove(table.data());
   }
 
-  public onTableMoveEnd(table: Table) {
-    this.callbacks!.tableMoveEnd(table.data());
+  public onTableMoveEnd(table: Table): void {
+    this.callbacks?.tableMoveEnd(table.data());
   }
 
-  public draw(viewport: Viewport) {
+  public draw(viewport: Viewport): void {
     let minX = Number.MAX_SAFE_INTEGER;
     let maxX = Number.MIN_SAFE_INTEGER;
     let minY = Number.MAX_SAFE_INTEGER;
@@ -159,7 +160,7 @@ export default class Viewer {
     });
   }
 
-  public getCords() {
+  public getCords(): Point {
     const bRect = this.svgElem.getBoundingClientRect();
     return {
       x: bRect.left + this.svgContainer.scrollLeft * this.zoom!,
@@ -167,7 +168,7 @@ export default class Viewer {
     };
   }
 
-  public viewportAddjustment() {
+  public viewportAddjustment(): void {
     if (this.viewBoxVals.x < 0) {
       this.viewBoxVals.x = 0;
     } else {
@@ -187,30 +188,30 @@ export default class Viewer {
     }
   }
 
-  public zoomIn() {
+  public zoomIn(): void {
     this.setZoom(this.zoom! * constant.ZOOM);
   }
 
-  public zoomOut() {
+  public zoomOut(): void {
     this.setZoom(this.zoom! / constant.ZOOM);
   }
 
-  public getZoom() {
-    return this.zoom;
+  public getZoom(): number{
+    return this.zoom!;
   }
 
-  public getTablePos(tableName: string) {
+  public getTablePos(tableName: string): Point | string {
     return this.tables!.find((table) => table.name === tableName)!.pos;
   }
 
-  public getPan() {
+  public getPan(): Point {
     return {
       x: this.svgContainer.scrollLeft,
       y: this.svgContainer.scrollTop,
     };
   }
 
-  public getViewPort() {
+  public getViewPort(): ViewBoxVals {
     return this.viewBoxVals;
   }
 
@@ -236,37 +237,37 @@ export default class Viewer {
     }
   }
 
-  public getMousePosRelativeContainer(event: MouseEvent) {
+  public getMousePosRelativeContainer(event: MouseEvent): Point {
     return {
       x: event.clientX - this.container.getBoundingClientRect().left,
       y: event.clientY - this.container.getBoundingClientRect().top,
     };
   }
 
-  public setCallbacks(callbacks: ICallbacks) {
+  public setCallbacks(callbacks: Callbacks): void {
     this.callbacks = callbacks;
   }
 
-  public tableDblClick(table: ITableData) {
-    this.callbacks!.tableDblClick(table);
+  public tableDblClick(table: TableData): void {
+    this.callbacks?.tableDblClick(table);
   }
 
-  public tableClick(table: ITableData) {
-    this.callbacks!.tableClick(table);
+  public tableClick(table: TableData): void {
+    this.callbacks?.tableClick(table);
   }
 
-  public tableContextMenu(table: ITableData) {
-    this.callbacks!.tableContextMenu(table);
+  public tableContextMenu(table: TableData): void {
+    this.callbacks?.tableContextMenu(table);
   }
 
-  public disableTableMovement(value: boolean) {
+  public disableTableMovement(value: boolean): void {
     this.isTableMovementDisabled = value;
     if (this.tables) {
       this.tables.forEach((table) => table.disableMovement(value));
     }
   }
 
-  private reset() {
+  private reset(): void {
     this.zoom = 1;
 
     this.svgElem.style.height = constant.VIEWER_PAN_HEIGHT + 'px';
@@ -278,7 +279,7 @@ export default class Viewer {
     this.minimap.reset();
   }
 
-  private updatePathIndex(relations: Relation[], side: Orientation, sidesAndCount: ISideAndCount[], table: Table) {
+  private updatePathIndex(relations: Relation[], side: Orientation, sidesAndCount: SideAndCount[], table: Table): void {
     let pathIndex = 0;
     relations.forEach((relation) => {
       const count = sidesAndCount.find((item) => item.side === side)!.count;
@@ -301,7 +302,7 @@ export default class Viewer {
     });
   }
 
-  private drawRelations() {
+  private drawRelations(): void {
     this.tables!.forEach((table) => {
       const tableRelations = this.getTableRelations(table);
 
@@ -329,7 +330,7 @@ export default class Viewer {
       Relation.xSort(topRelations, table);
       Relation.xSort(bottomRelations, table);
 
-      const sidesAndCount: ISideAndCount[] = [{
+      const sidesAndCount: SideAndCount[] = [{
           count: leftRelations.length,
           order: 1,
           side: Orientation.Left,
@@ -468,7 +469,7 @@ export default class Viewer {
     });
   }
 
-  private windowResizeEvent() {
+  private windowResizeEvent(): void {
     this.viewBoxVals.width = this.svgContainer.clientWidth / this.zoom!;
     this.viewBoxVals.height = this.svgContainer.clientHeight / this.zoom!;
 
@@ -480,7 +481,7 @@ export default class Viewer {
   private setZoom(
     zoom: number,
     targetX = this.svgContainer.clientWidth / 2,
-    targetY = this.svgContainer.clientHeight / 2) {
+    targetY = this.svgContainer.clientHeight / 2): void {
     let minZoomValue: number;
     if (this.svgContainer.offsetWidth > this.svgContainer.offsetHeight) {
       minZoomValue = this.svgContainer.clientWidth / constant.VIEWER_PAN_WIDTH;
@@ -526,21 +527,21 @@ export default class Viewer {
       this.minimap.setMinimapViewPoint(this.viewBoxVals);
 
       if (this.zoom! < zoom) {
-        this.callbacks!.zoomIn(zoom);
+        this.callbacks?.zoomIn(zoom);
       } else {
-        this.callbacks!.zoomOut(zoom);
+        this.callbacks?.zoomOut(zoom);
       }
       this.zoom = zoom;
     }
   }
 
-  private setUpEvents() {
+  private setUpEvents(): void {
     window.addEventListener('resize', this.windowResizeEvent.bind(this));
 
     let prevMouseCordX: number;
     let prevMouseCordY: number;
 
-    const mouseMove = (event: MouseEvent) => {
+    const mouseMove = (event: MouseEvent): void => {
       const deltaX = (event.clientX - prevMouseCordX);
       const deltaY = (event.clientY - prevMouseCordY);
       prevMouseCordY = event.clientY;
@@ -578,7 +579,7 @@ export default class Viewer {
     });
 
     this.container.addEventListener('mouseleave', this.minimap.onContainerMouseLeave!);
-    this.container.addEventListener('mouseup', this.minimap.onContainerMouseUp);
+    this.container.addEventListener('mouseup', this.minimap.onContainerMouseUp!);
 
     if (this.tables) {
       this.tables.forEach((table) => {
@@ -613,18 +614,18 @@ export default class Viewer {
       }
     });
 
-    interface IGestureEvent extends MouseEvent {
+    interface GestureEvent extends MouseEvent {
       scale: number;
     }
 
     // safari
-    this.container.addEventListener('gesturestart', ((event: IGestureEvent) => {
+    this.container.addEventListener('gesturestart', ((event: GestureEvent) => {
       if (event.scale != null) {
         this.safariScale = event.scale;
       }
       event.preventDefault();
     }) as CommonEventListener);
-    this.container.addEventListener('gesturechange', ((event: IGestureEvent) => {
+    this.container.addEventListener('gesturechange', ((event: GestureEvent) => {
       event.preventDefault();
       const clientRect = this.svgContainer.getBoundingClientRect();
       const targetX = event.clientX - clientRect.left;

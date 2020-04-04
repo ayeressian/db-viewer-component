@@ -4,16 +4,16 @@ import {
 } from './mathUtil';
 import Table from './Table';
 import { Column } from './types/Column';
-import Orientation from './types/IOrientation';
-import IPoint from './types/IPoint';
-import IVertices from './types/IVertices';
+import Orientation from './types/Orientation';
+import Vertices from './types/Vertices';
+import Point from './types/Point';
 
 const PATH_ARROW_LENGTH = 9;
 const PATH_ARROW_HEIGHT = 4;
 const PATH_START = 5;
 const PATH_SELF_RELATION_LENGTH = 40;
 
-interface IPathHeighlight {
+interface PathHeighlight {
   path: SVGGraphicsElement;
   highlight: SVGGraphicsElement;
 }
@@ -23,7 +23,7 @@ enum Axis {
   y = 'y',
 }
 
-interface IBasicRelation {
+interface BasicRelation {
   fromColumn: Column;
   fromTable: Table;
   toColumn: Column;
@@ -31,15 +31,15 @@ interface IBasicRelation {
 }
 export default class Relation {
 
-  public static ySort(arr: Relation[], table: Table) {
-    return Relation.sort(arr, table, Axis.y);
+  public static ySort(arr: Relation[], table: Table): void {
+    Relation.sort(arr, table, Axis.y);
   }
 
-  public static xSort(arr: Relation[], table: Table) {
-    return Relation.sort(arr, table, Axis.x);
+  public static xSort(arr: Relation[], table: Table): void {
+    Relation.sort(arr, table, Axis.x);
   }
 
-  private static sort(arr: Relation[], table: Table, axis: Axis) {
+  private static sort(arr: Relation[], table: Table, axis: Axis): void {
     arr.sort((r1, r2) => {
       if (r1.fromIntersectPoint == null || r2.fromIntersectPoint == null) {
         return -1;
@@ -69,40 +69,40 @@ export default class Relation {
   public highlightTrigger?: SVGGraphicsElement;
   public fromTablePathSide?: Orientation;
   public toTablePathSide?: Orientation;
-  public fromIntersectPoint?: IPoint;
-  public toIntersectPoint?: IPoint;
+  public fromIntersectPoint?: Point;
+  public toIntersectPoint?: Point;
 
   constructor({
     fromColumn,
     fromTable,
     toColumn,
     toTable,
-  }: IBasicRelation) {
+  }: BasicRelation) {
     this.fromColumn = fromColumn;
     this.fromTable = fromTable;
     this.toColumn = toColumn;
     this.toTable = toTable;
   }
 
-  public update() {
+  public update(): void {
     this.getTableRelationSide();
   }
 
-  public removeHoverEffect() {
+  public removeHoverEffect(): void {
     this.onMouseLeave();
   }
 
-  public render() {
+  public render(): [SVGGraphicsElement?, SVGGraphicsElement?] {
     const fromTableVertices = this.fromTable.getVertices();
     const toTableVertices = this.toTable.getVertices();
 
     const toMany = !this.fromColumn.uq;
 
-    type StartEndMethod = (tableVertices: IVertices, pathIndex: number, pathCount: number) => IPoint;
+    type StartEndMethod = (tableVertices: Vertices, pathIndex: number, pathCount: number) => Point;
 
     let startMethod: StartEndMethod;
     let endMethod: StartEndMethod;
-    let resultMethod: (start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean) => IPathHeighlight;
+    let resultMethod: (start: Point, end: Point, oneTo?: boolean, toMany?: boolean) => PathHeighlight;
 
     switch (this.fromTablePathSide) {
       case Orientation.Left:
@@ -201,8 +201,8 @@ export default class Relation {
 
     // In case of tables overlapping there won't be any result
     if (startMethod! && endMethod!) {
-      const start = startMethod!.call(this, fromTableVertices!, this.fromPathIndex!, this.fromPathCount!);
-      const end = endMethod!.call(this, toTableVertices!, this.toPathIndex!, this.toPathCount!);
+      const start = startMethod!.call(this, fromTableVertices, this.fromPathIndex!, this.fromPathCount!);
+      const end = endMethod!.call(this, toTableVertices, this.toPathIndex!, this.toPathCount!);
       const result = resultMethod!.call(this, start, end, this.fromColumn.nn, toMany);
       this.setElems(result.path, result.highlight);
     }
@@ -212,7 +212,7 @@ export default class Relation {
     return [this.highlightTrigger, this.pathElem];
   }
 
-  public sameTableRelation() {
+  public sameTableRelation(): boolean {
     return this.fromTable === this.toTable;
   }
 
@@ -286,15 +286,15 @@ export default class Relation {
     return [this.pathElem, this.highlightTrigger!];
   }
 
-  private getTableRelationSide() {
+  private getTableRelationSide(): never {
     throw new Error('Method not implemented.');
   }
 
-  private getPosOnLine(pathIndex: number, pathCount: number, sideLength: number) {
+  private getPosOnLine(pathIndex: number, pathCount: number, sideLength: number): number {
     return (pathIndex + 1) * (sideLength / (pathCount + 1));
   }
 
-  private getLeftSidePathCord(tableVertices: IVertices, pathIndex: number, pathCount: number): IPoint {
+  private getLeftSidePathCord = (tableVertices: Vertices, pathIndex: number, pathCount: number): Point => {
     const sideLength = tableVertices.bottomLeft.y - tableVertices.topLeft.y;
     const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
@@ -303,7 +303,7 @@ export default class Relation {
     };
   }
 
-  private getRightSidePathCord(tableVertices: IVertices, pathIndex: number, pathCount: number): IPoint {
+  private getRightSidePathCord = (tableVertices: Vertices, pathIndex: number, pathCount: number): Point => {
     const sideLength = tableVertices.bottomRight.y - tableVertices.topRight.y;
     const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
@@ -312,7 +312,7 @@ export default class Relation {
     };
   }
 
-  private getTopSidePathCord(tableVertices: IVertices, pathIndex: number, pathCount: number): IPoint {
+  private getTopSidePathCord = (tableVertices: Vertices, pathIndex: number, pathCount: number): Point => {
     const sideLength = tableVertices.topRight.x - tableVertices.topLeft.x;
     const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
@@ -321,7 +321,7 @@ export default class Relation {
     };
   }
 
-  private getBottomSidePathCord(tableVertices: IVertices, pathIndex: number, pathCount: number): IPoint {
+  private getBottomSidePathCord = (tableVertices: Vertices, pathIndex: number, pathCount: number): Point => {
     const sideLength = tableVertices.bottomRight.x - tableVertices.bottomLeft.x;
     const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
@@ -330,7 +330,7 @@ export default class Relation {
     };
   }
 
-  private get2LinePathFlatTop(start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean): IPathHeighlight {
+  private get2LinePathFlatTop = (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): PathHeighlight => {
     let dArrow: string;
     let dStartLine: string;
     let dPath: string;
@@ -387,7 +387,7 @@ export default class Relation {
     };
   }
 
-  private get2LinePathFlatBottom(start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean): IPathHeighlight {
+  private get2LinePathFlatBottom = (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): PathHeighlight => {
     let dArrow: string;
     let dStartLine: string;
     let dPath: string;
@@ -438,7 +438,7 @@ export default class Relation {
     };
   }
 
-  private get3LinePathHoriz(start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean): IPathHeighlight {
+  private get3LinePathHoriz = (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): PathHeighlight => {
     let dStartLine: string;
     let dPath: string;
     const p2X = start.x + (end.x - start.x) / 2;
@@ -478,7 +478,7 @@ export default class Relation {
     };
   }
 
-  private get3LinePathVert(start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean): IPathHeighlight {
+  private get3LinePathVert = (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): PathHeighlight => {
     let dStartLine = `M ${start.x - PATH_START} `;
 
     let dPath: string;
@@ -516,7 +516,7 @@ export default class Relation {
     };
   }
 
-  private getSelfRelationLeft(start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean): IPathHeighlight {
+  private getSelfRelationLeft = (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): PathHeighlight => {
     let dStartLine: string;
     let dPath: string;
 
@@ -542,7 +542,7 @@ export default class Relation {
     };
   }
 
-  private getSelfRelationRight(start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean): IPathHeighlight {
+  private getSelfRelationRight = (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): PathHeighlight => {
     let dStartLine: string;
     let dPath: string;
 
@@ -568,7 +568,7 @@ export default class Relation {
     };
   }
 
-  private getSelfRelationTop(start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean): IPathHeighlight {
+  private getSelfRelationTop = (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): PathHeighlight => {
     let dStartLine: string;
     let dPath: string;
 
@@ -594,7 +594,7 @@ export default class Relation {
     };
   }
 
-  private getSelfRelationBottom(start: IPoint, end: IPoint, oneTo?: boolean, toMany?: boolean): IPathHeighlight {
+  private getSelfRelationBottom = (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): PathHeighlight => {
     let dStartLine: string;
     let dPath: string;
     if (oneTo) {
@@ -619,12 +619,12 @@ export default class Relation {
     };
   }
 
-  private getCirclePath(x: number, y: number) {
+  private getCirclePath(x: number, y: number): string {
     return `M ${x - PATH_START} ${y}` +
           ` a 1,1 0 1,0 ${PATH_START * 2},0 a 1,1 0 1,0 ${-PATH_START * 2},0`;
   }
 
-  private getArrow({x, y}: IPoint, toMany: boolean | undefined, orientation: Orientation) {
+  private getArrow({x, y}: Point, toMany: boolean | undefined, orientation: Orientation): string {
     switch (orientation) {
       case Orientation.Top:
       if (toMany) {
@@ -661,13 +661,13 @@ export default class Relation {
     }
   }
 
-  private onMouseEnter() {
+  private onMouseEnter(): void {
     this.pathElem!.classList.add('pathHover');
     this.fromTable.highlightFrom(this.fromColumn);
     this.toTable.highlightTo(this.toColumn);
   }
 
-  private onMouseLeave() {
+  private onMouseLeave(): void {
     if (this.pathElem) {
       this.pathElem.classList.remove('pathHover');
       this.fromTable.removeHighlightFrom(this.fromColumn);
@@ -675,7 +675,7 @@ export default class Relation {
     }
   }
 
-  private setElems(elem: SVGGraphicsElement, highlightTrigger: SVGGraphicsElement) {
+  private setElems(elem: SVGGraphicsElement, highlightTrigger: SVGGraphicsElement): void {
     this.pathElem = elem;
     this.highlightTrigger = highlightTrigger;
     highlightTrigger.onmouseenter = this.onMouseEnter.bind(this);

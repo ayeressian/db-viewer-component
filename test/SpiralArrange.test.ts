@@ -10,7 +10,7 @@ const expect = chai.expect;
 chai.use(sinonChai);
 
 describe('Viewer', () => {
-  const subject = () => {
+  const subject = (): Function => {
     delete require.cache[require.resolve('../src/SpiralArrange.ts')];
     return require('../src/SpiralArrange.ts').default;
   };
@@ -18,7 +18,6 @@ describe('Viewer', () => {
     it('Orders table in correct way', () => {
       const SpiralArrange = subject();
       const schema = {
-        // tslint:disable-next-line: variable-name
         tables: Array(7).fill(null).map((_val, i) => ({name: `${i}`, columns: []})),
       };
       let tables = schemaParser(schema);

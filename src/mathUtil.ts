@@ -1,34 +1,13 @@
-import IPoint from './types/IPoint';
+import Point from './types/Point';
 
 export function to3FixedNumber(num: number): number {
   return Math.round(num * 1e3) / 1e3;
 }
 
-export function segmentIntersection(l1p1: IPoint, l1p2: IPoint, l2p1: IPoint, l2p2: IPoint): IPoint | null {
-  l1p1.x = to3FixedNumber(l1p1.x);
-  l1p1.y = to3FixedNumber(l1p1.y);
-  l1p2.x = to3FixedNumber(l1p2.x);
-  l1p2.y = to3FixedNumber(l1p2.y);
-
-  l2p1.x = to3FixedNumber(l2p1.x);
-  l2p1.y = to3FixedNumber(l2p1.y);
-  l2p2.x = to3FixedNumber(l2p2.x);
-  l2p2.y = to3FixedNumber(l2p2.y);
-  const ip = lineIntersection(l1p1, l1p2, l2p1, l2p2);
-
-  if (!ip) return null;
-
-  if (ip.x <= Math.max(l1p1.x, l1p2.x) && ip.x >= Math.min(l1p1.x, l1p2.x) &&
-    ip.x <= Math.max(l2p1.x, l2p2.x) && ip.x >= Math.min(l2p1.x, l2p2.x) &&
-    ip.y <= Math.max(l1p1.y, l1p2.y) && ip.y >= Math.min(l1p1.y, l1p2.y) &&
-    ip.y <= Math.max(l2p1.y, l2p2.y) && ip.y >= Math.min(l2p1.y, l2p2.y)) return ip;
-  return null;
-}
-
-export function lineIntersection(l1p1: IPoint, l1p2: IPoint, l2p1: IPoint, l2p2: IPoint): IPoint | null {
+export function lineIntersection(l1p1: Point, l1p2: Point, l2p1: Point, l2p2: Point): Point | null {
   const deltaXL1 = l1p1.x - l1p2.x;
   const deltaXL2 = l2p1.x - l2p2.x;
-  let result: IPoint | null;
+  let result: Point | null;
 
   if (deltaXL1 === 0 && deltaXL2 === 0) {
     // Parallel both horizontal
@@ -78,4 +57,25 @@ export function lineIntersection(l1p1: IPoint, l1p2: IPoint, l2p1: IPoint, l2p2:
     }
   }
   return result;
+}
+
+export function segmentIntersection(l1p1: Point, l1p2: Point, l2p1: Point, l2p2: Point): Point | null {
+  l1p1.x = to3FixedNumber(l1p1.x);
+  l1p1.y = to3FixedNumber(l1p1.y);
+  l1p2.x = to3FixedNumber(l1p2.x);
+  l1p2.y = to3FixedNumber(l1p2.y);
+
+  l2p1.x = to3FixedNumber(l2p1.x);
+  l2p1.y = to3FixedNumber(l2p1.y);
+  l2p2.x = to3FixedNumber(l2p2.x);
+  l2p2.y = to3FixedNumber(l2p2.y);
+  const ip = lineIntersection(l1p1, l1p2, l2p1, l2p2);
+
+  if (!ip) return null;
+
+  if (ip.x <= Math.max(l1p1.x, l1p2.x) && ip.x >= Math.min(l1p1.x, l1p2.x) &&
+    ip.x <= Math.max(l2p1.x, l2p2.x) && ip.x >= Math.min(l2p1.x, l2p2.x) &&
+    ip.y <= Math.max(l1p1.y, l1p2.y) && ip.y >= Math.min(l1p1.y, l1p2.y) &&
+    ip.y <= Math.max(l2p1.y, l2p2.y) && ip.y >= Math.min(l2p1.y, l2p2.y)) return ip;
+  return null;
 }

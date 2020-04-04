@@ -1,17 +1,17 @@
 export function isSafari(): boolean {
-  return navigator.userAgent.indexOf('Safari') !== -1 && navigator.userAgent.indexOf('Chrome') === -1;
+  return navigator.userAgent.includes('Safari') && navigator.userAgent.includes('Chrome');
 }
 
 export function isChrome(): boolean {
-  return /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+  return navigator.userAgent.includes('Chrome') && navigator.vendor.includes('Google Inc');
 }
 
-export function disableSelection(elem: Element) {
+export function disableSelection(elem: Element): void {
   elem.setAttribute('unselectable', 'on');
   elem.classList.add('unselectable');
 }
 
-export function enableSelection(elem: Element) {
+export function enableSelection(elem: Element): void {
   elem.removeAttribute('unselectable');
   elem.classList.remove('unselectable');
 }

@@ -1,11 +1,11 @@
 import Table from '../Table';
 
-export interface IFk {
+export interface Fk {
   table: Table;
-  column: IColumnNoneFk;
+  column: ColumnNoneFk;
 }
 
-export interface IColumnNoneFk {
+export interface ColumnNoneFk {
   name: string;
   elem?: HTMLTableRowElement;
   pk?: boolean;
@@ -14,12 +14,12 @@ export interface IColumnNoneFk {
   type: string;
 }
 
-export interface IColumnFk extends Omit<IColumnNoneFk, 'type'> {
-  fk?: IFk;
+export interface ColumnFk extends Omit<ColumnNoneFk, 'type'> {
+  fk?: Fk;
 }
 
-export type Column = IColumnFk | IColumnNoneFk;
+export type Column = ColumnFk | ColumnNoneFk;
 
-export const isColumnFk = (column: Column): column is IColumnFk => {
-  return (column as IColumnFk).fk !== undefined;
+export const isColumnFk = (column: Column): column is ColumnFk => {
+  return (column as ColumnFk).fk !== undefined;
 };

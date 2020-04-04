@@ -1,9 +1,9 @@
-interface IFkSchema {
+interface FkSchema {
   table: string;
   column: string;
 }
 
-interface IColumnNoneFkSchema {
+interface ColumnNoneFkSchema {
   name: string;
   type: string;
   pk?: boolean;
@@ -11,37 +11,37 @@ interface IColumnNoneFkSchema {
   nn?: boolean;
 }
 
-interface IColumnFkSchema extends Omit<IColumnNoneFkSchema, 'type'> {
-  fk?: IFkSchema;
+interface ColumnFkSchema extends Omit<ColumnNoneFkSchema, 'type'> {
+  fk?: FkSchema;
 }
 
-type IColumnSchema = IColumnFkSchema | IColumnNoneFkSchema
+type ColumnSchema = ColumnFkSchema | ColumnNoneFkSchema
 
-interface ITableSchema {
+interface TableSchema {
   name: string;
-  pos?: IPoint | string;
-  columns: IColumnSchema[];
+  pos?: Point | string;
+  columns: ColumnSchema[];
 }
 
-interface ISchema {
-  tables: ITableSchema[];
+interface Schema {
+  tables: TableSchema[];
   arrangement?: string;
   viewport?: string;
 }
 
-interface ITableData {
+interface TableData {
   name: string;
-  pos: IPoint;
+  pos: Point;
   width: number;
   height: number;
 }
 
-interface IPoint {
+interface Point {
   x: number;
   y: number;
 }
 
-interface IDbViewerEventMap extends HTMLElementEventMap {
+interface DbViewerEventMap extends HTMLElementEventMap {
   'ready': CustomEvent;
   'load': CustomEvent;
   'viewportClick': CustomEvent;
@@ -55,20 +55,20 @@ interface IDbViewerEventMap extends HTMLElementEventMap {
 }
 
 /** DbViewer element */
-interface IDbViewer extends HTMLElement {
+interface DbViewer extends HTMLElement {
   scrollLeft: number;
   scrollTop: number;
   src: string;
-  schema: ISchema;
+  schema: Schema;
   disableTableMovement: boolean;
   getZoom(): number;
   zoomIn(): void;
   zoomOut(): void;
-  getTableInfo(name: string): ITableData;
+  getTableInfo(name: string): TableData;
   setTablePos(name: string, xCord: number, yCord: number): void;
 
-  addEventListener<K extends keyof IDbViewerEventMap>(type: K, listener: (this: IDbViewer, ev: IDbViewerEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+  addEventListener<K extends keyof DbViewerEventMap>(type: K, listener: (this: DbViewer, ev: DbViewerEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
   addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-  removeEventListener<K extends keyof IDbViewerEventMap>(type: K, listener: (this: HTMLFormElement, ev: IDbViewerEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+  removeEventListener<K extends keyof DbViewerEventMap>(type: K, listener: (this: HTMLFormElement, ev: DbViewerEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
   removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
 }

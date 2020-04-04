@@ -1,23 +1,23 @@
 import chai from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import Orientation from '../src/types/IOrientation';
-import IPoint from '../src/types/IPoint';
-import IVertices from '../src/types/IVertices';
+import Orientation from '../src/types/Orientation';
+import Point from '../src/types/Point';
+import Vertices from '../src/types/Vertices';
 
 const expect = chai.expect;
 
 chai.use(sinonChai);
 
 describe('Relation', () => {
-  const subject = () => {
+  const subject = (): Function => {
     delete require.cache[require.resolve('../src/Relation.ts')];
     return require('../src/Relation.ts').default;
   };
   describe('Path calculation', () => {
     const Relation = subject();
-    const start: IPoint = {x: 100, y: 100};
-    const end: IPoint = {x: 500, y: 500};
+    const start: Point = {x: 100, y: 100};
+    const end: Point = {x: 500, y: 500};
     beforeEach(() => {
       Relation.prototype.createPath = sinon.fake();
       Relation.prototype.createHighlightTrigger = sinon.fake();
@@ -99,7 +99,7 @@ describe('Relation', () => {
           bottomRight: {x: 150, y: 150},
           topLeft: {x: 50, y: 50},
           topRight: {x: 150, y: 150},
-        } as IVertices),
+        } as Vertices),
       };
       fakeRlationObj.toTable = {
         getCenter: sinon.fake.returns({x: 500, y: 500}),
@@ -108,7 +108,7 @@ describe('Relation', () => {
           bottomRight: {x: 550, y: 550},
           topLeft: {x: 450, y: 450},
           topRight: {x: 550, y: 450},
-        } as IVertices),
+        } as Vertices),
       };
 
       fakeRlationObj.calcPathTableSides();

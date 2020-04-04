@@ -1,10 +1,10 @@
 import constant from './const';
-import { Column, IColumnFk, isColumnFk } from './types/Column';
+import { Column, ColumnFk, isColumnFk } from './types/Column';
 import CommonEventListener from './types/CommonEventListener';
-import IPoint from './types/IPoint';
-import { ITableSchema } from './types/ISchema';
-import ITableData from './types/ITableData';
-import IVertices from './types/IVertices';
+import Point from './types/Point';
+import { TableSchema } from './types/Schema';
+import TableData from './types/TableData';
+import Vertices from './types/Vertices';
 import Viewer from './Viewer';
 
 const OUT_OF_VIEW_CORD = -1000;
@@ -15,16 +15,16 @@ type OnMoveEnd = (table: Table) => void;
 
 export default class Table {
 
-  get pos() {
+  get pos(): string | Point {
     return this.posValue;
   }
 
-  get name() {
+  get name(): string {
     return this.nameValue;
   }
   private columns: Column[];
   private nameValue: string;
-  private posValue: IPoint | string;
+  private posValue: Point | string;
   private disableMovementValue: boolean;
   private elem?: SVGGraphicsElement;
   private veiwer?: Viewer;
@@ -43,7 +43,7 @@ export default class Table {
       x: 0,
       y: 0,
     },
-  }: ITableSchema) {
+  }: TableSchema) {
     this.columns = columns as Column[];
     this.nameValue = name;
     this.posValue = pos;
@@ -55,27 +55,27 @@ export default class Table {
     return this.columns;
   }
 
-  public setName(name: string) {
+  public setName(name: string): void {
     this.nameValue = name;
   }
 
-  public getName() {
+  public getName(): string {
     return this.nameValue;
   }
 
-  public addColumn(column: Column) {
+  public addColumn(column: Column): void {
     this.columns.push(column);
   }
 
-  public setMoveListener(onMove: OnMove) {
+  public setMoveListener(onMove: OnMove): void {
     this.onMove = onMove;
   }
 
-  public setMoveEndListener(onMoveEnd: OnMoveEnd) {
+  public setMoveEndListener(onMoveEnd: OnMoveEnd): void {
     this.onMoveEnd = onMoveEnd;
   }
 
-  public getCenter(): IPoint {
+  public getCenter(): Point {
     const bbox = this.elem!.getBBox();
 
     const x = bbox.x + this.table!.offsetWidth / 2;
@@ -86,7 +86,7 @@ export default class Table {
     };
   }
 
-  public getVertices(): IVertices {
+  public getVertices(): Vertices {
     const bbox = this.elem!.getBBox();
     return {
       bottomLeft: {
@@ -108,7 +108,7 @@ export default class Table {
     };
   }
 
-  public render() {
+  public render(): SVGGraphicsElement{
     this.elem = (document.createElementNS(constant.nsSvg, 'g') as SVGGraphicsElement);
     this.foreignObject = document.createElementNS(constant.nsSvg, 'foreignObject');
     this.elem.appendChild(this.foreignObject);
@@ -135,7 +135,7 @@ export default class Table {
         pdDiv.classList.add('pk');
         columnStatusTd.appendChild(pdDiv);
         columnStatusTd.classList.add('status');
-      } else if ((column as IColumnFk).fk) {
+      } else if ((column as ColumnFk).fk) {
         const fkDiv = document.createElementNS(constant.nsHtml, 'div');
         fkDiv.classList.add('fk');
         columnStatusTd.appendChild(fkDiv);
@@ -149,9 +149,9 @@ export default class Table {
 
       const columnTypeTd = document.createElementNS(constant.nsHtml, 'td');
       if (isColumnFk(column)) {
-        columnTypeTd.innerHTML = column.fk!.column.type!;
+        columnTypeTd.innerHTML = column.fk!.column.type;
       } else {
-        columnTypeTd.innerHTML = column.type!;
+        columnTypeTd.innerHTML = column.type;
       }
       columnTr.appendChild(columnTypeTd);
     });
@@ -162,13 +162,13 @@ export default class Table {
       this.setTablePos(OUT_OF_VIEW_CORD, OUT_OF_VIEW_CORD, true);
       this.penddingCenter = true;
     } else {
-      const point = this.posValue as IPoint;
+      const point = this.posValue as Point;
       this.setTablePos(point.x, point.y);
     }
 
     // After render happened
     setTimeout(() => {
-      let borderWidth = parseInt(getComputedStyle(this.table!).borderWidth!, 10);
+      let borderWidth = parseInt(getComputedStyle(this.table!).borderWidth, 10);
       borderWidth = isNaN(borderWidth) ? 0 : borderWidth;
       this.foreignObject!.setAttributeNS(null, 'width', (this.table!.scrollWidth + borderWidth).toString());
       this.foreignObject!.setAttributeNS(null, 'height', (this.table!.scrollHeight + borderWidth).toString());
@@ -177,13 +177,13 @@ export default class Table {
     return this.elem;
   }
 
-  public postDraw() {
+  public postDraw(): void {
     if (this.penddingCenter) {
       this.center();
     }
   }
 
-  public setTablePos(x: number, y: number, disableOutOfBoundCheck = false) {
+  public setTablePos = (x: number, y: number, disableOutOfBoundCheck = false): void => {
     if (!disableOutOfBoundCheck) {
       const result = this.notAllowOutOfBound(x, y);
       x = result.x;
@@ -197,40 +197,40 @@ export default class Table {
     if (this.onMove) this.onMove(this, x, y);
   }
 
-  public data(): ITableData {
+  public data(): TableData {
     return {
       height: this.table!.offsetHeight,
       name: this.nameValue,
-      pos: this.posValue as IPoint,
+      pos: this.posValue as Point,
       width: this.table!.offsetWidth,
     };
   }
 
-  public setVeiwer(veiwer: Viewer) {
+  public setVeiwer(veiwer: Viewer): void {
     this.veiwer = veiwer;
   }
 
-  public highlightFrom(column: Column) {
+  public highlightFrom(column: Column): void {
     column.elem!.classList.add('fromRelation');
   }
 
-  public removeHighlightFrom(column: Column) {
+  public removeHighlightFrom(column: Column): void {
     column.elem!.classList.remove('fromRelation');
   }
 
-  public highlightTo(column: Column) {
+  public highlightTo(column: Column): void {
     column.elem!.classList.add('toRelation');
   }
 
-  public removeHighlightTo(column: Column) {
+  public removeHighlightTo(column: Column): void {
     column.elem!.classList.remove('toRelation');
   }
 
-  public disableMovement(value: boolean) {
+  public disableMovement(value: boolean): void {
     this.disableMovementValue = value;
   }
 
-  private moveToTop() {
+  private moveToTop(): void {
     const parentNode = this.elem!.parentNode;
     // The reason for not using append of this.elem instead of remaining element prepend
     // is to keep event concistency. The following code is for making click and and double click to work.
@@ -241,7 +241,7 @@ export default class Table {
     });
   }
 
-  private clickEvents() {
+  private clickEvents(): void {
     this.elem!.addEventListener('dblclick', () => {
       this.veiwer!.tableDblClick(this.data());
     });
@@ -253,7 +253,7 @@ export default class Table {
     });
   }
 
-  private notAllowOutOfBound(x: number, y: number) {
+  private notAllowOutOfBound(x: number, y: number): Point {
     if (x < 0) x = 0;
     if (y < 0) y = 0;
     if (x + this.table!.offsetWidth > constant.VIEWER_PAN_WIDTH) {
@@ -265,11 +265,11 @@ export default class Table {
     return {x, y};
   }
 
-  private moveEvents() {
+  private moveEvents(): void {
     let mouseDownInitialElemX: number;
     let mouseDownInitialElemY: number;
 
-    const mouseMove = (event: MouseEvent) => {
+    const mouseMove = (event: MouseEvent): void => {
       event.stopPropagation();
       const mousePos = this.veiwer!.getMousePosRelativeContainer(event);
 
@@ -281,11 +281,11 @@ export default class Table {
       const y = normalizedClientY - mouseDownInitialElemY;
 
       this.setTablePos(x, y);
-      const pos = this.posValue as IPoint;
+      const pos = this.posValue as Point;
       if (this.onMove) this.onMove(this, pos.x, pos.y);
     };
 
-    const mouseDown = (event: MouseEvent) => {
+    const mouseDown = (event: MouseEvent): void => {
       event.stopPropagation();
       if ((event.button === 0 || event.button == null) && this.disableMovementValue === false) {
         this.table!.classList.add('move');
@@ -300,7 +300,7 @@ export default class Table {
 
         this.moveToTop();
 
-        const mouseUp = (mouseUpEvent: MouseEvent) => {
+        const mouseUp = (mouseUpEvent: MouseEvent): void => {
           if (this.onMoveEnd
             && (this.initialClientX !== mouseUpEvent.clientX || this.initialClientY !== mouseUpEvent.clientY)) {
             this.onMoveEnd(this);
@@ -317,7 +317,7 @@ export default class Table {
     this.elem!.addEventListener('touchstart', mouseDown as CommonEventListener);
   }
 
-  private center() {
+  private center(): void {
     const viewport = this.veiwer!.getViewPort();
     const x = viewport.x + viewport.width / 2 - this.table!.offsetWidth / this.veiwer!.getZoom()! / 2;
     const y = viewport.y + viewport.height / 2 - this.table!.offsetHeight / this.veiwer!.getZoom()! / 2;
