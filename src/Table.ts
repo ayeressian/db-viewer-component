@@ -160,11 +160,17 @@ export default class Table {
     this.moveEvents();
 
     if (this.posValue === 'center-viewport') {
-      this.setTablePos(OUT_OF_VIEW_CORD, OUT_OF_VIEW_CORD, true);
-      this.penddingCenter = true;
+      // After render happened
+      setTimeout(() => {
+        this.setTablePos(OUT_OF_VIEW_CORD, OUT_OF_VIEW_CORD, true);
+        this.penddingCenter = true;
+      });
     } else {
       const point = this.posValue as Point;
-      this.setTablePos(point.x, point.y);
+      // After render happened
+      setTimeout(() => {
+        this.setTablePos(point.x, point.y);
+      });
     }
 
     // After render happened
