@@ -20,6 +20,7 @@ import {
   ZoomOutEvent,
   DbViewerEventMap,
 } from './events';
+import Point from './types/Point';
 
 const NO_TABLE = new Error('No table exist with the given name.');
 const INVALID_SCHEMA = new Error('Invalid schema.');
@@ -64,10 +65,11 @@ class DbViewer extends HTMLElement {
   get schema(): Schema | undefined {
     if (this.notParsedSchema != null) {
       this.notParsedSchema.tables.forEach((notParsedTable) => {
-        notParsedTable.pos = this.tables!.find((table) => table.name === notParsedTable.name)!.pos;
+        const tablePos = this.tables!.find((table) => table.name === notParsedTable.name)!.pos;
+        notParsedTable.pos = {...(tablePos as Point)};
       });
     }
-    return this.notParsedSchema;
+    return JSON.parse(JSON.stringify(this.notParsedSchema));
   }
 
   set disableTableMovement(value: boolean) {
