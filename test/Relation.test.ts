@@ -4,7 +4,6 @@ import sinonChai from 'sinon-chai';
 import Orientation from '../src/types/Orientation';
 import Point from '../src/types/Point';
 import Vertices from '../src/types/Vertices';
-import Relation from '../dist/src/Relation';
 
 const expect = chai.expect;
 

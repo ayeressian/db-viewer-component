@@ -18,6 +18,7 @@ import {
   TableMoveEndEvent,
   ZoomInEvent,
   ZoomOutEvent,
+  DbViewerEventMap,
 } from './events';
 
 const NO_TABLE = new Error('No table exist with the given name.');
@@ -229,6 +230,13 @@ class DbViewer extends HTMLElement {
 
   private onZoomOut(zoom: number): void {
     this.dispatchEvent(new ZoomOutEvent(zoom));
+  }
+
+  addEventListener<K extends keyof DbViewerEventMap>(type: K, listener: (this: DbViewer, ev: DbViewerEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions): void {
+    super.addEventListener(type, listener as EventListener, options);
+  }
+  removeEventListener<K extends keyof DbViewerEventMap>(type: K, listener: (this: HTMLFormElement, ev: DbViewerEventMap[K]) => unknown, options?: boolean | EventListenerOptions): void {
+    super.removeEventListener(type, listener as EventListener, options);
   }
 }
 
