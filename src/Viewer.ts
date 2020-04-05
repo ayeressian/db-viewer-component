@@ -1,6 +1,6 @@
 import constant from './const';
 import Minimap from './Minimap';
-import Relation from './Relation';
+import Relation from './realtion/Relation';
 import SpiralArrange from './SpiralArrange';
 import Table from './Table';
 import { isColumnFk } from './types/Column';

@@ -1,3 +1,11 @@
 import './mathUtil.test';
 import './Relation.test';
 import './SpiralArrange.test';
+import './relation/selfRelationBottom.test';
+import './relation/selfRelationLeft.test';
+import './relation/selfRelationRight.test';
+import './relation/selfRelationTop.test';
+import './relation/threeLinePathHoriz.test';
+import './relation/threeLinePathVert.test';
+import './relation/twoLinePathFlatBottom.test';
+import './relation/twoLinePathFlatTop.test';
