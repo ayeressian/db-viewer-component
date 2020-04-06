@@ -31,4 +31,4 @@ export default (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): st
   }
 
   return `${dStartLine} ${dPath} ${dArrow}`;
-}
+};

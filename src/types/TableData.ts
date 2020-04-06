@@ -4,4 +4,5 @@ export default interface TableData {
   pos: Point;
   width: number;
   height: number;
+// eslint-disable-next-line semi
 }

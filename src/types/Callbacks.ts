@@ -9,4 +9,5 @@ export default interface Callbacks {
   zoomIn: (zoom: number) => void;
   zoomOut: (zoom: number) => void;
   viewportClick: (x: number, y: number) => void;
+// eslint-disable-next-line semi
 }

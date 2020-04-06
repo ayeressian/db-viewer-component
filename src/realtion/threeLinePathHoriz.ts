@@ -34,4 +34,4 @@ export default (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): st
   dPath += `V ${end.y} H ${end.x}`;
 
   return `${dStartLine} ${dPath} ${dArrow}`;
-}
+};

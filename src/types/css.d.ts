@@ -1,4 +1,4 @@
 declare module '*.css' {
   const value: string;
-  export default value
+  export default value;
 }

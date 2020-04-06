@@ -37,4 +37,4 @@ export default ({x, y}: Point, toMany: boolean | undefined, orientation: Orienta
         `M ${x} ${y} l ${-PATH_ARROW_LENGTH} ${-PATH_ARROW_HEIGHT}`;
     }
   }
-}
+};

@@ -19,4 +19,4 @@ export default (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): st
   const dArrow = arrow(end, toMany, Orientation.Bottom);
 
   return `${dStartLine} ${dPath} ${dArrow}`;
-}
+};

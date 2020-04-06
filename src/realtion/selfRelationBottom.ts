@@ -1,4 +1,4 @@
-import Point from "../types/Point"
+import Point from "../types/Point";
 import { PATH_SELF_RELATION_LENGTH, PATH_START } from "./relationConfig";
 import Orientation from "../types/Orientation";
 import arrow from "./arrow";
@@ -18,4 +18,4 @@ export default (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): st
   const dArrow = arrow(end, toMany, Orientation.Top);
 
   return `${dStartLine} ${dPath} ${dArrow}`;
-}
+};
