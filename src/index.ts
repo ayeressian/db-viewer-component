@@ -245,6 +245,6 @@ class DbViewer extends HTMLElement {
 customElements.define('db-viewer', DbViewer);
 
 export * from './types/Schema';
-export * from './types/Point';
+export {default as Point} from './types/Point';
 export * from './events';
 export default DbViewer;
