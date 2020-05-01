@@ -116,19 +116,23 @@ export default class Table {
 
     this.table = (document.createElementNS(constant.nsHtml, 'table') as HTMLElement);
     this.table.className = 'table';
+    const thead = document.createElementNS(constant.nsHtml, 'thead');
     const headingTr = document.createElementNS(constant.nsHtml, 'tr');
-    this.table.appendChild(headingTr);
     const headingTh = document.createElementNS(constant.nsHtml, 'th');
     headingTh.setAttributeNS(null, 'colspan', 3 + '');
     headingTh.innerHTML = this.nameValue;
     headingTr.appendChild(headingTh);
+    thead.appendChild(headingTr);
+
+    this.table.appendChild(thead);
 
     this.foreignObject.appendChild(this.table);
+
+    const tbody = document.createElementNS(constant.nsHtml, 'tbody');
 
     this.columns.forEach((column) => {
       const columnTr = document.createElementNS(constant.nsHtml, 'tr') as HTMLTableRowElement;
       column.elem = columnTr;
-      this.table!.appendChild(columnTr);
 
       const columnStatusTd = document.createElementNS(constant.nsHtml, 'td');
       if (column.pk) {
@@ -155,7 +159,9 @@ export default class Table {
         columnTypeTd.innerHTML = column.type;
       }
       columnTr.appendChild(columnTypeTd);
+      tbody.appendChild(columnTr);
     });
+    this.table.appendChild(tbody);
     this.clickEvents();
     this.moveEvents();
 
@@ -175,10 +181,13 @@ export default class Table {
 
     // After render happened
     setTimeout(() => {
-      let borderWidth = parseInt(getComputedStyle(this.table!).borderWidth, 10);
+      const computedStyle = getComputedStyle(this.table!);
+      let borderWidth = parseInt(computedStyle.borderLeftWidth, 10) + parseInt(computedStyle.borderRightWidth, 10);
+      let borderHeight = parseInt(computedStyle.borderTopWidth, 10) + parseInt(computedStyle.borderBottomWidth, 10);
       borderWidth = isNaN(borderWidth) ? 0 : borderWidth;
+      borderHeight = isNaN(borderHeight) ? 0 : borderHeight;
       this.foreignObject!.setAttributeNS(null, 'width', (this.table!.scrollWidth + borderWidth).toString());
-      this.foreignObject!.setAttributeNS(null, 'height', (this.table!.scrollHeight + borderWidth).toString());
+      this.foreignObject!.setAttributeNS(null, 'height', (this.table!.scrollHeight + borderHeight).toString());
     });
 
     return this.elem;
