@@ -1,9 +1,8 @@
 import schemaParser from './schemaParser';
 import Table from './Table';
 import template from './template';
-import { Schema } from './types/Schema';
+import { Schema, TableArrang } from './types/Schema';
 import TableData from './types/TableData';
-import TableArrang from './types/TableArrang';
 import validateJson from './validate-schema';
 import Viewer from './Viewer';
 

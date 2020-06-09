@@ -2,7 +2,7 @@ import constant from './const';
 import { Column, ColumnFk, isColumnFk } from './types/Column';
 import CommonEventListener from './types/CommonEventListener';
 import Point from './types/Point';
-import { TableSchema } from './types/Schema';
+import { TableSchema, TableArrang } from './types/Schema';
 import TableData from './types/TableData';
 import Vertices from './types/Vertices';
 import Viewer from './Viewer';
@@ -36,6 +36,7 @@ export default class Table {
   private onMoveEnd?: OnMoveEnd;
   private foreignObject?: Element;
   private penddingCenter?: boolean;
+  private tablesArrangement?: TableArrang;
 
   constructor({
     name,
@@ -44,12 +45,14 @@ export default class Table {
       x: 0,
       y: 0,
     },
-  }: TableSchema) {
+  }: TableSchema,
+  arrangement?: TableArrang) {
     this.columns = columns as Column[];
     this.nameValue = name;
     this.posValue = pos;
 
     this.disableMovementValue = false;
+    this.tablesArrangement = arrangement;
   }
 
   public getColumns(): Column[] {
@@ -130,67 +133,33 @@ export default class Table {
 
     const tbody = document.createElementNS(constant.nsHtml, 'tbody');
 
-    this.columns.forEach((column) => {
-      const columnTr = document.createElementNS(constant.nsHtml, 'tr') as HTMLTableRowElement;
-      column.elem = columnTr;
-
-      const columnStatusTd = document.createElementNS(constant.nsHtml, 'td');
-      if (column.pk) {
-        const pdDiv = document.createElementNS(constant.nsHtml, 'div');
-        pdDiv.classList.add('pk');
-        columnStatusTd.appendChild(pdDiv);
-        columnStatusTd.classList.add('status');
-      } else if ((column as ColumnFk).fk) {
-        const fkDiv = document.createElementNS(constant.nsHtml, 'div');
-        fkDiv.classList.add('fk');
-        columnStatusTd.appendChild(fkDiv);
-        columnStatusTd.classList.add('status');
-      }
-      columnTr.appendChild(columnStatusTd);
-
-      const columnNameTd = document.createElementNS(constant.nsHtml, 'td');
-      columnNameTd.innerHTML = column.name;
-      columnTr.appendChild(columnNameTd);
-
-      const columnTypeTd = document.createElementNS(constant.nsHtml, 'td');
-      if (isColumnFk(column)) {
-        columnTypeTd.innerHTML = column.fk!.column.type;
-      } else {
-        columnTypeTd.innerHTML = column.type;
-      }
-      columnTr.appendChild(columnTypeTd);
-      tbody.appendChild(columnTr);
-    });
+    this.createColumns(tbody);
+    
     this.table.appendChild(tbody);
     this.clickEvents();
     this.moveEvents();
 
-    if (this.posValue === 'center-viewport') {
-      // After render happened
-      setTimeout(() => {
+    if (this.tablesArrangement == null) {
+      if (this.posValue === 'center-viewport') {
         this.setTablePos(OUT_OF_VIEW_CORD, OUT_OF_VIEW_CORD, true);
         this.penddingCenter = true;
-      });
-    } else {
-      const point = this.posValue as Point;
-      // After render happened
-      setTimeout(() => {
+      } else {
+        const point = this.posValue as Point;
         this.setTablePos(point.x, point.y);
-      });
+      }
     }
 
-    // After render happened
-    setTimeout(() => {
-      const computedStyle = getComputedStyle(this.table!);
-      let borderWidth = parseInt(computedStyle.borderLeftWidth, 10) + parseInt(computedStyle.borderRightWidth, 10);
-      let borderHeight = parseInt(computedStyle.borderTopWidth, 10) + parseInt(computedStyle.borderBottomWidth, 10);
-      borderWidth = isNaN(borderWidth) ? 0 : borderWidth;
-      borderHeight = isNaN(borderHeight) ? 0 : borderHeight;
-      this.foreignObject!.setAttributeNS(null, 'width', (this.table!.scrollWidth + borderWidth).toString());
-      this.foreignObject!.setAttributeNS(null, 'height', (this.table!.scrollHeight + borderHeight).toString());
-    });
-
     return this.elem;
+  }
+
+  public addedToView(): void {
+    const computedStyle = getComputedStyle(this.table!);
+    let borderWidth = parseInt(computedStyle.borderLeftWidth, 10) + parseInt(computedStyle.borderRightWidth, 10);
+    let borderHeight = parseInt(computedStyle.borderTopWidth, 10) + parseInt(computedStyle.borderBottomWidth, 10);
+    borderWidth = isNaN(borderWidth) ? 0 : borderWidth;
+    borderHeight = isNaN(borderHeight) ? 0 : borderHeight;
+    this.foreignObject!.setAttributeNS(null, 'width', (this.table!.scrollWidth + borderWidth).toString());
+    this.foreignObject!.setAttributeNS(null, 'height', (this.table!.scrollHeight + borderHeight).toString());
   }
 
   public postDraw(): void {
@@ -342,6 +311,40 @@ export default class Table {
 
     this.elem!.addEventListener('mousedown', mouseDown as CommonEventListener);
     this.elem!.addEventListener('touchstart', mouseDown as CommonEventListener);
+  }
+
+  private createColumns(tbody: Element): void {
+    this.columns.forEach((column) => {
+      const columnTr = document.createElementNS(constant.nsHtml, 'tr') as HTMLTableRowElement;
+      column.elem = columnTr;
+
+      const columnStatusTd = document.createElementNS(constant.nsHtml, 'td');
+      if (column.pk) {
+        const pdDiv = document.createElementNS(constant.nsHtml, 'div');
+        pdDiv.classList.add('pk');
+        columnStatusTd.appendChild(pdDiv);
+        columnStatusTd.classList.add('status');
+      } else if ((column as ColumnFk).fk) {
+        const fkDiv = document.createElementNS(constant.nsHtml, 'div');
+        fkDiv.classList.add('fk');
+        columnStatusTd.appendChild(fkDiv);
+        columnStatusTd.classList.add('status');
+      }
+      columnTr.appendChild(columnStatusTd);
+
+      const columnNameTd = document.createElementNS(constant.nsHtml, 'td');
+      columnNameTd.innerHTML = column.name;
+      columnTr.appendChild(columnNameTd);
+
+      const columnTypeTd = document.createElementNS(constant.nsHtml, 'td');
+      if (isColumnFk(column)) {
+        columnTypeTd.innerHTML = column.fk!.column.type;
+      } else {
+        columnTypeTd.innerHTML = column.type;
+      }
+      columnTr.appendChild(columnTypeTd);
+      tbody.appendChild(columnTr);
+    });
   }
 
   private center(): void {

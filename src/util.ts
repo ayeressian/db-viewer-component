@@ -49,3 +49,5 @@ export function normalizeEvent(event: MouseEvent | TouchEvent): {
   }
   return result;
 }
+
+export const wait = (): Promise<void> => new Promise(resolve => setTimeout(resolve));

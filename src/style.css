@@ -1,3 +1,9 @@
+* {
+  font-family: var(--font-family, Arial, sans-serif);
+  color: var(--color, #333);
+  --table-boarder-color: #a4a2a3;
+}
+
 :host {
   display: block;
   overflow: hidden;
@@ -21,7 +27,8 @@
 #veiwer-container #minimap {
   border-style: solid;
   border-width: 1px;
-  background-color: #e3ebed;
+  border-color: #666;
+  background-color: var(--viewer-background-color,  #e3ebed);
   margin-bottom: 5px;
   display: block;
 }
@@ -35,19 +42,19 @@
 #veiwer-container #minimap-container {
   left: 10px;
   bottom: 18px;
-  width: 64px;
+  width: 80px;
   position: absolute;
 }
 
 #veiwer-container #minimap-container #minimap .mini_table {
-  fill: lightcyan;
+  fill: var(--table-boarder-color);
   stroke-width: 10;
   stroke: black;
   float: left;
 }
 
 #veiwer-container #minimap-container #btn-container button{
-  width: 30px;
+  width: 38px;
   height: 30px;
   margin-bottom: 5px;
   padding: 1px;
@@ -69,8 +76,8 @@
   user-select: none;
   cursor: default;
   display: block;
-  background-color: #e3ebed;
-  font: normal 10px Verdana, Arial, sans-serif;
+  background-color: var(--viewer-background-color,  #e3ebed);
+  font-size: 10px;
 }
 
 #veiwer.pan {
@@ -86,9 +93,9 @@
   min-width: 100px;
   border-collapse: collapse;
 
-  border-bottom: 5px solid #a4a2a3;
-  border-left: 5px solid #a4a2a3;
-  border-right: 5px solid #a4a2a3;
+  border-bottom: 2px solid var(--table-boarder-color);
+  border-left: 2px solid var(--table-boarder-color);
+  border-right: 2px solid var(--table-boarder-color);
 }
 
 .table.move {
@@ -102,7 +109,7 @@
 .table tr th {
   font-size: 1.2em;
   padding: 5px;
-  background-color: #a4a2a3;
+  background-color: var(--table-boarder-color);
   color: white;
 }
 
@@ -126,22 +133,22 @@
 }
 
 .table td.status .pk {
-  background-image: url(./asset/pk.png);
+  background-image: url(./asset/pk.svg);
 }
 
 .table td.status .fk {
-  background-image: url(./asset/fk.png);
+  background-image: url(./asset/fk.svg);
 }
 
 path {
   stroke-width: 1;
-  stroke: #666;
+  stroke: var(--path-color, #666);
   fill: none;
 }
 
 .pathHover {
   stroke-width: 2;
-  stroke: black;
+  stroke: var(--path-color-highlight, black);
 }
 
 .fromRelation {

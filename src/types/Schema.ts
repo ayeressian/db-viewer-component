@@ -27,6 +27,11 @@ export interface TableSchema {
 
 export interface Schema {
   tables: TableSchema[];
-  arrangement?: string;
+  arrangement?: TableArrang;
   viewport?: string;
+}
+
+export enum TableArrang {
+  spiral = 'spiral',
+  default = 'default',
 }

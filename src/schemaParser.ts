@@ -15,7 +15,7 @@ export default function schemaParser(schema: Schema): Table[] {
         ++i;
       }
     }
-    tables.push(new Table(table));
+    tables.push(new Table(table, schema.arrangement));
   });
 
   schema.tables.forEach((sTable) => {

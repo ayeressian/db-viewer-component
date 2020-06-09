@@ -9,10 +9,10 @@ import Callbacks from './types/Callbacks';
 import Orientation from './types/Orientation';
 import TableData from './types/TableData';
 import ViewBoxVals from './types/ViewBoxVals';
-import TableArrang from './types/TableArrang';
 import Viewport from './types/Viewport';
 import Point from './types/Point';
 import { normalizeEvent } from './util';
+import { TableArrang } from './types/Schema';
 
 interface SideAndCount {
   side: Orientation;
@@ -36,6 +36,8 @@ export default class Viewer {
   private panXResolver?: () => void;
   private panYResolver?: () => void;
   private safariScale?: number;
+
+  private tableArrang?: TableArrang;
 
   constructor(private mainElem: ShadowRoot) {
     this.container = this.mainElem.getElementById('veiwer-container')!;
@@ -79,12 +81,7 @@ export default class Viewer {
       table.setMoveEndListener(this.onTableMoveEnd.bind(this));
       table.disableMovement(this.isTableMovementDisabled);
     });
-
-    if (tableArrang === TableArrang.spiral) {
-      // wait for table render to happen
-      setTimeout(() => SpiralArrange.call(tables));
-    }
-
+    this.tableArrang = tableArrang;
     this.draw(viewport);
   }
 
@@ -108,12 +105,15 @@ export default class Viewer {
 
     this.minimap.removeTables();
 
-    this.tables!.forEach((table, i) => {
+    let i = 0;
+    for (const table of this.tables!) {
       this.minimap.createTable(table);
 
       const tableElm = table.render();
       tableElm.setAttribute('id', i + 'table');
       this.svgElem.appendChild(tableElm);
+
+      table.addedToView();
 
       const vertices = table.getVertices();
 
@@ -152,13 +152,15 @@ export default class Viewer {
       if (bottomY > maxY) {
         maxY = bottomY;
       }
-    });
+      ++i;
+    }
+    
+    if (this.tableArrang === TableArrang.spiral) {
+      SpiralArrange.call(this.tables!);
+    }
 
-    // After draw happened
-    setTimeout(() => {
-      this.drawRelations();
-      this.setViewPort(viewport).then(() => this.tables!.forEach((table) => table.postDraw && table.postDraw()));
-    });
+    this.drawRelations();
+    this.setViewPort(viewport).then(() => this.tables!.forEach((table) => table.postDraw && table.postDraw()));
   }
 
   public getCords(): Point {
