@@ -28,10 +28,17 @@ export interface TableSchema {
 export interface Schema {
   tables: TableSchema[];
   arrangement?: TableArrang;
-  viewport?: string;
+  viewport?: Viewport;
 }
 
-export enum TableArrang {
+export const enum Viewport {
+  noChange = 'noChange',
+  centerByTablesWeight = 'centerByTablesWeight',
+  center = 'center',
+  centerByTables = 'centerByTables',
+}
+
+export const enum TableArrang {
   spiral = 'spiral',
   default = 'default',
 }

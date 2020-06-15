@@ -9,10 +9,9 @@ import Callbacks from './types/Callbacks';
 import Orientation from './types/Orientation';
 import TableData from './types/TableData';
 import ViewBoxVals from './types/ViewBoxVals';
-import Viewport from './types/Viewport';
 import Point from './types/Point';
 import { normalizeEvent } from './util';
-import { TableArrang } from './types/Schema';
+import { TableArrang, Viewport } from './types/Schema';
 
 interface SideAndCount {
   side: Orientation;
@@ -23,7 +22,7 @@ interface SideAndCount {
 export default class Viewer {
 
   public isTableMovementDisabled: boolean;
-  public tables?: Table[];
+  public tables: Table[] = [];
   private container: HTMLElement;
   private svgElem: SVGGraphicsElement;
   private svgContainer: HTMLElement;
@@ -69,9 +68,10 @@ export default class Viewer {
     this.reset();
 
     this.isTableMovementDisabled = false;
+    this.setViewport(Viewport.center);
   }
 
-  public load(tables: Table[], viewport: Viewport, tableArrang: TableArrang): void {
+  public load(tables: Table[], viewport: Viewport = Viewport.centerByTables, tableArrang: TableArrang = TableArrang.default): void {
     this.relationInfos = [];
     this.svgElem.innerHTML = '';
     this.tables = tables;
@@ -106,7 +106,7 @@ export default class Viewer {
     this.minimap.removeTables();
 
     let i = 0;
-    for (const table of this.tables!) {
+    for (const table of this.tables) {
       this.minimap.createTable(table);
 
       const tableElm = table.render();
@@ -156,11 +156,11 @@ export default class Viewer {
     }
     
     if (this.tableArrang === TableArrang.spiral) {
-      SpiralArrange.call(this.tables!);
+      SpiralArrange.call(this.tables);
     }
 
     this.drawRelations();
-    this.setViewPort(viewport).then(() => this.tables!.forEach((table) => table.postDraw && table.postDraw()));
+    this.setViewport(viewport).then(() => this.tables.forEach((table) => table.postDraw && table.postDraw()));
   }
 
   public getCords(): Point {
@@ -204,7 +204,7 @@ export default class Viewer {
   }
 
   public getTablePos(tableName: string): Point | string {
-    return this.tables!.find((table) => table.name === tableName)!.pos;
+    return this.tables.find((table) => table.name === tableName)!.pos;
   }
 
   public getPan(): Point {
@@ -307,7 +307,7 @@ export default class Viewer {
   }
 
   private drawRelations(): void {
-    this.tables!.forEach((table) => {
+    this.tables.forEach((table) => {
       const tableRelations = this.getTableRelations(table);
 
       const pendingSelfRelations = tableRelations.filter((relation) => relation.calcPathTableSides());
@@ -404,17 +404,17 @@ export default class Viewer {
     });
   }
 
-  private setViewPort(type: Viewport): Promise<[void, void]> {
-    let viewportX: number;
-    let viewportY: number;
+  public setViewport(type: Viewport): Promise<[void, void]> {
+    let viewportX;
+    let viewportY;
     switch (type) {
       case Viewport.noChange:
-      break;
+        return Promise.resolve([undefined, undefined]);
       case Viewport.centerByTablesWeight:
       {
         let totalX = 0;
         let totalY = 0;
-        const filteredTables = this.tables!.filter((table) => {
+        const filteredTables = this.tables.filter((table) => {
           const data = table.data();
           return data.pos.x >= 0 && data.pos.y >= 0;
         });
@@ -439,14 +439,14 @@ export default class Viewer {
       break;
       default: // centerByTables
       {
-        if (this.tables!.length === 0) {
-          return this.setViewPort(Viewport.center);
+        if (this.tables.length === 0) {
+          return this.setViewport(Viewport.center);
         }
         let minX = Number.MAX_SAFE_INTEGER;
         let minY = Number.MAX_SAFE_INTEGER;
         let maxX = Number.MIN_SAFE_INTEGER;
         let maxY = Number.MIN_SAFE_INTEGER;
-        this.tables!.forEach((table) => {
+        this.tables.forEach((table) => {
           const data = table.data();
           if (data.pos.x >= 0 && data.pos.y >= 0) {
             if (data.pos.x < minX) minX = data.pos.x;
@@ -464,7 +464,7 @@ export default class Viewer {
       }
       break;
     }
-    return Promise.all([this.setPanX(viewportX!), this.setPanY(viewportY!)]);
+    return Promise.all([this.setPanX(viewportX), this.setPanY(viewportY)]);
   }
 
   private getTableRelations(table: Table): Relation[] {

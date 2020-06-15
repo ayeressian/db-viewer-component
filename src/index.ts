@@ -1,7 +1,7 @@
 import schemaParser from './schemaParser';
 import Table from './Table';
 import template from './template';
-import { Schema, TableArrang } from './types/Schema';
+import { Schema, TableArrang, Viewport } from './types/Schema';
 import TableData from './types/TableData';
 import validateJson from './validate-schema';
 import Viewer from './Viewer';
@@ -46,7 +46,7 @@ class DbViewer extends HTMLElement {
   }
 
   static get observedAttributes(): string[] {
-    return ['src', 'disable-table-movement'];
+    return ['src', 'disable-table-movement', 'viewport'];
   }
 
   set schema(schema: Schema | undefined) {
@@ -55,9 +55,9 @@ class DbViewer extends HTMLElement {
         throw INVALID_SCHEMA;
       }
       this.notParsedSchema = JSON.parse(JSON.stringify(schema));
-      const schemaObj = JSON.parse(JSON.stringify(schema));
+      const schemaObj = JSON.parse(JSON.stringify(schema)) as Schema;
       this.tables = schemaParser(schemaObj);
-      this.viewer!.load(this.tables, schemaObj.viewport, schemaObj.arrangement);
+      this.viewer!.load(this.tables, this.viewport ?? schemaObj.viewport, schemaObj.arrangement);
     });
   }
 
@@ -82,11 +82,26 @@ class DbViewer extends HTMLElement {
   get disableTableMovement(): boolean {
     return this.viewer!.isTableMovementDisabled;
   }
+
+  set viewport(value: Viewport | undefined) {
+    if (value) {
+      this.setAttribute('viewport', value);
+    } else {
+      this.removeAttribute('viewport');
+    }
+  }
+
+  get viewport(): Viewport | undefined {
+    return this.viewportVal;
+  }
+
+
   private readyPromise: Promise<null>;
   private readyPromiseResolve?: () => void;
   private viewer?: Viewer;
   private tables?: Table[];
   private srcVal?: string;
+  private viewportVal?: Viewport;
   private notParsedSchema?: Schema;
 
   constructor() {
@@ -132,33 +147,37 @@ class DbViewer extends HTMLElement {
   public attributeChangedCallback(name: string, _oldValue: string, newValue: string): void {
     switch (name) {
       case 'src':
-      this.srcVal = newValue;
-      this.readyPromise.then(() => {
-        fetch(this.srcVal!).then((response) => response.json()).
-        then((response) => {
-          if (!validateJson(response)) {
-            throw INVALID_SCHEMA;
-          }
-          this.notParsedSchema = JSON.parse(JSON.stringify(response));
-          this.tables = schemaParser(response);
+        this.srcVal = newValue;
+        this.readyPromise.then(() => {
+          fetch(this.srcVal!).then((response) => response.json()).
+          then((response) => {
+            if (!validateJson(response)) {
+              throw INVALID_SCHEMA;
+            }
+            this.notParsedSchema = JSON.parse(JSON.stringify(response));
+            this.tables = schemaParser(response);
 
-          let arrangement: TableArrang;
-          if (!this.notParsedSchema!.arrangement) arrangement = TableArrang.default;
-          else arrangement = TableArrang[this.notParsedSchema!.arrangement as keyof typeof TableArrang];
+            let arrangement: TableArrang;
+            if (!this.notParsedSchema!.arrangement) arrangement = TableArrang.default;
+            else arrangement = this.notParsedSchema!.arrangement;
 
-          this.viewer!.load(this.tables, response.viewport, arrangement);
-          setTimeout(() => {
-            this.dispatchEvent(new LoadEvent());
+            this.viewer!.load(this.tables, this.viewport ?? response.viewport, arrangement);
+            setTimeout(() => {
+              this.dispatchEvent(new LoadEvent());
+            });
           });
         });
-      });
-      break;
+        break;
       case 'disable-table-movement':
         if (this.hasAttribute('disable-table-movement')) {
           this.readyPromise.then(() => this.viewer!.disableTableMovement(true));
         } else {
           this.readyPromise.then(() => this.viewer!.disableTableMovement(false));
         }
+        break;
+      case 'viewport':
+        this.viewportVal = newValue as Viewport;
+        if (this.viewer) this.viewer.setViewport(this.viewportVal);
         break;
     }
   }
