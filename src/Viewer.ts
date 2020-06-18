@@ -97,7 +97,7 @@ export default class Viewer {
     this.callbacks?.tableMoveEnd(table.data());
   }
 
-  public draw(viewport: Viewport): void {
+  public async draw(viewport: Viewport): Promise<void> {
     let minX = Number.MAX_SAFE_INTEGER;
     let maxX = Number.MIN_SAFE_INTEGER;
     let minY = Number.MAX_SAFE_INTEGER;
@@ -109,7 +109,7 @@ export default class Viewer {
     for (const table of this.tables) {
       this.minimap.createTable(table);
 
-      const tableElm = table.render();
+      const tableElm = await table.render();
       tableElm.setAttribute('id', i + 'table');
       this.svgElem.appendChild(tableElm);
 
@@ -160,7 +160,7 @@ export default class Viewer {
     }
 
     this.drawRelations();
-    this.setViewport(viewport).then(() => this.tables.forEach((table) => table.postDraw && table.postDraw()));
+    this.setViewport(viewport).then(() => this.tables.forEach((table) => table.postDraw()));
   }
 
   public getCords(): Point {
