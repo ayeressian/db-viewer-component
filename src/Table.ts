@@ -139,17 +139,25 @@ export default class Table {
     this.clickEvents();
     this.moveEvents();
 
+    //Wait for render to finish setTablePos needs to have render
+    setTimeout(() => {
+      this.afterRender();
+    });
+
+    return this.elem;
+  }
+
+  private afterRender(): void {
     if (this.tablesArrangement == null) {
       if (this.posValue === 'center-viewport') {
         this.setTablePos(OUT_OF_VIEW_CORD, OUT_OF_VIEW_CORD, true);
         this.penddingCenter = true;
-      } else {
+      }
+      else {
         const point = this.posValue as Point;
         this.setTablePos(point.x, point.y);
       }
     }
-
-    return this.elem;
   }
 
   public addedToView(): void {
