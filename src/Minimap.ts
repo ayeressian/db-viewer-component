@@ -6,8 +6,8 @@ import Viewer from './Viewer';
 
 export default class Minimap {
 
-  public onContainerMouseLeave?: () => void;
-  public onContainerMouseUp?: () => void;
+  onContainerMouseLeave?: () => void;
+  onContainerMouseUp?: () => void;
 
   private minimap: Element;
   private viewpoint: Element;
@@ -24,7 +24,7 @@ export default class Minimap {
     this.reset();
   }
 
-  public minimapPositionFromMouse(event: MouseEvent): void {
+  minimapPositionFromMouse(event: MouseEvent): void {
     event.stopPropagation();
     const minimapBoundingClientRect = this.minimap.getBoundingClientRect();
     const x = event.clientX - minimapBoundingClientRect.left;
@@ -40,37 +40,37 @@ export default class Minimap {
     this.viewer.setPanY(yCord);
   }
 
-  public removeTables(): void {
+  removeTables(): void {
     this.tableMinimap = new Map();
     this.minimap.querySelectorAll('.mini_table').forEach((miniTable) => miniTable.remove());
   }
 
-  public reset(): void {
+  reset(): void {
     this.removeTables();
     this.minimap.setAttribute('viewBox', `0 0 ${constant.VIEWER_PAN_WIDTH} ${constant.VIEWER_PAN_HEIGHT}`);
   }
 
-  public setMinimapViewPoint(viewBoxVals: ViewBoxVals): void {
+  setMinimapViewPoint(viewBoxVals: ViewBoxVals): void {
     this.viewpoint.setAttributeNS(null, 'x', viewBoxVals.x.toString());
     this.viewpoint.setAttributeNS(null, 'y', viewBoxVals.y.toString());
     this.viewpoint.setAttributeNS(null, 'width', viewBoxVals.width.toString());
     this.viewpoint.setAttributeNS(null, 'height', viewBoxVals.height.toString());
   }
 
-  public createTable(table: Table): void {
+  createTable(table: Table): void {
     const tableMini = document.createElementNS(constant.nsSvg, 'rect') as SVGGraphicsElement;
     tableMini.setAttributeNS(null, 'class', 'mini_table');
     this.tableMinimap!.set(table, tableMini);
     this.minimap.appendChild(tableMini);
   }
 
-  public setTableDim(table: Table, x: number, y: number): void {
+  setTableDim(table: Table, x: number, y: number): void {
     const miniTable = this.tableMinimap!.get(table)!;
     miniTable.setAttributeNS(null, 'width', x.toString());
     miniTable.setAttributeNS(null, 'height', y.toString());
   }
 
-  public onTableMove(table: Table, deltaX: number, deltaY: number): void {
+  onTableMove(table: Table, deltaX: number, deltaY: number): void {
     const minimapTableElem = this.tableMinimap!.get(table)!;
 
     minimapTableElem.setAttributeNS(null, 'x', deltaX.toString());

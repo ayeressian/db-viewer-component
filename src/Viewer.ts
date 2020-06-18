@@ -21,8 +21,8 @@ interface SideAndCount {
 
 export default class Viewer {
 
-  public isTableMovementDisabled: boolean;
-  public tables: Table[] = [];
+  isTableMovementDisabled: boolean;
+  tables: Table[] = [];
   private container: HTMLElement;
   private svgElem: SVGGraphicsElement;
   private svgContainer: HTMLElement;
@@ -71,7 +71,7 @@ export default class Viewer {
     this.setViewport(Viewport.center);
   }
 
-  public load(tables: Table[], viewport: Viewport = Viewport.centerByTables, tableArrang: TableArrang = TableArrang.default): void {
+  load(tables: Table[], viewport: Viewport = Viewport.centerByTables, tableArrang: TableArrang = TableArrang.default): void {
     this.relationInfos = [];
     this.svgElem.innerHTML = '';
     this.tables = tables;
@@ -85,7 +85,7 @@ export default class Viewer {
     this.draw(viewport);
   }
 
-  public onTableMove(table: Table, deltaX: number, deltaY: number): void {
+  onTableMove(table: Table, deltaX: number, deltaY: number): void {
     this.drawRelations();
 
     this.minimap.onTableMove(table, deltaX, deltaY);
@@ -93,11 +93,11 @@ export default class Viewer {
     this.callbacks?.tableMove(table.data());
   }
 
-  public onTableMoveEnd(table: Table): void {
+  onTableMoveEnd(table: Table): void {
     this.callbacks?.tableMoveEnd(table.data());
   }
 
-  public async draw(viewport: Viewport): Promise<void> {
+  async draw(viewport: Viewport): Promise<void> {
     let minX = Number.MAX_SAFE_INTEGER;
     let maxX = Number.MIN_SAFE_INTEGER;
     let minY = Number.MAX_SAFE_INTEGER;
@@ -163,7 +163,7 @@ export default class Viewer {
     this.setViewport(viewport).then(() => this.tables.forEach((table) => table.postDraw()));
   }
 
-  public getCords(): Point {
+  getCords(): Point {
     const bRect = this.svgElem.getBoundingClientRect();
     return {
       x: bRect.left + this.svgContainer.scrollLeft * this.zoom!,
@@ -171,7 +171,7 @@ export default class Viewer {
     };
   }
 
-  public viewportAddjustment(): void {
+  viewportAddjustment(): void {
     if (this.viewBoxVals.x < 0) {
       this.viewBoxVals.x = 0;
     } else {
@@ -191,34 +191,34 @@ export default class Viewer {
     }
   }
 
-  public zoomIn(): void {
+  zoomIn(): void {
     this.setZoom(this.zoom! * constant.ZOOM);
   }
 
-  public zoomOut(): void {
+  zoomOut(): void {
     this.setZoom(this.zoom! / constant.ZOOM);
   }
 
-  public getZoom(): number{
+  getZoom(): number{
     return this.zoom!;
   }
 
-  public getTablePos(tableName: string): Point | string {
+  getTablePos(tableName: string): Point | string {
     return this.tables.find((table) => table.name === tableName)!.pos;
   }
 
-  public getPan(): Point {
+  getPan(): Point {
     return {
       x: this.svgContainer.scrollLeft,
       y: this.svgContainer.scrollTop,
     };
   }
 
-  public getViewPort(): ViewBoxVals {
+  getViewPort(): ViewBoxVals {
     return this.viewBoxVals;
   }
 
-  public setPanX(value: number): Promise<void> {
+  setPanX(value: number): Promise<void> {
     this.viewBoxVals.x = value / this.zoom!;
     const originalScrollLeft = this.svgContainer.scrollLeft;
     this.svgContainer.scrollLeft = value;
@@ -229,7 +229,7 @@ export default class Viewer {
     }
   }
 
-  public setPanY(value: number): Promise<void> {
+  setPanY(value: number): Promise<void> {
     this.viewBoxVals.y = value / this.zoom!;
     const originalScrollTop = this.svgContainer.scrollTop;
     this.svgContainer.scrollTop = value;
@@ -240,7 +240,7 @@ export default class Viewer {
     }
   }
 
-  public getMousePosRelativeContainer(event: MouseEvent | TouchEvent): Point {
+  getMousePosRelativeContainer(event: MouseEvent | TouchEvent): Point {
     const eventVals = normalizeEvent(event);
     return {
       x: eventVals.clientX - this.container.getBoundingClientRect().left,
@@ -248,23 +248,23 @@ export default class Viewer {
     };
   }
 
-  public setCallbacks(callbacks: Callbacks): void {
+  setCallbacks(callbacks: Callbacks): void {
     this.callbacks = callbacks;
   }
 
-  public tableDblClick(table: TableData): void {
+  tableDblClick(table: TableData): void {
     this.callbacks?.tableDblClick(table);
   }
 
-  public tableClick(table: TableData): void {
+  tableClick(table: TableData): void {
     this.callbacks?.tableClick(table);
   }
 
-  public tableContextMenu(table: TableData): void {
+  tableContextMenu(table: TableData): void {
     this.callbacks?.tableContextMenu(table);
   }
 
-  public disableTableMovement(value: boolean): void {
+  disableTableMovement(value: boolean): void {
     this.isTableMovementDisabled = value;
     if (this.tables) {
       this.tables.forEach((table) => table.disableMovement(value));
@@ -404,7 +404,7 @@ export default class Viewer {
     });
   }
 
-  public setViewport(type: Viewport): Promise<[void, void]> {
+  setViewport(type: Viewport): Promise<[void, void]> {
     let viewportX;
     let viewportY;
     switch (type) {

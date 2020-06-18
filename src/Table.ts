@@ -55,31 +55,31 @@ export default class Table {
     this.tablesArrangement = arrangement;
   }
 
-  public getColumns(): Column[] {
+  getColumns(): Column[] {
     return this.columns;
   }
 
-  public setName(name: string): void {
+  setName(name: string): void {
     this.nameValue = name;
   }
 
-  public getName(): string {
+  getName(): string {
     return this.nameValue;
   }
 
-  public addColumn(column: Column): void {
+  addColumn(column: Column): void {
     this.columns.push(column);
   }
 
-  public setMoveListener(onMove: OnMove): void {
+  setMoveListener(onMove: OnMove): void {
     this.onMove = onMove;
   }
 
-  public setMoveEndListener(onMoveEnd: OnMoveEnd): void {
+  setMoveEndListener(onMoveEnd: OnMoveEnd): void {
     this.onMoveEnd = onMoveEnd;
   }
 
-  public getCenter(): Point {
+  getCenter(): Point {
     const bbox = this.elem!.getBBox();
 
     const x = bbox.x + this.table!.offsetWidth / 2;
@@ -90,7 +90,7 @@ export default class Table {
     };
   }
 
-  public getVertices(): Vertices {
+  getVertices(): Vertices {
     const bbox = this.elem!.getBBox();
     return {
       bottomLeft: {
@@ -112,7 +112,7 @@ export default class Table {
     };
   }
 
-  public async render(): Promise<SVGGraphicsElement>{
+  async render(): Promise<SVGGraphicsElement>{
     this.elem = (document.createElementNS(constant.nsSvg, 'g') as SVGGraphicsElement);
     this.foreignObject = document.createElementNS(constant.nsSvg, 'foreignObject');
     this.elem.appendChild(this.foreignObject);
@@ -159,7 +159,7 @@ export default class Table {
     }
   }
 
-  public addedToView(): void {
+  addedToView(): void {
     const computedStyle = getComputedStyle(this.table!);
     let borderWidth = parseInt(computedStyle.borderLeftWidth, 10) + parseInt(computedStyle.borderRightWidth, 10);
     let borderHeight = parseInt(computedStyle.borderTopWidth, 10) + parseInt(computedStyle.borderBottomWidth, 10);
@@ -169,13 +169,13 @@ export default class Table {
     this.foreignObject!.setAttributeNS(null, 'height', (this.table!.scrollHeight + borderHeight).toString());
   }
 
-  public postDraw(): void {
+  postDraw(): void {
     if (this.penddingCenter) {
       this.center();
     }
   }
 
-  public setTablePos = (x: number, y: number, disableOutOfBoundCheck = false): void => {
+  setTablePos = (x: number, y: number, disableOutOfBoundCheck = false): void => {
     if (!disableOutOfBoundCheck) {
       const result = this.notAllowOutOfBound(x, y);
       x = result.x;
@@ -189,7 +189,7 @@ export default class Table {
     if (this.onMove) this.onMove(this, x, y);
   }
 
-  public data(): TableData {
+  data(): TableData {
     return {
       height: this.table!.offsetHeight,
       name: this.nameValue,
@@ -198,27 +198,27 @@ export default class Table {
     };
   }
 
-  public setVeiwer(veiwer: Viewer): void {
+  setVeiwer(veiwer: Viewer): void {
     this.veiwer = veiwer;
   }
 
-  public highlightFrom(column: Column): void {
+  highlightFrom(column: Column): void {
     column.elem!.classList.add('fromRelation');
   }
 
-  public removeHighlightFrom(column: Column): void {
+  removeHighlightFrom(column: Column): void {
     column.elem!.classList.remove('fromRelation');
   }
 
-  public highlightTo(column: Column): void {
+  highlightTo(column: Column): void {
     column.elem!.classList.add('toRelation');
   }
 
-  public removeHighlightTo(column: Column): void {
+  removeHighlightTo(column: Column): void {
     column.elem!.classList.remove('toRelation');
   }
 
-  public disableMovement(value: boolean): void {
+  disableMovement(value: boolean): void {
     this.disableMovementValue = value;
   }
 

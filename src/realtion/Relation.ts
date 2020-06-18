@@ -29,11 +29,11 @@ interface BasicRelation {
 }
 export default class Relation {
 
-  public static ySort(arr: Relation[], table: Table): void {
+  static ySort(arr: Relation[], table: Table): void {
     Relation.sort(arr, table, Axis.y);
   }
 
-  public static xSort(arr: Relation[], table: Table): void {
+  static xSort(arr: Relation[], table: Table): void {
     Relation.sort(arr, table, Axis.x);
   }
 
@@ -55,20 +55,20 @@ export default class Relation {
       }
     });
   }
-  public fromColumn: Column;
-  public fromPathCount?: number;
-  public fromPathIndex?: number;
-  public fromTable: Table;
-  public toColumn: Column;
-  public toPathCount?: number;
-  public toPathIndex?: number;
-  public toTable: Table;
-  public pathElem?: SVGGraphicsElement;
-  public highlightTrigger?: SVGGraphicsElement;
-  public fromTablePathSide?: Orientation;
-  public toTablePathSide?: Orientation;
-  public fromIntersectPoint?: Point;
-  public toIntersectPoint?: Point;
+  fromColumn: Column;
+  fromPathCount?: number;
+  fromPathIndex?: number;
+  fromTable: Table;
+  toColumn: Column;
+  toPathCount?: number;
+  toPathIndex?: number;
+  toTable: Table;
+  pathElem?: SVGGraphicsElement;
+  highlightTrigger?: SVGGraphicsElement;
+  fromTablePathSide?: Orientation;
+  toTablePathSide?: Orientation;
+  fromIntersectPoint?: Point;
+  toIntersectPoint?: Point;
 
   constructor({
     fromColumn,
@@ -82,15 +82,15 @@ export default class Relation {
     this.toTable = toTable;
   }
 
-  public update(): void {
+  update(): void {
     this.getTableRelationSide();
   }
 
-  public removeHoverEffect(): void {
+  removeHoverEffect(): void {
     this.onMouseLeave();
   }
 
-  public render(): [SVGGraphicsElement?, SVGGraphicsElement?] {
+  render(): [SVGGraphicsElement?, SVGGraphicsElement?] {
     const fromTableVertices = this.fromTable.getVertices();
     const toTableVertices = this.toTable.getVertices();
 
@@ -212,11 +212,11 @@ export default class Relation {
     return [this.highlightTrigger, this.pathElem];
   }
 
-  public sameTableRelation(): boolean {
+  sameTableRelation(): boolean {
     return this.fromTable === this.toTable;
   }
 
-  public calcPathTableSides(): boolean {
+  calcPathTableSides(): boolean {
     if (this.fromTable === this.toTable) {
       return true;
     }
@@ -279,7 +279,7 @@ export default class Relation {
     return false;
   }
 
-  public getElems(): Element[] {
+  getElems(): Element[] {
     if (!this.pathElem) {
       return [];
     }

@@ -116,19 +116,19 @@ class DbViewer extends HTMLElement {
     }
   }
 
-  public getZoom(): number {
+  getZoom(): number {
     return this.viewer!.getZoom()!;
   }
 
-  public zoomIn(): void {
+  zoomIn(): void {
     this.viewer!.zoomIn();
   }
 
-  public zoomOut(): void {
+  zoomOut(): void {
     this.viewer!.zoomOut();
   }
 
-  public getTableInfo(name: string): TableData {
+  getTableInfo(name: string): TableData {
     const table = this.tables!.find((tableItem) => tableItem.name === name);
     if (table == null) {
       throw NO_TABLE;
@@ -136,7 +136,7 @@ class DbViewer extends HTMLElement {
     return table.data();
   }
 
-  public setTablePos(name: string, xCord: number, yCord: number): void {
+  setTablePos(name: string, xCord: number, yCord: number): void {
     const table = this.tables!.find((tableItem) => tableItem.name === name);
     if (table == null) {
       throw NO_TABLE;
@@ -144,7 +144,7 @@ class DbViewer extends HTMLElement {
     table.setTablePos(xCord, yCord);
   }
 
-  public attributeChangedCallback(name: string, _oldValue: string, newValue: string): void {
+  attributeChangedCallback(name: string, _oldValue: string, newValue: string): void {
     switch (name) {
       case 'src':
         this.srcVal = newValue;
