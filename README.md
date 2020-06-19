@@ -25,8 +25,8 @@ document.querySelector('db-viewer').schema = awesomeSchema;
 ```
 The json schema for db-veiwer schema can be found [here](https://raw.githubusercontent.com/ayeressian/db-viewer-component/new-events-methods/src/validation-schema.json). An example of schema can be found [here](https://raw.githubusercontent.com/ayeressian/db-viewer-component/master/example/schema/school.json).
 
-A simple usage example can be found [here](https://codesandbox.io/s/vanila-6f3zz).
-An example usage with the React can be found [here](https://codesandbox.io/s/react-5tob7). An example usage with the Svelte can be found [here](https://codesandbox.io/s/white-fast-uvdk2).
+A simple usage example can be found [here](https://stackblitz.com/edit/db-viewer-component-simple-example).
+An example usage with the React can be found [here](https://stackblitz.com/edit/db-viewer-component-react-example). An example usage with the Svelte can be found [here](https://codesandbox.io/s/white-fast-uvdk2).
 
 ### API
 #### Attributes
