@@ -5,7 +5,7 @@
 # db-viewer-component
 
 Database viewer web component. This web component can be used to view database diagrams.
-See an [example](https://codesandbox.io/s/vanila-6f3zz).
+See an [example](https://stackblitz.com/edit/db-viewer-component-simple-example).
 
 Note: This component doesn't work on old browsers that don't support web components.
 
