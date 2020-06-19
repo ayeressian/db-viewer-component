@@ -35,6 +35,7 @@ export default class Viewer {
   private panXResolver?: () => void;
   private panYResolver?: () => void;
   private safariScale?: number;
+  private tablesLoaded = false;
 
   private tableArrang?: TableArrang;
 
@@ -86,7 +87,7 @@ export default class Viewer {
   }
 
   onTableMove(table: Table, deltaX: number, deltaY: number): void {
-    this.drawRelations();
+    if (this.tablesLoaded) this.drawRelations();
 
     this.minimap.onTableMove(table, deltaX, deltaY);
 
@@ -97,7 +98,8 @@ export default class Viewer {
     this.callbacks?.tableMoveEnd(table.data());
   }
 
-  async draw(viewport: Viewport): Promise<void> {
+  draw(viewport: Viewport): void {
+    this.tablesLoaded = false;
     let minX = Number.MAX_SAFE_INTEGER;
     let maxX = Number.MIN_SAFE_INTEGER;
     let minY = Number.MAX_SAFE_INTEGER;
@@ -109,10 +111,9 @@ export default class Viewer {
     for (const table of this.tables) {
       this.minimap.createTable(table);
 
-      const tableElm = await table.render();
+      const tableElm = table.render();
       tableElm.setAttribute('id', i + 'table');
       this.svgElem.appendChild(tableElm);
-
       table.addedToView();
 
       const vertices = table.getVertices();
@@ -161,6 +162,7 @@ export default class Viewer {
 
     this.drawRelations();
     this.setViewport(viewport).then(() => this.tables.forEach((table) => table.postDraw()));
+    this.tablesLoaded = true;
   }
 
   getCords(): Point {

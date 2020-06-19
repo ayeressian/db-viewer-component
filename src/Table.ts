@@ -6,7 +6,7 @@ import { TableSchema, TableArrang } from './types/Schema';
 import TableData from './types/TableData';
 import Vertices from './types/Vertices';
 import Viewer from './Viewer';
-import { isTouchEvent, normalizeEvent, wait } from './util';
+import { isTouchEvent, normalizeEvent } from './util';
 
 const OUT_OF_VIEW_CORD = -1000;
 
@@ -80,6 +80,7 @@ export default class Table {
   }
 
   getCenter(): Point {
+    debugger;
     const bbox = this.elem!.getBBox();
 
     const x = bbox.x + this.table!.offsetWidth / 2;
@@ -112,7 +113,7 @@ export default class Table {
     };
   }
 
-  async render(): Promise<SVGGraphicsElement>{
+  render(): SVGGraphicsElement{
     this.elem = (document.createElementNS(constant.nsSvg, 'g') as SVGGraphicsElement);
     this.foreignObject = document.createElementNS(constant.nsSvg, 'foreignObject');
     this.elem.appendChild(this.foreignObject);
@@ -139,14 +140,6 @@ export default class Table {
     this.clickEvents();
     this.moveEvents();
 
-    //Wait for render to finish setTablePos needs to have render
-    await wait();
-    this.afterRender();
-
-    return this.elem;
-  }
-
-  private afterRender(): void {
     if (this.tablesArrangement == null) {
       if (this.posValue === 'center-viewport') {
         this.setTablePos(OUT_OF_VIEW_CORD, OUT_OF_VIEW_CORD, true);
@@ -157,6 +150,8 @@ export default class Table {
         this.setTablePos(point.x, point.y);
       }
     }
+
+    return this.elem;
   }
 
   addedToView(): void {

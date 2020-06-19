@@ -162,9 +162,7 @@ class DbViewer extends HTMLElement {
             else arrangement = this.notParsedSchema!.arrangement;
 
             this.viewer!.load(this.tables, this.viewport ?? response.viewport, arrangement);
-            setTimeout(() => {
-              this.dispatchEvent(new LoadEvent());
-            });
+            this.dispatchEvent(new LoadEvent());
           });
         });
         break;
