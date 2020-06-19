@@ -80,7 +80,6 @@ export default class Table {
   }
 
   getCenter(): Point {
-    debugger;
     const bbox = this.elem!.getBBox();
 
     const x = bbox.x + this.table!.offsetWidth / 2;
