@@ -1,5 +1,5 @@
 import constant from './const';
-import Table from './table';
+import Table from './Table';
 
 export default class SpiralArrange {
   static call(tables: Table[]): Table[] {
