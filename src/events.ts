@@ -95,6 +95,9 @@ export interface DbViewerEventMap extends HTMLElementEventMap {
   'tableClick': TableClickEvent;
   'tableDblClick': TableDblClickEvent;
   'tableContextMenu': TableContextMenuEvent;
+  'relationClick': RelationClickEvent;
+  'relationDblClick': RelationDblClickEvent;
+  'relationContextMenu': RelationContextMenuEvent;
   'tableMove': TableMoveEvent;
   'tableMoveEnd': TableMoveEndEvent;
   'zoomIn': ZoomInEvent;
