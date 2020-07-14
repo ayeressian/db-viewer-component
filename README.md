@@ -44,6 +44,9 @@ Name | Description | event.detail
 `tableContextMenu` | Right clicking on a table. | {tableName, pos: {x, y}, width, height}
 `tableMove` | Moving table. | {tableName, pos: {x, y}, width, height}
 `tableMoveEnd` | Moving table ends. | {tableName, pos: {x, y}, width, height}
+`relationClick` | Clicking on a relation. | {fromTable, toTable, fromColumn, toColumn}
+`relationDblClick` | Double clicking in a relation. | {fromTable, toTable, fromColumn, toColumn}
+`relationContextMenu` | Right clikc on a realtion. | {fromTable, toTable, fromColumn, toColumn}
 `zoomIn` | Zooming in view |
 `zoomOut` | Zooming out view |
 `load` | Schema file has been successfully fetched from server. |

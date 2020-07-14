@@ -1,5 +1,6 @@
 import Point from "./types/Point";
 import TableData from "./types/TableData";
+import { RelationData } from './realtion/Relation';
 
 export class ViewportClickEvent extends CustomEvent<Point> {
   constructor(point: Point) {
@@ -34,6 +35,24 @@ export class TableMoveEvent extends CustomEvent<TableData> {
 export class TableMoveEndEvent extends CustomEvent<TableData> {
   constructor(tableData: TableData) {
     super('tableMoveEnd', {detail: tableData});
+  }
+}
+
+export class RelationClickEvent extends CustomEvent<RelationData> {
+  constructor(tableData: RelationData) {
+    super('relationClick', {detail: tableData});
+  }
+}
+
+export class RelationDblClickEvent extends CustomEvent<RelationData> {
+  constructor(tableData: RelationData) {
+    super('relationDblClick', {detail: tableData});
+  }
+}
+
+export class RelationContextMenuEvent extends CustomEvent<RelationData> {
+  constructor(tableData: RelationData) {
+    super('relationContextMenu', {detail: tableData});
   }
 }
 

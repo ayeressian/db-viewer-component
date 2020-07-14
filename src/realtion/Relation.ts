@@ -15,6 +15,7 @@ import selfRelationRight from './selfRelationRight';
 import selfRelationTop from './selfRelationTop';
 import threeLinePathVert from './threeLinePathVert';
 import selfRelationBottom from './selfRelationBottom';
+import Viewer from '../Viewer';
 
 enum Axis {
   x = 'x',
@@ -27,6 +28,15 @@ interface BasicRelation {
   toColumn: Column;
   toTable: Table;
 }
+
+export class RelationData {
+  constructor(
+    public fromTable: string,
+    public toTable: string,
+    public fromColumn: string,
+    public toColumn: string) {}
+}
+
 export default class Relation {
 
   static ySort(arr: Relation[], table: Table): void {
@@ -75,7 +85,7 @@ export default class Relation {
     fromTable,
     toColumn,
     toTable,
-  }: BasicRelation) {
+  }: BasicRelation, private viewer: Viewer) {
     this.fromColumn = fromColumn;
     this.fromTable = fromTable;
     this.toColumn = toColumn;
@@ -330,13 +340,13 @@ export default class Relation {
     };
   }
 
-  private onMouseEnter(): void {
+  private onMouseEnter = (): void => {
     this.pathElem!.classList.add('pathHover');
     this.fromTable.highlightFrom(this.fromColumn);
     this.toTable.highlightTo(this.toColumn);
   }
 
-  private onMouseLeave(): void {
+  private onMouseLeave = (): void => {
     if (this.pathElem) {
       this.pathElem.classList.remove('pathHover');
       this.fromTable.removeHighlightFrom(this.fromColumn);
@@ -344,11 +354,32 @@ export default class Relation {
     }
   }
 
+  private createRelationInfo(): RelationData {
+    return new RelationData(this.fromTable.name, this.toTable.name, this.fromColumn.name, this.toColumn.name);
+  }
+
+  private onClick = (): void => {
+    this.viewer.relationClick(this.createRelationInfo());
+  }
+
+  private onDblClick = (): void => {
+    this.viewer.relationDblClick(this.createRelationInfo());
+  }
+
+  private onContextMenu = (): void => {
+    this.viewer.relationContextMenu(this.createRelationInfo());
+  }
+
   private setElems(elem: SVGGraphicsElement, highlightTrigger: SVGGraphicsElement): void {
     this.pathElem = elem;
     this.highlightTrigger = highlightTrigger;
-    highlightTrigger.onmouseenter = this.onMouseEnter.bind(this);
-    highlightTrigger.onmouseleave = this.onMouseLeave.bind(this);
+    highlightTrigger.onmouseenter = this.onMouseEnter;
+    highlightTrigger.onmouseleave = this.onMouseLeave;
+
+    highlightTrigger.addEventListener('contextmenu', this.onContextMenu);
+    highlightTrigger.addEventListener('dblclick', this.onDblClick);
+    highlightTrigger.addEventListener('click', this.onClick);
+    highlightTrigger.addEventListener('touch', this.onClick);
   }
 
   private createHighlightTrigger(d: string): SVGGraphicsElement {

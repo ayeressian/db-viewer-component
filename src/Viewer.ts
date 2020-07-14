@@ -1,6 +1,6 @@
 import constant from './const';
 import Minimap from './Minimap';
-import Relation from './realtion/Relation';
+import Relation, { RelationData } from './realtion/Relation';
 import SpiralArrange from './SpiralArrange';
 import Table from './Table';
 import { isColumnFk } from './types/Column';
@@ -129,7 +129,7 @@ export default class Viewer {
             toColumn: column.fk!.column,
             toTable: column.fk!.table,
           };
-          const relation = new Relation(relationInfo);
+          const relation = new Relation(relationInfo, this);
           this.relationInfos!.push(relation);
         }
       });
@@ -264,6 +264,18 @@ export default class Viewer {
 
   tableContextMenu(table: TableData): void {
     this.callbacks?.tableContextMenu(table);
+  }
+
+  relationClick(relationData: RelationData): void {
+    this.callbacks?.relationClick(relationData);
+  }
+
+  relationDblClick(relationData: RelationData): void {
+    this.callbacks?.relationDblClick(relationData);
+  }
+
+  relationContextMenu(relationData: RelationData): void {
+    this.callbacks?.relationContextMenu(relationData);
   }
 
   disableTableMovement(value: boolean): void {

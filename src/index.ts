@@ -18,8 +18,12 @@ import {
   ZoomInEvent,
   ZoomOutEvent,
   DbViewerEventMap,
+  RelationClickEvent,
+  RelationDblClickEvent,
 } from './events';
 import Point from './types/Point';
+import { RelationData } from './realtion/Relation';
+import { RelationContextMenuEvent } from './events';
 
 const NO_TABLE = new Error('No table exist with the given name.');
 const INVALID_SCHEMA = new Error('Invalid schema.');
@@ -199,12 +203,15 @@ class DbViewer extends HTMLElement {
     this.shadowDomLoaded(shadowDom).then(() => {
       this.viewer = new Viewer(shadowDom);
       this.viewer.setCallbacks({
-        tableClick: this.onTableClick.bind(this),
-        tableContextMenu: this.onTableContextMenu.bind(this),
-        tableDblClick: this.onTableDblClick.bind(this),
-        tableMove: this.onTableMove.bind(this),
-        tableMoveEnd: this.onTableMoveEnd.bind(this),
-        viewportClick: this.onViewportClick.bind(this),
+        tableClick: this.onTableClick,
+        tableContextMenu: this.onTableContextMenu,
+        tableDblClick: this.onTableDblClick,
+        tableMove: this.onTableMove,
+        tableMoveEnd: this.onTableMoveEnd,
+        relationClick: this.onRelationClick,
+        relationDblClick: this.onRelationDblClick,
+        relationContextMenu: this.onRelationContextMenu,
+        viewportClick: this.onViewportClick,
         zoomIn: this.onZoomIn.bind(this),
         zoomOut: this.onZoomOut.bind(this),
       });
@@ -218,35 +225,47 @@ class DbViewer extends HTMLElement {
     return document.readyState === 'complete';
   }
 
-  private onViewportClick(x: number, y: number): void {
+  private onViewportClick = (x: number, y: number): void => {
     this.dispatchEvent(new ViewportClickEvent({x, y}));
   }
 
-  private onTableClick(tableData: TableData): void {
+  private onTableClick = (tableData: TableData): void => {
     this.dispatchEvent(new TableClickEvent(tableData));
   }
 
-  private onTableDblClick(tableData: TableData): void {
+  private onTableDblClick = (tableData: TableData): void => {
     this.dispatchEvent(new TableDblClickEvent(tableData));
   }
 
-  private onTableContextMenu(tableData: TableData): void {
+  private onTableContextMenu = (tableData: TableData): void => {
     this.dispatchEvent(new TableContextMenuEvent(tableData));
   }
 
-  private onTableMove(tableData: TableData): void {
+  private onTableMove = (tableData: TableData): void => {
     this.dispatchEvent(new TableMoveEvent(tableData));
   }
 
-  private onTableMoveEnd(tableData: TableData): void {
+  private onTableMoveEnd = (tableData: TableData): void => {
     this.dispatchEvent(new TableMoveEndEvent(tableData));
   }
 
-  private onZoomIn(zoom: number): void {
+  private onRelationClick = (relationData: RelationData): void => {
+    this.dispatchEvent(new RelationClickEvent(relationData));
+  }
+
+  private onRelationDblClick = (relationData: RelationData): void => {
+    this.dispatchEvent(new RelationDblClickEvent(relationData));
+  }
+
+  private onRelationContextMenu = (relationData: RelationData): void => {
+    this.dispatchEvent(new RelationContextMenuEvent(relationData));
+  }
+
+  private onZoomIn = (zoom: number): void => {
     this.dispatchEvent(new ZoomInEvent(zoom));
   }
 
-  private onZoomOut(zoom: number): void {
+  private onZoomOut = (zoom: number): void => {
     this.dispatchEvent(new ZoomOutEvent(zoom));
   }
 

@@ -18,9 +18,15 @@ const schoolDbSetup = () => {
   dbViewerSchoolElem.src = '/example/schema/school.json';
 
   dbViewerSchoolElem.addEventListener('ready', () => console.log('ready'));
+
   dbViewerSchoolElem.addEventListener('tableClick', (event) => console.log('tableClick', event.detail));
   dbViewerSchoolElem.addEventListener('tableDblClick', (event) => console.log('tableDblClick', event.detail));
   dbViewerSchoolElem.addEventListener('tableContextMenu', (event) => console.log('tableContextMenu', event.detail));
+
+  dbViewerSchoolElem.addEventListener('relationClick', (event) => console.log('relationClick', event.detail));
+  dbViewerSchoolElem.addEventListener('relationDblClick', (event) => console.log('relationDblClick', event.detail));
+  dbViewerSchoolElem.addEventListener('relationContextMenu', (event) => console.log('relationContextMenu', event.detail));
+
   dbViewerSchoolElem.addEventListener('tableMove', (event) => console.log('tableMove', event.detail));
   dbViewerSchoolElem.addEventListener('tableMoveEnd', (event) => console.log('tableMoveEnd', event.detail));
   dbViewerSchoolElem.addEventListener('zoomIn', (event) => console.log('zoomIn', event.detail));
