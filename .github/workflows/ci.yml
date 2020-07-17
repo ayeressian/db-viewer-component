@@ -25,3 +25,4 @@ jobs:
     # Runs a single command using the runners shell
     - run: npm i
     - run: npm test
+    - run: npm run start-and-e2e

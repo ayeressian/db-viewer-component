@@ -33,8 +33,19 @@
       ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
+    },
+    { 
+      "type": "node", 
+      "request": "launch", 
+      "name": "e2e Test",
+      "program": "${workspaceRoot}/node_modules/.bin/jasmine-ts", 
+      "args": [
+        "--config=e2e/jasmine.json"
+      ], 
+      "env": { 
+        "NODE_PATH": ".",
+        "NO_HEADLESS": "true"
+      } 
     }
   ]
 }
-
-//node_modules/jasmine/bin/jasmine.js
