@@ -25,6 +25,7 @@ jobs:
     # Runs a single command using the runners shell
     - run: npm i
     - run: npm test
+    - run: npm run start-and-e2e
     - run: npm run publish-npm
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
