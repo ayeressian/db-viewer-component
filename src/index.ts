@@ -5,6 +5,7 @@ import { Schema, TableArrang, Viewport } from './types/Schema';
 import TableData from './types/TableData';
 import validateJson from './validate-schema';
 import Viewer from './Viewer';
+import { cloneDeep } from 'lodash';
 
 import {
   LoadEvent,
@@ -58,8 +59,8 @@ class DbViewer extends HTMLElement {
       if (schema == null || !validateJson(schema)) {
         throw INVALID_SCHEMA;
       }
-      this.notParsedSchema = JSON.parse(JSON.stringify(schema));
-      const schemaObj = JSON.parse(JSON.stringify(schema)) as Schema;
+      this.notParsedSchema = cloneDeep(schema);
+      const schemaObj = cloneDeep(schema) as Schema;
       this.tables = schemaParser(schemaObj);
       this.viewer!.load(this.tables, this.viewport ?? schemaObj.viewport, schemaObj.arrangement);
     });
@@ -72,7 +73,7 @@ class DbViewer extends HTMLElement {
         notParsedTable.pos = {...(tablePos as Point)};
       });
     }
-    return JSON.parse(JSON.stringify(this.notParsedSchema));
+    return cloneDeep(this.notParsedSchema);
   }
 
   set disableTableMovement(value: boolean) {
@@ -158,7 +159,7 @@ class DbViewer extends HTMLElement {
             if (!validateJson(response)) {
               throw INVALID_SCHEMA;
             }
-            this.notParsedSchema = JSON.parse(JSON.stringify(response));
+            this.notParsedSchema = cloneDeep(response);
             this.tables = schemaParser(response);
 
             let arrangement: TableArrang;
