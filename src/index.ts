@@ -60,7 +60,7 @@ class DbViewer extends HTMLElement {
         throw INVALID_SCHEMA;
       }
       this.notParsedSchema = cloneDeep(schema);
-      const schemaObj = cloneDeep(schema) as Schema;
+      const schemaObj = cloneDeep(schema);
       this.tables = schemaParser(schemaObj);
       this.viewer!.load(this.tables, this.viewport ?? schemaObj.viewport, schemaObj.arrangement);
     });
