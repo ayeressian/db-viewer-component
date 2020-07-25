@@ -77,7 +77,6 @@
   cursor: default;
   display: block;
   background-color: var(--viewer-background-color,  #e3ebed);
-  font-size: 10px;
 }
 
 #veiwer.pan {
