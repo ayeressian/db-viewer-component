@@ -69,6 +69,16 @@ Name | Description | Arguments
 `zoomIn` | Zoom in view. |
 `zoomOut` | Zoom out view. |
 `getZoom` | Get amount of zoom |
+#### Styles
+Styles can be applied by the following CSS variables.
+Name | Description
+--- | ---
+`--table-boarder-color` | Table border color
+`--viewer-background-color` | Viewer background color
+`--relation-color` | Relation color |
+`--relation-color-highlight` | Relation color on mouse hover
+`--font-family` | Font
+`--color` | Text color
 
 ### To run
   1. npm i

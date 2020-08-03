@@ -58,7 +58,7 @@
   height: 30px;
   margin-bottom: 5px;
   padding: 1px;
-  font-size: large;
+  font-size: 1.2em;
   float: left;
 }
 
@@ -141,13 +141,13 @@
 
 path {
   stroke-width: 1;
-  stroke: var(--path-color, #666);
+  stroke: var(--relation-color, #666);
   fill: none;
 }
 
 .pathHover {
   stroke-width: 2;
-  stroke: var(--path-color-highlight, black);
+  stroke: var(--relation-color-highlight, black);
 }
 
 .fromRelation {
