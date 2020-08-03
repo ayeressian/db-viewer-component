@@ -20,14 +20,13 @@ const getNumberOfRelations = (schema: Schema): number => {
 describe('New file', () => {
   let browser: Browser;
   let page: Page;
-  const passData: {page?: Page} = {};
 
   beforeAll(async () => {
     browser = await getBrowser();
 
     page = await browser.newPage();
     await page.goto('http://localhost:9998/');
-    passData.page = page;
+    await page.waitForLoadState('domcontentloaded');
   });
   
   afterAll(async () => {
