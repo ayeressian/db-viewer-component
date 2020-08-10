@@ -1,10 +1,6 @@
-export function isSafari(): boolean {
-  return navigator.userAgent.includes('Safari') && navigator.userAgent.includes('Chrome');
-}
+export const isSafari =  /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-export function isChrome(): boolean {
-  return navigator.userAgent.includes('Chrome') && navigator.vendor.includes('Google Inc');
-}
+export const isChrome = navigator.userAgent.includes('Chrome') && navigator.vendor.includes('Google Inc');
 
 export function disableSelection(elem: Element): void {
   elem.setAttribute('unselectable', 'on');

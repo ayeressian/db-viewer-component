@@ -22,6 +22,8 @@
   -webkit-user-select: none !important;
   -ms-user-select: none !important;
   user-select: none !important;
+
+  touch-action: none;
 }
 
 #veiwer-container #minimap {
@@ -42,7 +44,7 @@
 #veiwer-container #minimap-container {
   left: 10px;
   bottom: 18px;
-  width: 80px;
+  width: 100px;
   position: absolute;
 }
 
@@ -53,13 +55,17 @@
   float: left;
 }
 
-#veiwer-container #minimap-container #btn-container button{
-  width: 38px;
+#veiwer-container #minimap-container #btn-container {
+  display: flex;
+}
+
+#veiwer-container #minimap-container #btn-container button {
   height: 30px;
   margin-bottom: 5px;
   padding: 1px;
   font-size: 1.2em;
   float: left;
+  width: 50%;
 }
 
 #veiwer-container #minimap-container #btn-container #btn-zoom-in {

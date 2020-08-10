@@ -25,7 +25,6 @@ export default class Minimap {
   }
 
   minimapPositionFromMouse(event: MouseEvent): void {
-    event.stopPropagation();
     const minimapBoundingClientRect = this.minimap.getBoundingClientRect();
     const x = event.clientX - minimapBoundingClientRect.left;
     const y = event.clientY - minimapBoundingClientRect.top;

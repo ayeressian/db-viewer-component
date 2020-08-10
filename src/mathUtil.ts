@@ -4,6 +4,17 @@ export function to3FixedNumber(num: number): number {
   return Math.round(num * 1e3) / 1e3;
 }
 
+export function distance(point1: Point, point2: Point): number {
+  const a = Math.abs(point1.y - point2.y);
+  const b = Math.abs(point1.x - point2.x);
+
+  return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+}
+
+export function center(point1: Point, point2: Point): Point {
+  return { y: (point1.y + point2.y) / 2, x: (point1.x + point2.x) / 2 };
+}
+
 export function lineIntersection(l1p1: Point, l1p2: Point, l2p1: Point, l2p2: Point): Point | null {
   const deltaXL1 = l1p1.x - l1p2.x;
   const deltaXL2 = l2p1.x - l2p2.x;

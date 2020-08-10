@@ -258,24 +258,23 @@ export default class Table {
     let mouseDownInitialElemY: number;
 
     const mouseMove = (event: MouseEvent | TouchEvent): void  => {
-      event.stopPropagation();
-      const mousePos = this.veiwer!.getMousePosRelativeContainer(event);
+      if (!this.veiwer!.getGestureStart()) { 
+        const mousePos = this.veiwer!.getMousePosRelativeContainer(event);
 
-      const normalizedClientX =
-        mousePos.x / this.veiwer!.getZoom()! + this.veiwer!.getPan().x / this.veiwer!.getZoom()!;
-      const normalizedClientY =
-        mousePos.y / this.veiwer!.getZoom()! + this.veiwer!.getPan().y / this.veiwer!.getZoom()!;
-      const x = normalizedClientX - mouseDownInitialElemX;
-      const y = normalizedClientY - mouseDownInitialElemY;
+        const normalizedClientX =
+          mousePos.x / this.veiwer!.getZoom()! + this.veiwer!.getPan().x / this.veiwer!.getZoom()!;
+        const normalizedClientY =
+          mousePos.y / this.veiwer!.getZoom()! + this.veiwer!.getPan().y / this.veiwer!.getZoom()!;
+        const x = normalizedClientX - mouseDownInitialElemX;
+        const y = normalizedClientY - mouseDownInitialElemY;
 
-      this.setTablePos(x, y);
-      const pos = this.posValue as Point;
-      if (this.onMove) this.onMove(this, pos.x, pos.y);
+        this.setTablePos(x, y);
+        const pos = this.posValue as Point;
+        if (this.onMove) this.onMove(this, pos.x, pos.y);
+      }
     };
 
     const mouseDown = (event: MouseEvent | TouchEvent): void => {
-      event.stopPropagation();
-      event.preventDefault();
       const touchEvent = isTouchEvent(event);
       if ((!touchEvent && ((event as MouseEvent).button === 0 || (event as MouseEvent).button == null) || touchEvent)
         && this.disableMovementValue === false) {
