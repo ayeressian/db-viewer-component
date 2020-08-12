@@ -685,7 +685,7 @@ export default class Viewer {
       let prevDiff: number | null;
       this.container.addEventListener('pointerdown', (event: PointerEvent): void => {
         evCache.push(event);
-      }, true);
+      });
       this.container.addEventListener('pointermove', (event: PointerEvent): void => {
         const index = evCache.findIndex(item => item.pointerId === event.pointerId);
         if (index !== -1) {
@@ -705,7 +705,7 @@ export default class Viewer {
           }
           prevDiff = curDiff;
         }
-      }, true);
+      });
 
       const pointerupHandler = (event: PointerEvent): void => {
         // Remove this pointer from the cache and reset the target's
