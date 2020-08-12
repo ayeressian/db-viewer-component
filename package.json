@@ -1,6 +1,6 @@
 {
   "name": "db-viewer-component",
-  "version": "4.3.2",
+  "version": "4.3.4",
   "description": "A web component for showing db schemas",
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
     "build-dev-watch": "webpack --mode=development --watch --config=./webpack.config/webpack.config.ts",
     "publish-npm": "rm -rf dist && npm run build-prod && npm publish",
     "publish-npm-dev": "rm -rf dist && npm run build-dev && npm publish --tag dev",
-    "test": "mocha-webpack \"test/**/*.ts\" --mode development --webpack-config=./webpack.config/webpack.test.config.ts",
+    "test": "mocha-webpack \"test/**/*.ts\" --mode development --webpack-config=./webpack.config/webpack.test.config.ts -r jsdom-global/register",
     "test:watch": "npm run test -- --watch",
     "test:debug": "webpack-dev-server --config webpack.config/webpack.test.debug.config.ts --hot --inline",
     "e2e": "npm run e2e-firefox && npm run e2e-chromium",
@@ -57,6 +57,8 @@
     "jasmine": "^3.5.0",
     "jasmine-spec-reporter": "^5.0.2",
     "jasmine-ts": "^0.3.0",
+    "jsdom": "16.4.0",
+    "jsdom-global": "3.0.2",
     "mocha": "^5.2.0",
     "mocha-loader": "^2.0.1",
     "mocha-webpack": "^2.0.0-beta.0",
