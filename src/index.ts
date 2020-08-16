@@ -31,19 +31,19 @@ const INVALID_SCHEMA = new Error('Invalid schema.');
 
 class DbViewer extends HTMLElement {
   get scrollLeft(): number {
-    return this.viewer!.getPan().x;
+    return this.viewer.getPan().x;
   }
 
   set scrollLeft(value: number) {
-    this.viewer!.setPanX(value);
+    this.viewer.setPanX(value);
   }
 
   get scrollTop(): number {
-    return this.viewer!.getPan().y;
+    return this.viewer.getPan().y;
   }
 
   set scrollTop(value: number) {
-    this.viewer!.setPanY(value);
+    this.viewer.setPanY(value);
   }
 
   set src(src: string) {
@@ -62,14 +62,14 @@ class DbViewer extends HTMLElement {
       this.notParsedSchema = cloneDeep(schema);
       const schemaObj = cloneDeep(schema);
       this.tables = schemaParser(schemaObj);
-      this.viewer!.load(this.tables, this.viewport ?? schemaObj.viewport, schemaObj.arrangement);
+      this.viewer.load(this.tables, this.viewport ?? schemaObj.viewport, schemaObj.arrangement);
     });
   }
 
   get schema(): Schema | undefined {
     if (this.notParsedSchema != null) {
       this.notParsedSchema.tables.forEach((notParsedTable) => {
-        const tablePos = this.tables!.find((table) => table.name === notParsedTable.name)!.pos;
+        const tablePos = this.tables.find((table) => table.name === notParsedTable.name)!.pos;
         notParsedTable.pos = {...(tablePos as Point)};
       });
     }
@@ -85,7 +85,7 @@ class DbViewer extends HTMLElement {
   }
 
   get disableTableMovement(): boolean {
-    return this.viewer!.isTableMovementDisabled;
+    return this.viewer.isTableMovementDisabled;
   }
 
   set viewport(value: Viewport | undefined) {
@@ -102,12 +102,12 @@ class DbViewer extends HTMLElement {
 
 
   private readyPromise: Promise<null>;
-  private readyPromiseResolve?: () => void;
-  private viewer?: Viewer;
-  private tables?: Table[];
-  private srcVal?: string;
-  private viewportVal?: Viewport;
-  private notParsedSchema?: Schema;
+  private readyPromiseResolve!: () => void;
+  private viewer!: Viewer;
+  private tables!: Table[];
+  private srcVal!: string;
+  private viewportVal!: Viewport;
+  private notParsedSchema!: Schema;
 
   constructor() {
     super();
@@ -122,19 +122,19 @@ class DbViewer extends HTMLElement {
   }
 
   getZoom(): number {
-    return this.viewer!.getZoom()!;
+    return this.viewer.getZoom()!;
   }
 
   zoomIn(): void {
-    this.viewer!.zoomIn();
+    this.viewer.zoomIn();
   }
 
   zoomOut(): void {
-    this.viewer!.zoomOut();
+    this.viewer.zoomOut();
   }
 
   getTableInfo(name: string): TableData {
-    const table = this.tables!.find((tableItem) => tableItem.name === name);
+    const table = this.tables.find((tableItem) => tableItem.name === name);
     if (table == null) {
       throw NO_TABLE;
     }
@@ -142,7 +142,7 @@ class DbViewer extends HTMLElement {
   }
 
   setTablePos(name: string, xCord: number, yCord: number): void {
-    const table = this.tables!.find((tableItem) => tableItem.name === name);
+    const table = this.tables.find((tableItem) => tableItem.name === name);
     if (table == null) {
       throw NO_TABLE;
     }
@@ -154,7 +154,7 @@ class DbViewer extends HTMLElement {
       case 'src':
         this.srcVal = newValue;
         this.readyPromise.then(() => {
-          fetch(this.srcVal!).then((response) => response.json()).
+          fetch(this.srcVal).then((response) => response.json()).
           then((response) => {
             if (!validateJson(response)) {
               throw INVALID_SCHEMA;
@@ -163,19 +163,19 @@ class DbViewer extends HTMLElement {
             this.tables = schemaParser(response);
 
             let arrangement: TableArrang;
-            if (!this.notParsedSchema!.arrangement) arrangement = TableArrang.default;
-            else arrangement = this.notParsedSchema!.arrangement;
+            if (!this.notParsedSchema.arrangement) arrangement = TableArrang.default;
+            else arrangement = this.notParsedSchema.arrangement;
 
-            this.viewer!.load(this.tables, this.viewport ?? response.viewport, arrangement);
+            this.viewer.load(this.tables, this.viewport ?? response.viewport, arrangement);
             this.dispatchEvent(new LoadEvent());
           });
         });
         break;
       case 'disable-table-movement':
         if (this.hasAttribute('disable-table-movement')) {
-          this.readyPromise.then(() => this.viewer!.disableTableMovement(true));
+          this.readyPromise.then(() => this.viewer.disableTableMovement(true));
         } else {
-          this.readyPromise.then(() => this.viewer!.disableTableMovement(false));
+          this.readyPromise.then(() => this.viewer.disableTableMovement(false));
         }
         break;
       case 'viewport':
@@ -216,7 +216,7 @@ class DbViewer extends HTMLElement {
         zoomIn: this.onZoomIn.bind(this),
         zoomOut: this.onZoomOut.bind(this),
       });
-      this.readyPromiseResolve!();
+      this.readyPromiseResolve();
       this.dispatchEvent(new ReadyEvent());
     });
     shadowDom.innerHTML = template;

@@ -7,15 +7,7 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "allowJs": false,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noImplicitThis": true,
-    "noUnusedParameters": true,
-    "strictNullChecks": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "strictFunctionTypes": true,
-    "noImplicitAny": true,
     "declaration": true,
+    "strict": true
   }
 }

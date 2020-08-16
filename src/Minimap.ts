@@ -13,7 +13,7 @@ export default class Minimap {
   private viewpoint: Element;
   private btnZoomIn: Element;
   private btnZoomOut: Element;
-  private tableMinimap?: Map<Table, SVGGraphicsElement>;
+  private tableMinimap!: Map<Table, SVGGraphicsElement>;
 
   constructor(private mainElem: ShadowRoot, private viewer: Viewer, private svgElem: SVGGraphicsElement) {
     this.minimap = this.mainElem.getElementById('minimap')!;
@@ -59,18 +59,18 @@ export default class Minimap {
   createTable(table: Table): void {
     const tableMini = document.createElementNS(constant.nsSvg, 'rect') as SVGGraphicsElement;
     tableMini.setAttributeNS(null, 'class', 'mini_table');
-    this.tableMinimap!.set(table, tableMini);
+    this.tableMinimap.set(table, tableMini);
     this.minimap.appendChild(tableMini);
   }
 
   setTableDim(table: Table, x: number, y: number): void {
-    const miniTable = this.tableMinimap!.get(table)!;
+    const miniTable = this.tableMinimap.get(table)!;
     miniTable.setAttributeNS(null, 'width', x.toString());
     miniTable.setAttributeNS(null, 'height', y.toString());
   }
 
   onTableMove(table: Table, deltaX: number, deltaY: number): void {
-    const minimapTableElem = this.tableMinimap!.get(table)!;
+    const minimapTableElem = this.tableMinimap.get(table)!;
 
     minimapTableElem.setAttributeNS(null, 'x', deltaX.toString());
     minimapTableElem.setAttributeNS(null, 'y', deltaY.toString());

@@ -27,15 +27,15 @@ export default class Table {
   private nameValue: string;
   private posValue: Point | string;
   private disableMovementValue: boolean;
-  private elem?: SVGGraphicsElement;
-  private veiwer?: Viewer;
-  private table?: HTMLElement;
-  private onMove?: OnMove;
-  private initialClientX?: number;
-  private initialClientY?: number;
-  private onMoveEnd?: OnMoveEnd;
-  private foreignObject?: Element;
-  private penddingCenter?: boolean;
+  private elem!: SVGGraphicsElement;
+  private veiwer!: Viewer;
+  private table!: HTMLElement;
+  private onMove!: OnMove;
+  private initialClientX!: number;
+  private initialClientY!: number;
+  private onMoveEnd!: OnMoveEnd;
+  private foreignObject!: Element;
+  private penddingCenter!: boolean;
   private tablesArrangement?: TableArrang;
 
   constructor({
@@ -80,10 +80,10 @@ export default class Table {
   }
 
   getCenter(): Point {
-    const bbox = this.elem!.getBBox();
+    const bbox = this.elem.getBBox();
 
-    const x = bbox.x + this.table!.offsetWidth / 2;
-    const y = bbox.y + this.table!.offsetHeight / 2;
+    const x = bbox.x + this.table.offsetWidth / 2;
+    const y = bbox.y + this.table.offsetHeight / 2;
     return {
       x,
       y,
@@ -91,22 +91,22 @@ export default class Table {
   }
 
   getVertices(): Vertices {
-    const bbox = this.elem!.getBBox();
+    const bbox = this.elem.getBBox();
     return {
       bottomLeft: {
         x: bbox.x,
-        y: bbox.y + this.table!.offsetHeight,
+        y: bbox.y + this.table.offsetHeight,
       },
       bottomRight: {
-        x: bbox.x + this.table!.offsetWidth,
-        y: bbox.y + this.table!.offsetHeight,
+        x: bbox.x + this.table.offsetWidth,
+        y: bbox.y + this.table.offsetHeight,
       },
       topLeft: {
         x: bbox.x,
         y: bbox.y,
       },
       topRight: {
-        x: bbox.x + this.table!.offsetWidth,
+        x: bbox.x + this.table.offsetWidth,
         y: bbox.y,
       },
     };
@@ -154,13 +154,13 @@ export default class Table {
   }
 
   addedToView(): void {
-    const computedStyle = getComputedStyle(this.table!);
+    const computedStyle = getComputedStyle(this.table);
     let borderWidth = parseInt(computedStyle.borderLeftWidth, 10) + parseInt(computedStyle.borderRightWidth, 10);
     let borderHeight = parseInt(computedStyle.borderTopWidth, 10) + parseInt(computedStyle.borderBottomWidth, 10);
     borderWidth = isNaN(borderWidth) ? 0 : borderWidth;
     borderHeight = isNaN(borderHeight) ? 0 : borderHeight;
-    this.foreignObject!.setAttributeNS(null, 'width', (this.table!.scrollWidth + borderWidth).toString());
-    this.foreignObject!.setAttributeNS(null, 'height', (this.table!.scrollHeight + borderHeight).toString());
+    this.foreignObject.setAttributeNS(null, 'width', (this.table.scrollWidth + borderWidth).toString());
+    this.foreignObject.setAttributeNS(null, 'height', (this.table.scrollHeight + borderHeight).toString());
   }
 
   postDraw(): void {
@@ -178,17 +178,17 @@ export default class Table {
     this.posValue = {
       x, y,
     };
-    this.foreignObject!.setAttributeNS(null, 'x', x.toString());
-    this.foreignObject!.setAttributeNS(null, 'y', y.toString());
+    this.foreignObject.setAttributeNS(null, 'x', x.toString());
+    this.foreignObject.setAttributeNS(null, 'y', y.toString());
     if (this.onMove) this.onMove(this, x, y);
   }
 
   data(): TableData {
     return {
-      height: this.table!.offsetHeight,
+      height: this.table.offsetHeight,
       name: this.nameValue,
       pos: this.posValue as Point,
-      width: this.table!.offsetWidth,
+      width: this.table.offsetWidth,
     };
   }
 
@@ -217,7 +217,7 @@ export default class Table {
   }
 
   private moveToTop(): void {
-    const parentNode = this.elem!.parentNode;
+    const parentNode = this.elem.parentNode;
     // The reason for not using append of this.elem instead of remaining element prepend
     // is to keep event concistency. The following code is for making click and and double click to work.
     Array.from(parentNode!.children).reverse().forEach((childElem) => {
@@ -228,27 +228,27 @@ export default class Table {
   }
 
   private clickEvents(): void {
-    this.elem!.addEventListener('dblclick', () => {
-      this.veiwer!.tableDblClick(this.data());
+    this.elem.addEventListener('dblclick', () => {
+      this.veiwer.tableDblClick(this.data());
     });
     const onClick = (): void => {
-      this.veiwer!.tableClick(this.data());
+      this.veiwer.tableClick(this.data());
     };
-    this.elem!.addEventListener('click', onClick);
-    this.elem!.addEventListener('touch', onClick);
-    this.elem!.addEventListener('contextmenu', () => {
-      this.veiwer!.tableContextMenu(this.data());
+    this.elem.addEventListener('click', onClick);
+    this.elem.addEventListener('touch', onClick);
+    this.elem.addEventListener('contextmenu', () => {
+      this.veiwer.tableContextMenu(this.data());
     });
   }
 
   private notAllowOutOfBound(x: number, y: number): Point {
     if (x < 0) x = 0;
     if (y < 0) y = 0;
-    if (x + this.table!.offsetWidth > constant.VIEWER_PAN_WIDTH) {
-      x = constant.VIEWER_PAN_WIDTH - this.table!.offsetWidth;
+    if (x + this.table.offsetWidth > constant.VIEWER_PAN_WIDTH) {
+      x = constant.VIEWER_PAN_WIDTH - this.table.offsetWidth;
     }
-    if (y + this.table!.offsetHeight > constant.VIEWER_PAN_HEIGHT) {
-      y = constant.VIEWER_PAN_HEIGHT - this.table!.offsetHeight;
+    if (y + this.table.offsetHeight > constant.VIEWER_PAN_HEIGHT) {
+      y = constant.VIEWER_PAN_HEIGHT - this.table.offsetHeight;
     }
     return { x, y };
   }
@@ -258,13 +258,13 @@ export default class Table {
     let mouseDownInitialElemY: number;
 
     const mouseMove = (event: MouseEvent | TouchEvent): void  => {
-      if (!this.veiwer!.getGestureStart()) { 
-        const mousePos = this.veiwer!.getMousePosRelativeContainer(event);
+      if (!this.veiwer.getGestureStart()) { 
+        const mousePos = this.veiwer.getMousePosRelativeContainer(event);
 
         const normalizedClientX =
-          mousePos.x / this.veiwer!.getZoom()! + this.veiwer!.getPan().x / this.veiwer!.getZoom()!;
+          mousePos.x / this.veiwer.getZoom()! + this.veiwer.getPan().x / this.veiwer.getZoom()!;
         const normalizedClientY =
-          mousePos.y / this.veiwer!.getZoom()! + this.veiwer!.getPan().y / this.veiwer!.getZoom()!;
+          mousePos.y / this.veiwer.getZoom()! + this.veiwer.getPan().y / this.veiwer.getZoom()!;
         const x = normalizedClientX - mouseDownInitialElemX;
         const y = normalizedClientY - mouseDownInitialElemY;
 
@@ -279,9 +279,9 @@ export default class Table {
       if ((!touchEvent && ((event as MouseEvent).button === 0 || (event as MouseEvent).button == null) || touchEvent)
         && this.disableMovementValue === false) {
         const eventVal = normalizeEvent(event);
-        this.table!.classList.add('move');
-        const boundingRect = this.elem!.getBoundingClientRect();
-        const zoom = this.veiwer!.getZoom()!;
+        this.table.classList.add('move');
+        const boundingRect = this.elem.getBoundingClientRect();
+        const zoom = this.veiwer.getZoom()!;
         mouseDownInitialElemX = (eventVal.clientX - boundingRect.left) / zoom;
         mouseDownInitialElemY = (eventVal.clientY - boundingRect.top) / zoom;
 
@@ -298,7 +298,7 @@ export default class Table {
             && (this.initialClientX !== mouseUpEvent.clientX || this.initialClientY !== mouseUpEvent.clientY)) {
             this.onMoveEnd(this);
           }
-          this.table!.classList.remove('move');
+          this.table.classList.remove('move');
           document.removeEventListener('mouseup', mouseUp as CommonEventListener);
           document.removeEventListener('touchend', mouseUp as CommonEventListener);
           document.removeEventListener('mousemove', mouseMove as CommonEventListener);
@@ -309,8 +309,8 @@ export default class Table {
       }
     };
 
-    this.elem!.addEventListener('mousedown', mouseDown as CommonEventListener);
-    this.elem!.addEventListener('touchstart', mouseDown as CommonEventListener);
+    this.elem.addEventListener('mousedown', mouseDown as CommonEventListener);
+    this.elem.addEventListener('touchstart', mouseDown as CommonEventListener);
   }
 
   private createColumns(tbody: Element): void {
@@ -348,9 +348,9 @@ export default class Table {
   }
 
   private center(): void {
-    const viewport = this.veiwer!.getViewPort();
-    const x = viewport.x + viewport.width / 2 - this.table!.offsetWidth / this.veiwer!.getZoom()! / 2;
-    const y = viewport.y + viewport.height / 2 - this.table!.offsetHeight / this.veiwer!.getZoom()! / 2;
+    const viewport = this.veiwer.getViewPort();
+    const x = viewport.x + viewport.width / 2 - this.table.offsetWidth / this.veiwer.getZoom()! / 2;
+    const y = viewport.y + viewport.height / 2 - this.table.offsetHeight / this.veiwer.getZoom()! / 2;
     this.setTablePos(x, y);
   }
 }

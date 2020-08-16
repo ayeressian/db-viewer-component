@@ -30,12 +30,12 @@ export default class Viewer {
   private minimap: Minimap;
   private disbleScrollEvent: boolean;
   private viewBoxVals: ViewBoxVals;
-  private zoom?: number;
-  private callbacks?: Callbacks;
-  private relationInfos?: Relation[];
-  private panXResolver?: () => void;
-  private panYResolver?: () => void;
-  private safariScale?: number;
+  private zoom!: number;
+  private callbacks!: Callbacks;
+  private relationInfos!: Relation[];
+  private panXResolver!: () => void;
+  private panYResolver!: () => void;
+  private safariScale!: number;
   private tablesLoaded = false;
   private gestureStart = false;
 
@@ -64,8 +64,8 @@ export default class Viewer {
     this.minimap.setMinimapViewPoint(this.viewBoxVals);
 
     this.svgContainer.addEventListener('click', (event: MouseEvent) => {
-      const x = event.offsetX / this.zoom!;
-      const y = event.offsetY / this.zoom!;
+      const x = event.offsetX / this.zoom;
+      const y = event.offsetY / this.zoom;
       this.callbacks?.viewportClick(x, y);
     });
     this.reset();
@@ -132,7 +132,7 @@ export default class Viewer {
             toTable: column.fk!.table,
           };
           const relation = new Relation(relationInfo, this);
-          this.relationInfos!.push(relation);
+          this.relationInfos.push(relation);
         }
       });
 
@@ -170,8 +170,8 @@ export default class Viewer {
   getCords(): Point {
     const bRect = this.svgElem.getBoundingClientRect();
     return {
-      x: bRect.left + this.svgContainer.scrollLeft * this.zoom!,
-      y: bRect.top + this.svgContainer.scrollTop * this.zoom!,
+      x: bRect.left + this.svgContainer.scrollLeft * this.zoom,
+      y: bRect.top + this.svgContainer.scrollTop * this.zoom,
     };
   }
 
@@ -196,15 +196,15 @@ export default class Viewer {
   }
 
   zoomIn(): void {
-    this.setZoom(this.zoom! * constant.ZOOM);
+    this.setZoom(this.zoom * constant.ZOOM);
   }
 
   zoomOut(): void {
-    this.setZoom(this.zoom! / constant.ZOOM);
+    this.setZoom(this.zoom / constant.ZOOM);
   }
 
   getZoom(): number {
-    return this.zoom!;
+    return this.zoom;
   }
 
   getTablePos(tableName: string): Point | string {
@@ -228,7 +228,7 @@ export default class Viewer {
   }
 
   setPanX(value: number): Promise<void> {
-    this.viewBoxVals.x = value / this.zoom!;
+    this.viewBoxVals.x = value / this.zoom;
     const originalScrollLeft = this.svgContainer.scrollLeft;
     this.svgContainer.scrollLeft = value;
     if (this.svgContainer.scrollLeft === originalScrollLeft) {
@@ -239,7 +239,7 @@ export default class Viewer {
   }
 
   setPanY(value: number): Promise<void> {
-    this.viewBoxVals.y = value / this.zoom!;
+    this.viewBoxVals.y = value / this.zoom;
     const originalScrollTop = this.svgContainer.scrollTop;
     this.svgContainer.scrollTop = value;
     if (this.svgContainer.scrollTop === originalScrollTop) {
@@ -417,7 +417,7 @@ export default class Viewer {
       this.updatePathIndex(bottomRelations, Orientation.Bottom, sidesAndCount, table);
     });
 
-    this.relationInfos!.forEach((relation: Relation) => {
+    this.relationInfos.forEach((relation: Relation) => {
       relation.removeHoverEffect();
       relation.getElems().forEach((elem) => this.svgElem.removeChild(elem));
       const elems = relation.render();
@@ -489,14 +489,14 @@ export default class Viewer {
   }
 
   private getTableRelations(table: Table): Relation[] {
-    return this.relationInfos!.filter((relations) => {
+    return this.relationInfos.filter((relations) => {
       return relations.fromTable === table || relations.toTable === table;
     });
   }
 
   private windowResizeEvent(): void {
-    this.viewBoxVals.width = this.svgContainer.clientWidth / this.zoom!;
-    this.viewBoxVals.height = this.svgContainer.clientHeight / this.zoom!;
+    this.viewBoxVals.width = this.svgContainer.clientWidth / this.zoom;
+    this.viewBoxVals.height = this.svgContainer.clientHeight / this.zoom;
 
     this.viewportAddjustment();
 
@@ -552,7 +552,7 @@ export default class Viewer {
 
       this.minimap.setMinimapViewPoint(this.viewBoxVals);
 
-      if (this.zoom! < zoom) {
+      if (this.zoom < zoom) {
         this.callbacks?.zoomIn(zoom);
       } else {
         this.callbacks?.zoomOut(zoom);
@@ -630,8 +630,8 @@ export default class Viewer {
 
     this.svgContainer.addEventListener('scroll', () => {
       if (!this.disbleScrollEvent) {
-        this.viewBoxVals.x = this.svgContainer.scrollLeft / this.zoom!;
-        this.viewBoxVals.y = this.svgContainer.scrollTop / this.zoom!;
+        this.viewBoxVals.x = this.svgContainer.scrollLeft / this.zoom;
+        this.viewBoxVals.y = this.svgContainer.scrollTop / this.zoom;
         this.minimap.setMinimapViewPoint(this.viewBoxVals);
         if (this.panXResolver) {
           this.panXResolver();
@@ -650,7 +650,7 @@ export default class Viewer {
         const clientRect = this.svgContainer.getBoundingClientRect();
         const targetX = event.clientX - clientRect.left;
         const targetY = event.clientY - clientRect.top;
-        this.setZoom(this.zoom! - event.deltaY * constant.SCROLL_TO_ZOOM_MULTIPLIER, targetX, targetY);
+        this.setZoom(this.zoom - event.deltaY * constant.SCROLL_TO_ZOOM_MULTIPLIER, targetX, targetY);
         event.preventDefault();
       }
     });
@@ -672,8 +672,8 @@ export default class Viewer {
         const clientRect = this.svgContainer.getBoundingClientRect();
         const targetX = event.clientX - clientRect.left;
         const targetY = event.clientY - clientRect.top;
-        const scaleChange = event.scale - this.safariScale!;
-        this.setZoom(this.zoom! + scaleChange, targetX, targetY);
+        const scaleChange = event.scale - this.safariScale;
+        this.setZoom(this.zoom + scaleChange, targetX, targetY);
         this.safariScale = event.scale;
       }) as CommonEventListener, true);
 
@@ -701,7 +701,7 @@ export default class Viewer {
           if (prevDiff != null) {
             const delta = curDiff - prevDiff;
             event.preventDefault();
-            this.setZoom(this.zoom! + delta * constant.PINCH_TO_ZOOM_MULTIPLIER, centerPoint.x, centerPoint.y);
+            this.setZoom(this.zoom + delta * constant.PINCH_TO_ZOOM_MULTIPLIER, centerPoint.x, centerPoint.y);
           }
           prevDiff = curDiff;
         }
