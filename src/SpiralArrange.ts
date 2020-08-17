@@ -1,5 +1,5 @@
-import constant from './const';
-import Table from './Table';
+import constant from "./const";
+import Table from "./Table";
 
 export default class SpiralArrange {
   static call(tables: Table[]): Table[] {
@@ -22,17 +22,17 @@ export default class SpiralArrange {
       tablesWithDirection.forEach((table) => {
         switch (direction) {
           case 0: // right
-          currentX += constant.SPIRAL_ARRANGE_DIST_X;
-          break;
+            currentX += constant.SPIRAL_ARRANGE_DIST_X;
+            break;
           case 1: // down
-          currentY += constant.SPIRAL_ARRANGE_DIST_Y;
-          break;
+            currentY += constant.SPIRAL_ARRANGE_DIST_Y;
+            break;
           case 2: // left
-          currentX -= constant.SPIRAL_ARRANGE_DIST_X;
-          break;
+            currentX -= constant.SPIRAL_ARRANGE_DIST_X;
+            break;
           case 3: // up
-          currentY -= constant.SPIRAL_ARRANGE_DIST_Y;
-          break;
+            currentY -= constant.SPIRAL_ARRANGE_DIST_Y;
+            break;
         }
         table.setTablePos(currentX, currentY);
       });

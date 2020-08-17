@@ -1,25 +1,23 @@
-import constant from '../const';
-import {
-  segmentIntersection,
-} from '../mathUtil';
-import Table from '../Table';
-import { Column } from '../types/Column';
-import Orientation from '../types/Orientation';
-import Vertices from '../types/Vertices';
-import Point from '../types/Point';
-import selfRelationLeft from './selfRelationLeft';
-import threeLinePathHoriz from './threeLinePathHoriz';
-import twoLinePathFlatTop from './twoLinePathFlatTop';
-import twoLinePathFlatBottom from './twoLinePathFlatBottom';
-import selfRelationRight from './selfRelationRight';
-import selfRelationTop from './selfRelationTop';
-import threeLinePathVert from './threeLinePathVert';
-import selfRelationBottom from './selfRelationBottom';
-import Viewer from '../Viewer';
+import constant from "../const";
+import { segmentIntersection } from "../mathUtil";
+import Table from "../Table";
+import { Column } from "../types/Column";
+import Orientation from "../types/Orientation";
+import Vertices from "../types/Vertices";
+import Point from "../types/Point";
+import selfRelationLeft from "./selfRelationLeft";
+import threeLinePathHoriz from "./threeLinePathHoriz";
+import twoLinePathFlatTop from "./twoLinePathFlatTop";
+import twoLinePathFlatBottom from "./twoLinePathFlatBottom";
+import selfRelationRight from "./selfRelationRight";
+import selfRelationTop from "./selfRelationTop";
+import threeLinePathVert from "./threeLinePathVert";
+import selfRelationBottom from "./selfRelationBottom";
+import Viewer from "../Viewer";
 
 enum Axis {
-  x = 'x',
-  y = 'y',
+  x = "x",
+  y = "y",
 }
 
 interface BasicRelation {
@@ -34,11 +32,11 @@ export class RelationData {
     public fromTable: string,
     public toTable: string,
     public fromColumn: string,
-    public toColumn: string) {}
+    public toColumn: string
+  ) {}
 }
 
 export default class Relation {
-
   static ySort(arr: Relation[], table: Table): void {
     Relation.sort(arr, table, Axis.y);
   }
@@ -80,12 +78,10 @@ export default class Relation {
   fromIntersectPoint?: Point;
   toIntersectPoint?: Point;
 
-  constructor({
-    fromColumn,
-    fromTable,
-    toColumn,
-    toTable,
-  }: BasicRelation, private viewer: Viewer) {
+  constructor(
+    { fromColumn, fromTable, toColumn, toTable }: BasicRelation,
+    private viewer: Viewer
+  ) {
     this.fromColumn = fromColumn;
     this.fromTable = fromTable;
     this.toColumn = toColumn;
@@ -106,11 +102,20 @@ export default class Relation {
 
     const toMany = !this.fromColumn.uq;
 
-    type StartEndMethod = (tableVertices: Vertices, pathIndex: number, pathCount: number) => Point;
+    type StartEndMethod = (
+      tableVertices: Vertices,
+      pathIndex: number,
+      pathCount: number
+    ) => Point;
 
     let startMethod: StartEndMethod;
     let endMethod: StartEndMethod;
-    let resultMethod: (start: Point, end: Point, oneTo?: boolean, toMany?: boolean) => string;
+    let resultMethod: (
+      start: Point,
+      end: Point,
+      oneTo?: boolean,
+      toMany?: boolean
+    ) => string;
 
     switch (this.fromTablePathSide) {
       case Orientation.Left:
@@ -209,9 +214,25 @@ export default class Relation {
 
     // In case of tables overlapping there won't be any result
     if (startMethod! && endMethod!) {
-      const start = startMethod!.call(this, fromTableVertices, this.fromPathIndex!, this.fromPathCount!);
-      const end = endMethod!.call(this, toTableVertices, this.toPathIndex!, this.toPathCount!);
-      const result = resultMethod!.call(this, start, end, this.fromColumn.nn, toMany);
+      const start = startMethod!.call(
+        this,
+        fromTableVertices,
+        this.fromPathIndex!,
+        this.fromPathCount!
+      );
+      const end = endMethod!.call(
+        this,
+        toTableVertices,
+        this.toPathIndex!,
+        this.toPathCount!
+      );
+      const result = resultMethod!.call(
+        this,
+        start,
+        end,
+        this.fromColumn.nn,
+        toMany
+      );
       const path = this.createPath(result);
       const highlight = this.createHighlightTrigger(result);
       this.setElems(path, highlight);
@@ -235,26 +256,42 @@ export default class Relation {
 
     const fromTableSides = this.fromTable.getVertices();
 
-    const intersectFromTableRightSide =
-      segmentIntersection(fromTableCenter, toTableCenter, fromTableSides.topRight, fromTableSides.bottomRight);
+    const intersectFromTableRightSide = segmentIntersection(
+      fromTableCenter,
+      toTableCenter,
+      fromTableSides.topRight,
+      fromTableSides.bottomRight
+    );
     if (intersectFromTableRightSide) {
       this.fromIntersectPoint = intersectFromTableRightSide;
       this.fromTablePathSide = Orientation.Right;
     }
-    const intersectFromTableLeftSide =
-      segmentIntersection(fromTableCenter, toTableCenter, fromTableSides.topLeft, fromTableSides.bottomLeft);
+    const intersectFromTableLeftSide = segmentIntersection(
+      fromTableCenter,
+      toTableCenter,
+      fromTableSides.topLeft,
+      fromTableSides.bottomLeft
+    );
     if (intersectFromTableLeftSide) {
       this.fromIntersectPoint = intersectFromTableLeftSide;
       this.fromTablePathSide = Orientation.Left;
     }
-    const intersectFromTableTopSide =
-      segmentIntersection(fromTableCenter, toTableCenter, fromTableSides.topLeft, fromTableSides.topRight);
+    const intersectFromTableTopSide = segmentIntersection(
+      fromTableCenter,
+      toTableCenter,
+      fromTableSides.topLeft,
+      fromTableSides.topRight
+    );
     if (intersectFromTableTopSide) {
       this.fromIntersectPoint = intersectFromTableTopSide;
       this.fromTablePathSide = Orientation.Top;
     }
-    const intersectFromTableBottomSide =
-      segmentIntersection(fromTableCenter, toTableCenter, fromTableSides.bottomLeft, fromTableSides.bottomRight);
+    const intersectFromTableBottomSide = segmentIntersection(
+      fromTableCenter,
+      toTableCenter,
+      fromTableSides.bottomLeft,
+      fromTableSides.bottomRight
+    );
     if (intersectFromTableBottomSide) {
       this.fromIntersectPoint = intersectFromTableBottomSide;
       this.fromTablePathSide = Orientation.Bottom;
@@ -262,26 +299,42 @@ export default class Relation {
 
     const toTableSides = this.toTable.getVertices();
 
-    const intersectToTableRightSide =
-      segmentIntersection(fromTableCenter, toTableCenter, toTableSides.topRight, toTableSides.bottomRight);
+    const intersectToTableRightSide = segmentIntersection(
+      fromTableCenter,
+      toTableCenter,
+      toTableSides.topRight,
+      toTableSides.bottomRight
+    );
     if (intersectToTableRightSide) {
       this.toIntersectPoint = intersectToTableRightSide;
       this.toTablePathSide = Orientation.Right;
     }
-    const intersectToTableLeftSide =
-      segmentIntersection(fromTableCenter, toTableCenter, toTableSides.topLeft, toTableSides.bottomLeft);
+    const intersectToTableLeftSide = segmentIntersection(
+      fromTableCenter,
+      toTableCenter,
+      toTableSides.topLeft,
+      toTableSides.bottomLeft
+    );
     if (intersectToTableLeftSide) {
       this.toIntersectPoint = intersectToTableLeftSide;
       this.toTablePathSide = Orientation.Left;
     }
-    const intersectToTableTopSide =
-      segmentIntersection(fromTableCenter, toTableCenter, toTableSides.topLeft, toTableSides.topRight);
+    const intersectToTableTopSide = segmentIntersection(
+      fromTableCenter,
+      toTableCenter,
+      toTableSides.topLeft,
+      toTableSides.topRight
+    );
     if (intersectToTableTopSide) {
       this.toIntersectPoint = intersectToTableTopSide;
       this.toTablePathSide = Orientation.Top;
     }
-    const intersectToTableBottomSide =
-      segmentIntersection(fromTableCenter, toTableCenter, toTableSides.bottomRight, toTableSides.bottomLeft);
+    const intersectToTableBottomSide = segmentIntersection(
+      fromTableCenter,
+      toTableCenter,
+      toTableSides.bottomRight,
+      toTableSides.bottomLeft
+    );
     if (intersectToTableBottomSide) {
       this.toIntersectPoint = intersectToTableBottomSide;
       this.toTablePathSide = Orientation.Bottom;
@@ -297,103 +350,137 @@ export default class Relation {
   }
 
   private getTableRelationSide(): never {
-    throw new Error('Method not implemented.');
+    throw new Error("Method not implemented.");
   }
 
-  private getPosOnLine(pathIndex: number, pathCount: number, sideLength: number): number {
+  private getPosOnLine(
+    pathIndex: number,
+    pathCount: number,
+    sideLength: number
+  ): number {
     return (pathIndex + 1) * (sideLength / (pathCount + 1));
   }
 
-  private getLeftSidePathCord = (tableVertices: Vertices, pathIndex: number, pathCount: number): Point => {
+  private getLeftSidePathCord = (
+    tableVertices: Vertices,
+    pathIndex: number,
+    pathCount: number
+  ): Point => {
     const sideLength = tableVertices.bottomLeft.y - tableVertices.topLeft.y;
     const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
       x: tableVertices.topLeft.x,
       y: tableVertices.topLeft.y + posOnLine,
     };
-  }
+  };
 
-  private getRightSidePathCord = (tableVertices: Vertices, pathIndex: number, pathCount: number): Point => {
+  private getRightSidePathCord = (
+    tableVertices: Vertices,
+    pathIndex: number,
+    pathCount: number
+  ): Point => {
     const sideLength = tableVertices.bottomRight.y - tableVertices.topRight.y;
     const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
       x: tableVertices.topRight.x,
       y: tableVertices.topRight.y + posOnLine,
     };
-  }
+  };
 
-  private getTopSidePathCord = (tableVertices: Vertices, pathIndex: number, pathCount: number): Point => {
+  private getTopSidePathCord = (
+    tableVertices: Vertices,
+    pathIndex: number,
+    pathCount: number
+  ): Point => {
     const sideLength = tableVertices.topRight.x - tableVertices.topLeft.x;
     const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
       x: tableVertices.topLeft.x + posOnLine,
       y: tableVertices.topLeft.y,
     };
-  }
+  };
 
-  private getBottomSidePathCord = (tableVertices: Vertices, pathIndex: number, pathCount: number): Point => {
+  private getBottomSidePathCord = (
+    tableVertices: Vertices,
+    pathIndex: number,
+    pathCount: number
+  ): Point => {
     const sideLength = tableVertices.bottomRight.x - tableVertices.bottomLeft.x;
     const posOnLine = this.getPosOnLine(pathIndex, pathCount, sideLength);
     return {
       x: tableVertices.bottomLeft.x + posOnLine,
       y: tableVertices.bottomLeft.y,
     };
-  }
+  };
 
   private onMouseEnter = (): void => {
-    this.pathElem!.classList.add('pathHover');
+    this.pathElem!.classList.add("pathHover");
     this.fromTable.highlightFrom(this.fromColumn);
     this.toTable.highlightTo(this.toColumn);
-  }
+  };
 
   private onMouseLeave = (): void => {
     if (this.pathElem) {
-      this.pathElem.classList.remove('pathHover');
+      this.pathElem.classList.remove("pathHover");
       this.fromTable.removeHighlightFrom(this.fromColumn);
       this.toTable.removeHighlightTo(this.toColumn);
     }
-  }
+  };
 
   private createRelationInfo(): RelationData {
-    return new RelationData(this.fromTable.name, this.toTable.name, this.fromColumn.name, this.toColumn.name);
+    return new RelationData(
+      this.fromTable.name,
+      this.toTable.name,
+      this.fromColumn.name,
+      this.toColumn.name
+    );
   }
 
   private onClick = (): void => {
     this.viewer.relationClick(this.createRelationInfo());
-  }
+  };
 
   private onDblClick = (): void => {
     this.viewer.relationDblClick(this.createRelationInfo());
-  }
+  };
 
   private onContextMenu = (): void => {
     this.viewer.relationContextMenu(this.createRelationInfo());
-  }
+  };
 
-  private setElems(elem: SVGGraphicsElement, highlightTrigger: SVGGraphicsElement): void {
+  private setElems(
+    elem: SVGGraphicsElement,
+    highlightTrigger: SVGGraphicsElement
+  ): void {
     this.pathElem = elem;
     this.highlightTrigger = highlightTrigger;
     highlightTrigger.onmouseenter = this.onMouseEnter;
     highlightTrigger.onmouseleave = this.onMouseLeave;
 
-    highlightTrigger.addEventListener('contextmenu', this.onContextMenu);
-    highlightTrigger.addEventListener('dblclick', this.onDblClick);
-    highlightTrigger.addEventListener('click', this.onClick);
-    highlightTrigger.addEventListener('touch', this.onClick);
+    highlightTrigger.addEventListener("contextmenu", this.onContextMenu);
+    highlightTrigger.addEventListener("dblclick", this.onDblClick);
+    highlightTrigger.addEventListener("click", this.onClick);
+    highlightTrigger.addEventListener("touch", this.onClick);
   }
 
   private createHighlightTrigger(d: string): SVGGraphicsElement {
-    const path = document.createElementNS(constant.nsSvg, 'path') as SVGGraphicsElement;
-    path.setAttributeNS(null, 'd', d);
-    path.classList.add('highlight');
+    const path = document.createElementNS(
+      constant.nsSvg,
+      "path"
+    ) as SVGGraphicsElement;
+    path.setAttributeNS(null, "d", d);
+    path.classList.add("highlight");
 
     return path;
   }
 
   private createPath(d: string): SVGGraphicsElement {
-    const path = document.createElementNS(constant.nsSvg, 'path') as SVGGraphicsElement;
+    const path = document.createElementNS(
+      constant.nsSvg,
+      "path"
+    ) as SVGGraphicsElement;
 
-    path.setAttributeNS(null, 'd', d);
+    path.setAttributeNS(null, "d", d);
 
     return path;
   }

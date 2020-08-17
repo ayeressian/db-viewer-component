@@ -1,45 +1,43 @@
-import path from 'path';
-import { Configuration } from 'webpack';
+import path from "path";
+import { Configuration } from "webpack";
 
 const config: Configuration = {
   devServer: {
-    contentBase: './',
+    contentBase: "./",
     historyApiFallback: {
-      index: './example/index.html',
+      index: "./example/index.html",
     },
     port: 9998,
-    publicPath: '/dist',
+    publicPath: "/dist",
   },
-  devtool: 'source-map',
-  entry: './src/index.ts',
+  devtool: "source-map",
+  entry: "./src/index.ts",
   module: {
-    rules: [{
+    rules: [
+      {
         test: /\.css$/,
-        use: 'css-loader',
+        use: "css-loader",
       },
       {
         test: /\.(html)$/,
-        use: 'html-loader',
+        use: "html-loader",
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
-        use: [
-          'url-loader?limit=10000',
-          'img-loader',
-        ],
+        use: ["url-loader?limit=10000", "img-loader"],
       },
       {
-        loader: 'ts-loader',
+        loader: "ts-loader",
         test: /\.ts$/,
       },
     ],
   },
   output: {
-    filename: 'main.js',
-    path: path.resolve(__dirname, '../dist'),
+    filename: "main.js",
+    path: path.resolve(__dirname, "../dist"),
   },
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: [".ts", ".js"],
   },
 };
 

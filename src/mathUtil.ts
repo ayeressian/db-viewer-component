@@ -1,4 +1,4 @@
-import Point from './types/Point';
+import Point from "./types/Point";
 
 export function to3FixedNumber(num: number): number {
   return Math.round(num * 1e3) / 1e3;
@@ -15,7 +15,12 @@ export function center(point1: Point, point2: Point): Point {
   return { y: (point1.y + point2.y) / 2, x: (point1.x + point2.x) / 2 };
 }
 
-export function lineIntersection(l1p1: Point, l1p2: Point, l2p1: Point, l2p2: Point): Point | null {
+export function lineIntersection(
+  l1p1: Point,
+  l1p2: Point,
+  l2p1: Point,
+  l2p2: Point
+): Point | null {
   const deltaXL1 = l1p1.x - l1p2.x;
   const deltaXL2 = l2p1.x - l2p2.x;
   let result: Point | null;
@@ -70,7 +75,12 @@ export function lineIntersection(l1p1: Point, l1p2: Point, l2p1: Point, l2p2: Po
   return result;
 }
 
-export function segmentIntersection(l1p1: Point, l1p2: Point, l2p1: Point, l2p2: Point): Point | null {
+export function segmentIntersection(
+  l1p1: Point,
+  l1p2: Point,
+  l2p1: Point,
+  l2p2: Point
+): Point | null {
   l1p1.x = to3FixedNumber(l1p1.x);
   l1p1.y = to3FixedNumber(l1p1.y);
   l1p2.x = to3FixedNumber(l1p2.x);
@@ -84,9 +94,16 @@ export function segmentIntersection(l1p1: Point, l1p2: Point, l2p1: Point, l2p2:
 
   if (!ip) return null;
 
-  if (ip.x <= Math.max(l1p1.x, l1p2.x) && ip.x >= Math.min(l1p1.x, l1p2.x) &&
-    ip.x <= Math.max(l2p1.x, l2p2.x) && ip.x >= Math.min(l2p1.x, l2p2.x) &&
-    ip.y <= Math.max(l1p1.y, l1p2.y) && ip.y >= Math.min(l1p1.y, l1p2.y) &&
-    ip.y <= Math.max(l2p1.y, l2p2.y) && ip.y >= Math.min(l2p1.y, l2p2.y)) return ip;
+  if (
+    ip.x <= Math.max(l1p1.x, l1p2.x) &&
+    ip.x >= Math.min(l1p1.x, l1p2.x) &&
+    ip.x <= Math.max(l2p1.x, l2p2.x) &&
+    ip.x >= Math.min(l2p1.x, l2p2.x) &&
+    ip.y <= Math.max(l1p1.y, l1p2.y) &&
+    ip.y >= Math.min(l1p1.y, l1p2.y) &&
+    ip.y <= Math.max(l2p1.y, l2p2.y) &&
+    ip.y >= Math.min(l2p1.y, l2p2.y)
+  )
+    return ip;
   return null;
 }

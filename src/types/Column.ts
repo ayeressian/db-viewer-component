@@ -1,4 +1,4 @@
-import Table from '../Table';
+import Table from "../Table";
 
 export interface Fk {
   table: Table;
@@ -14,7 +14,7 @@ export interface ColumnNoneFk {
   type: string;
 }
 
-export interface ColumnFk extends Omit<ColumnNoneFk, 'type'> {
+export interface ColumnFk extends Omit<ColumnNoneFk, "type"> {
   fk?: Fk;
 }
 

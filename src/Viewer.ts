@@ -1,18 +1,18 @@
-import constant from './const';
-import Minimap from './Minimap';
-import Relation, { RelationData } from './realtion/Relation';
-import SpiralArrange from './SpiralArrange';
-import Table from './Table';
-import { isColumnFk } from './types/Column';
-import CommonEventListener from './types/CommonEventListener';
-import Callbacks from './types/Callbacks';
-import Orientation from './types/Orientation';
-import TableData from './types/TableData';
-import ViewBoxVals from './types/ViewBoxVals';
-import Point from './types/Point';
-import { normalizeEvent, isSafari } from './util';
-import { TableArrang, Viewport } from './types/Schema';
-import { center, distance } from './mathUtil';
+import constant from "./const";
+import Minimap from "./Minimap";
+import Relation, { RelationData } from "./realtion/Relation";
+import SpiralArrange from "./SpiralArrange";
+import Table from "./Table";
+import { isColumnFk } from "./types/Column";
+import CommonEventListener from "./types/CommonEventListener";
+import Callbacks from "./types/Callbacks";
+import Orientation from "./types/Orientation";
+import TableData from "./types/TableData";
+import ViewBoxVals from "./types/ViewBoxVals";
+import Point from "./types/Point";
+import { normalizeEvent, isSafari } from "./util";
+import { TableArrang, Viewport } from "./types/Schema";
+import { center, distance } from "./mathUtil";
 
 interface SideAndCount {
   side: Orientation;
@@ -21,7 +21,6 @@ interface SideAndCount {
 }
 
 export default class Viewer {
-
   isTableMovementDisabled: boolean;
   tables: Table[] = [];
   private container: HTMLElement;
@@ -42,10 +41,12 @@ export default class Viewer {
   private tableArrang?: TableArrang;
 
   constructor(private mainElem: ShadowRoot) {
-    this.container = this.mainElem.getElementById('veiwer-container')!;
+    this.container = this.mainElem.getElementById("veiwer-container")!;
 
-    this.svgElem = this.mainElem.querySelector<SVGGraphicsElement>('#veiwer')!;
-    this.svgContainer = this.mainElem.querySelector<HTMLElement>('.svg-container')!;
+    this.svgElem = this.mainElem.querySelector<SVGGraphicsElement>("#veiwer")!;
+    this.svgContainer = this.mainElem.querySelector<HTMLElement>(
+      ".svg-container"
+    )!;
 
     this.minimap = new Minimap(mainElem, this, this.svgElem);
 
@@ -63,7 +64,7 @@ export default class Viewer {
     };
     this.minimap.setMinimapViewPoint(this.viewBoxVals);
 
-    this.svgContainer.addEventListener('click', (event: MouseEvent) => {
+    this.svgContainer.addEventListener("click", (event: MouseEvent) => {
       const x = event.offsetX / this.zoom;
       const y = event.offsetY / this.zoom;
       this.callbacks?.viewportClick(x, y);
@@ -74,9 +75,13 @@ export default class Viewer {
     this.setViewport(Viewport.center);
   }
 
-  load(tables: Table[], viewport: Viewport = Viewport.centerByTables, tableArrang: TableArrang = TableArrang.default): void {
+  load(
+    tables: Table[],
+    viewport: Viewport = Viewport.centerByTables,
+    tableArrang: TableArrang = TableArrang.default
+  ): void {
     this.relationInfos = [];
-    this.svgElem.innerHTML = '';
+    this.svgElem.innerHTML = "";
     this.tables = tables;
     tables.forEach((table) => {
       table.setVeiwer(this);
@@ -114,14 +119,17 @@ export default class Viewer {
       this.minimap.createTable(table);
 
       const tableElm = table.render();
-      tableElm.setAttribute('id', i + 'table');
+      tableElm.setAttribute("id", i + "table");
       this.svgElem.appendChild(tableElm);
       table.addedToView();
 
       const vertices = table.getVertices();
 
       this.minimap.setTableDim(
-        table, vertices.topRight.x - vertices.topLeft.x, vertices.bottomLeft.y - vertices.topLeft.y);
+        table,
+        vertices.topRight.x - vertices.topLeft.x,
+        vertices.bottomLeft.y - vertices.topLeft.y
+      );
 
       table.getColumns().forEach((column) => {
         if (isColumnFk(column)) {
@@ -163,7 +171,9 @@ export default class Viewer {
     }
 
     this.drawRelations();
-    this.setViewport(viewport).then(() => this.tables.forEach((table) => table.postDraw()));
+    this.setViewport(viewport).then(() =>
+      this.tables.forEach((table) => table.postDraw())
+    );
     this.tablesLoaded = true;
   }
 
@@ -179,7 +189,8 @@ export default class Viewer {
     if (this.viewBoxVals.x < 0) {
       this.viewBoxVals.x = 0;
     } else {
-      const offsetWidth = this.viewBoxVals.width + this.viewBoxVals.x - constant.VIEWER_PAN_WIDTH;
+      const offsetWidth =
+        this.viewBoxVals.width + this.viewBoxVals.x - constant.VIEWER_PAN_WIDTH;
       if (offsetWidth > 0) {
         this.viewBoxVals.x -= offsetWidth;
       }
@@ -188,7 +199,10 @@ export default class Viewer {
     if (this.viewBoxVals.y < 0) {
       this.viewBoxVals.y = 0;
     } else {
-      const offsetHeight = this.viewBoxVals.height + this.viewBoxVals.y - constant.VIEWER_PAN_HEIGHT;
+      const offsetHeight =
+        this.viewBoxVals.height +
+        this.viewBoxVals.y -
+        constant.VIEWER_PAN_HEIGHT;
       if (offsetHeight > 0) {
         this.viewBoxVals.y -= offsetHeight;
       }
@@ -222,7 +236,6 @@ export default class Viewer {
     return this.gestureStart;
   }
 
-
   getViewPort(): ViewBoxVals {
     return this.viewBoxVals;
   }
@@ -234,7 +247,7 @@ export default class Viewer {
     if (this.svgContainer.scrollLeft === originalScrollLeft) {
       return Promise.resolve();
     } else {
-      return new Promise((resolve) => this.panXResolver = resolve);
+      return new Promise((resolve) => (this.panXResolver = resolve));
     }
   }
 
@@ -245,7 +258,7 @@ export default class Viewer {
     if (this.svgContainer.scrollTop === originalScrollTop) {
       return Promise.resolve();
     } else {
-      return new Promise((resolve) => this.panYResolver = resolve);
+      return new Promise((resolve) => (this.panYResolver = resolve));
     }
   }
 
@@ -295,16 +308,24 @@ export default class Viewer {
   private reset(): void {
     this.zoom = 1;
 
-    this.svgElem.style.height = constant.VIEWER_PAN_HEIGHT + 'px';
-    this.svgElem.style.width = constant.VIEWER_PAN_WIDTH + 'px';
-    this.svgElem.setAttribute('viewBox', `0 0 ${constant.VIEWER_PAN_WIDTH} ${constant.VIEWER_PAN_HEIGHT}`);
+    this.svgElem.style.height = constant.VIEWER_PAN_HEIGHT + "px";
+    this.svgElem.style.width = constant.VIEWER_PAN_WIDTH + "px";
+    this.svgElem.setAttribute(
+      "viewBox",
+      `0 0 ${constant.VIEWER_PAN_WIDTH} ${constant.VIEWER_PAN_HEIGHT}`
+    );
 
     this.relationInfos = [];
 
     this.minimap.reset();
   }
 
-  private updatePathIndex(relations: Relation[], side: Orientation, sidesAndCount: SideAndCount[], table: Table): void {
+  private updatePathIndex(
+    relations: Relation[],
+    side: Orientation,
+    sidesAndCount: SideAndCount[],
+    table: Table
+  ): void {
     let pathIndex = 0;
     relations.forEach((relation) => {
       const count = sidesAndCount.find((item) => item.side === side)!.count;
@@ -331,50 +352,65 @@ export default class Viewer {
     this.tables.forEach((table) => {
       const tableRelations = this.getTableRelations(table);
 
-      const pendingSelfRelations = tableRelations.filter((relation) => relation.calcPathTableSides());
+      const pendingSelfRelations = tableRelations.filter((relation) =>
+        relation.calcPathTableSides()
+      );
 
-      const leftRelations = tableRelations.filter((r) =>
-        ((r.toTable === table && r.toTablePathSide === Orientation.Left) ||
-          (r.fromTable === table && r.fromTablePathSide === Orientation.Left)) &&
-        !r.sameTableRelation());
-      const rightRelations = tableRelations.filter((r) =>
-        ((r.toTable === table && r.toTablePathSide === Orientation.Right) ||
-          (r.fromTable === table && r.fromTablePathSide === Orientation.Right)) &&
-        !r.sameTableRelation());
-      const topRelations = tableRelations.filter((r) =>
-        ((r.toTable === table && r.toTablePathSide === Orientation.Top) ||
-          (r.fromTable === table && r.fromTablePathSide === Orientation.Top)) &&
-        !r.sameTableRelation());
-      const bottomRelations = tableRelations.filter((r) =>
-        ((r.toTable === table && r.toTablePathSide === Orientation.Bottom) ||
-          (r.fromTable === table && r.fromTablePathSide === Orientation.Bottom)) &&
-        !r.sameTableRelation());
+      const leftRelations = tableRelations.filter(
+        (r) =>
+          ((r.toTable === table && r.toTablePathSide === Orientation.Left) ||
+            (r.fromTable === table &&
+              r.fromTablePathSide === Orientation.Left)) &&
+          !r.sameTableRelation()
+      );
+      const rightRelations = tableRelations.filter(
+        (r) =>
+          ((r.toTable === table && r.toTablePathSide === Orientation.Right) ||
+            (r.fromTable === table &&
+              r.fromTablePathSide === Orientation.Right)) &&
+          !r.sameTableRelation()
+      );
+      const topRelations = tableRelations.filter(
+        (r) =>
+          ((r.toTable === table && r.toTablePathSide === Orientation.Top) ||
+            (r.fromTable === table &&
+              r.fromTablePathSide === Orientation.Top)) &&
+          !r.sameTableRelation()
+      );
+      const bottomRelations = tableRelations.filter(
+        (r) =>
+          ((r.toTable === table && r.toTablePathSide === Orientation.Bottom) ||
+            (r.fromTable === table &&
+              r.fromTablePathSide === Orientation.Bottom)) &&
+          !r.sameTableRelation()
+      );
 
       Relation.ySort(leftRelations, table);
       Relation.ySort(rightRelations, table);
       Relation.xSort(topRelations, table);
       Relation.xSort(bottomRelations, table);
 
-      const sidesAndCount: SideAndCount[] = [{
-        count: leftRelations.length,
-        order: 1,
-        side: Orientation.Left,
-      },
-      {
-        count: rightRelations.length,
-        order: 2,
-        side: Orientation.Right,
-      },
-      {
-        count: topRelations.length,
-        order: 3,
-        side: Orientation.Top,
-      },
-      {
-        count: bottomRelations.length,
-        order: 4,
-        side: Orientation.Bottom,
-      },
+      const sidesAndCount: SideAndCount[] = [
+        {
+          count: leftRelations.length,
+          order: 1,
+          side: Orientation.Left,
+        },
+        {
+          count: rightRelations.length,
+          order: 2,
+          side: Orientation.Right,
+        },
+        {
+          count: topRelations.length,
+          order: 3,
+          side: Orientation.Top,
+        },
+        {
+          count: bottomRelations.length,
+          order: 4,
+          side: Orientation.Bottom,
+        },
       ];
 
       pendingSelfRelations.forEach((pendingSelfRelation) => {
@@ -411,10 +447,25 @@ export default class Viewer {
         minPathSideCount.count += 2;
       });
 
-      this.updatePathIndex(leftRelations, Orientation.Left, sidesAndCount, table);
-      this.updatePathIndex(rightRelations, Orientation.Right, sidesAndCount, table);
+      this.updatePathIndex(
+        leftRelations,
+        Orientation.Left,
+        sidesAndCount,
+        table
+      );
+      this.updatePathIndex(
+        rightRelations,
+        Orientation.Right,
+        sidesAndCount,
+        table
+      );
       this.updatePathIndex(topRelations, Orientation.Top, sidesAndCount, table);
-      this.updatePathIndex(bottomRelations, Orientation.Bottom, sidesAndCount, table);
+      this.updatePathIndex(
+        bottomRelations,
+        Orientation.Bottom,
+        sidesAndCount,
+        table
+      );
     });
 
     this.relationInfos.forEach((relation: Relation) => {
@@ -458,7 +509,8 @@ export default class Viewer {
           viewportY = constant.VIEWER_PAN_HEIGHT / 2 - height / 2;
         }
         break;
-      default: // centerByTables
+      default:
+        // centerByTables
         {
           if (this.tables.length === 0) {
             return this.setViewport(Viewport.center);
@@ -472,8 +524,10 @@ export default class Viewer {
             if (data.pos.x >= 0 && data.pos.y >= 0) {
               if (data.pos.x < minX) minX = data.pos.x;
               if (data.pos.y < minY) minY = data.pos.y;
-              if (data.pos.x + data.width > maxX) maxX = data.pos.x + data.width;
-              if (data.pos.y + data.height > maxY) maxY = data.pos.y + data.height;
+              if (data.pos.x + data.width > maxX)
+                maxX = data.pos.x + data.width;
+              if (data.pos.y + data.height > maxY)
+                maxY = data.pos.y + data.height;
             }
           });
           const centerX = (minX + maxX) / 2;
@@ -506,13 +560,14 @@ export default class Viewer {
   private setZoom(
     zoom: number,
     targetX = this.svgContainer.clientWidth / 2,
-    targetY = this.svgContainer.clientHeight / 2): void {
-
+    targetY = this.svgContainer.clientHeight / 2
+  ): void {
     let minZoomValue: number;
     if (this.svgContainer.offsetWidth > this.svgContainer.offsetHeight) {
       minZoomValue = this.svgContainer.clientWidth / constant.VIEWER_PAN_WIDTH;
     } else {
-      minZoomValue = this.svgContainer.clientHeight / constant.VIEWER_PAN_HEIGHT;
+      minZoomValue =
+        this.svgContainer.clientHeight / constant.VIEWER_PAN_HEIGHT;
     }
     if (minZoomValue > zoom) {
       zoom = minZoomValue;
@@ -526,8 +581,8 @@ export default class Viewer {
       if (targetX == null) targetX = this.svgContainer.clientWidth / 2;
       if (targetY == null) targetY = this.svgContainer.clientHeight / 2;
 
-      this.svgElem.style.height = constant.VIEWER_PAN_HEIGHT * zoom + 'px';
-      this.svgElem.style.width = constant.VIEWER_PAN_WIDTH * zoom + 'px';
+      this.svgElem.style.height = constant.VIEWER_PAN_HEIGHT * zoom + "px";
+      this.svgElem.style.width = constant.VIEWER_PAN_WIDTH * zoom + "px";
 
       const newWidth = this.svgContainer.clientWidth / zoom;
       const newHeight = this.svgContainer.clientHeight / zoom;
@@ -562,14 +617,17 @@ export default class Viewer {
   }
 
   private noneTableAndMinmapEvent(event: Event): boolean {
-    return !event.composedPath().some(item => {
+    return !event.composedPath().some((item) => {
       const htmlElement = item as HTMLElement;
-      return htmlElement.id === 'minimap-container' || htmlElement.classList?.contains('table');
+      return (
+        htmlElement.id === "minimap-container" ||
+        htmlElement.classList?.contains("table")
+      );
     });
   }
 
   private setUpEvents(): void {
-    window.addEventListener('resize', this.windowResizeEvent.bind(this));
+    window.addEventListener("resize", this.windowResizeEvent.bind(this));
 
     let prevMouseCordX: number;
     let prevMouseCordY: number;
@@ -577,8 +635,8 @@ export default class Viewer {
     const mouseMove = (event: MouseEvent): void => {
       event.preventDefault();
       if (this.noneTableAndMinmapEvent(event)) {
-        const deltaX = (event.clientX - prevMouseCordX);
-        const deltaY = (event.clientY - prevMouseCordY);
+        const deltaX = event.clientX - prevMouseCordX;
+        const deltaY = event.clientY - prevMouseCordY;
         prevMouseCordY = event.clientY;
         prevMouseCordX = event.clientX;
         const originalScrollLeft = this.svgContainer.scrollLeft;
@@ -595,32 +653,47 @@ export default class Viewer {
       }
     };
 
-    this.mainElem.addEventListener('touchmove', (event: Event) => {
+    this.mainElem.addEventListener("touchmove", (event: Event) => {
       // Don't move viewport when table is being moved
       if (!this.noneTableAndMinmapEvent(event)) event.preventDefault();
     });
 
-    this.container.addEventListener('mouseleave', () => {
-      this.svgElem.classList.remove('pan');
-      this.mainElem.removeEventListener('mousemove', mouseMove as CommonEventListener);
+    this.container.addEventListener("mouseleave", () => {
+      this.svgElem.classList.remove("pan");
+      this.mainElem.removeEventListener(
+        "mousemove",
+        mouseMove as CommonEventListener
+      );
     });
 
-    this.container.addEventListener('mousedown', (event: MouseEvent) => {
+    this.container.addEventListener("mousedown", (event: MouseEvent) => {
       if (event.button === 0 && this.noneTableAndMinmapEvent(event)) {
-        this.svgElem.classList.add('pan');
+        this.svgElem.classList.add("pan");
         prevMouseCordX = event.clientX;
         prevMouseCordY = event.clientY;
-        this.mainElem.addEventListener('mousemove', mouseMove as CommonEventListener);
+        this.mainElem.addEventListener(
+          "mousemove",
+          mouseMove as CommonEventListener
+        );
       }
     });
 
-    this.mainElem.addEventListener('mouseup', () => {
-      this.svgElem.classList.remove('pan');
-      this.mainElem.removeEventListener('mousemove', mouseMove as CommonEventListener);
+    this.mainElem.addEventListener("mouseup", () => {
+      this.svgElem.classList.remove("pan");
+      this.mainElem.removeEventListener(
+        "mousemove",
+        mouseMove as CommonEventListener
+      );
     });
 
-    this.container.addEventListener('mouseleave', this.minimap.onContainerMouseLeave!);
-    this.container.addEventListener('mouseup', this.minimap.onContainerMouseUp!);
+    this.container.addEventListener(
+      "mouseleave",
+      this.minimap.onContainerMouseLeave!
+    );
+    this.container.addEventListener(
+      "mouseup",
+      this.minimap.onContainerMouseUp!
+    );
 
     if (this.tables) {
       this.tables.forEach((table) => {
@@ -628,7 +701,7 @@ export default class Viewer {
       });
     }
 
-    this.svgContainer.addEventListener('scroll', () => {
+    this.svgContainer.addEventListener("scroll", () => {
       if (!this.disbleScrollEvent) {
         this.viewBoxVals.x = this.svgContainer.scrollLeft / this.zoom;
         this.viewBoxVals.y = this.svgContainer.scrollTop / this.zoom;
@@ -645,12 +718,16 @@ export default class Viewer {
       this.disbleScrollEvent = false;
     });
 
-    this.container.addEventListener('wheel', (event: MouseWheelEvent) => {
+    this.container.addEventListener("wheel", (event: MouseWheelEvent) => {
       if (event.ctrlKey) {
         const clientRect = this.svgContainer.getBoundingClientRect();
         const targetX = event.clientX - clientRect.left;
         const targetY = event.clientY - clientRect.top;
-        this.setZoom(this.zoom - event.deltaY * constant.SCROLL_TO_ZOOM_MULTIPLIER, targetX, targetY);
+        this.setZoom(
+          this.zoom - event.deltaY * constant.SCROLL_TO_ZOOM_MULTIPLIER,
+          targetX,
+          targetY
+        );
         event.preventDefault();
       }
     });
@@ -660,57 +737,77 @@ export default class Viewer {
         scale: number;
       }
 
-      this.container.addEventListener('gesturestart', ((event: GestureEvent) => {
+      this.container.addEventListener("gesturestart", ((
+        event: GestureEvent
+      ) => {
         this.gestureStart = true;
         if (event.scale != null) {
           this.safariScale = event.scale;
         }
         event.preventDefault();
       }) as CommonEventListener);
-      this.container.addEventListener('gesturechange', ((event: GestureEvent) => {
-        event.preventDefault();
-        const clientRect = this.svgContainer.getBoundingClientRect();
-        const targetX = event.clientX - clientRect.left;
-        const targetY = event.clientY - clientRect.top;
-        const scaleChange = event.scale - this.safariScale;
-        this.setZoom(this.zoom + scaleChange, targetX, targetY);
-        this.safariScale = event.scale;
-      }) as CommonEventListener, true);
+      this.container.addEventListener(
+        "gesturechange",
+        ((event: GestureEvent) => {
+          event.preventDefault();
+          const clientRect = this.svgContainer.getBoundingClientRect();
+          const targetX = event.clientX - clientRect.left;
+          const targetY = event.clientY - clientRect.top;
+          const scaleChange = event.scale - this.safariScale;
+          this.setZoom(this.zoom + scaleChange, targetX, targetY);
+          this.safariScale = event.scale;
+        }) as CommonEventListener,
+        true
+      );
 
-      this.container.addEventListener('gestureend', () => {
+      this.container.addEventListener("gestureend", () => {
         this.gestureStart = false;
       });
     } else {
       const evCache: PointerEvent[] = [];
       let prevDiff: number | null;
-      this.container.addEventListener('pointerdown', (event: PointerEvent): void => {
-        evCache.push(event);
-      });
-      this.container.addEventListener('pointermove', (event: PointerEvent): void => {
-        const index = evCache.findIndex(item => item.pointerId === event.pointerId);
-        if (index !== -1) {
-          evCache[index] = event;
+      this.container.addEventListener(
+        "pointerdown",
+        (event: PointerEvent): void => {
+          evCache.push(event);
         }
-        if (evCache.length == 2) {
-          this.gestureStart = true;
-          // Calculate the distance between the two pointers
-          const p1 = { x: evCache[0].clientX, y: evCache[0].clientY };
-          const p2 = { x: evCache[1].clientX, y: evCache[1].clientY };
-          const centerPoint = center(p1, p2);
-          const curDiff = distance(p1, p2);
-          if (prevDiff != null) {
-            const delta = curDiff - prevDiff;
-            event.preventDefault();
-            this.setZoom(this.zoom + delta * constant.PINCH_TO_ZOOM_MULTIPLIER, centerPoint.x, centerPoint.y);
+      );
+      this.container.addEventListener(
+        "pointermove",
+        (event: PointerEvent): void => {
+          const index = evCache.findIndex(
+            (item) => item.pointerId === event.pointerId
+          );
+          if (index !== -1) {
+            evCache[index] = event;
           }
-          prevDiff = curDiff;
+          if (evCache.length == 2) {
+            this.gestureStart = true;
+            // Calculate the distance between the two pointers
+            const p1 = { x: evCache[0].clientX, y: evCache[0].clientY };
+            const p2 = { x: evCache[1].clientX, y: evCache[1].clientY };
+            const centerPoint = center(p1, p2);
+            const curDiff = distance(p1, p2);
+            if (prevDiff != null) {
+              const delta = curDiff - prevDiff;
+              event.preventDefault();
+              this.setZoom(
+                this.zoom + delta * constant.PINCH_TO_ZOOM_MULTIPLIER,
+                centerPoint.x,
+                centerPoint.y
+              );
+            }
+            prevDiff = curDiff;
+          }
         }
-      });
+      );
 
       const pointerupHandler = (event: PointerEvent): void => {
         // Remove this pointer from the cache and reset the target's
         // background and border
-        const index = evCache.findIndex(item => item.pointerId === event.pointerId);
+        const index = evCache.findIndex(
+          (item) => item.pointerId === event.pointerId
+        );
         if (index !== -1) evCache.splice(index, 1);
 
         // If the number of pointers down is less than two then reset diff tracker
@@ -720,10 +817,10 @@ export default class Viewer {
         }
       };
 
-      this.container.addEventListener('pointerup', pointerupHandler, true);
-      this.container.addEventListener('pointercancel', pointerupHandler, true);
-      this.container.addEventListener('pointerout', pointerupHandler, true);
-      this.container.addEventListener('pointerleave', pointerupHandler, true);
+      this.container.addEventListener("pointerup", pointerupHandler, true);
+      this.container.addEventListener("pointercancel", pointerupHandler, true);
+      this.container.addEventListener("pointerout", pointerupHandler, true);
+      this.container.addEventListener("pointerleave", pointerupHandler, true);
     }
   }
 }

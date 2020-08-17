@@ -1,32 +1,45 @@
-export const isSafari =  /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+export const isSafari = /^((?!chrome|android).)*safari/i.test(
+  navigator.userAgent
+);
 
-export const isChrome = navigator.userAgent.includes('Chrome') && navigator.vendor.includes('Google Inc');
+export const isChrome =
+  navigator.userAgent.includes("Chrome") &&
+  navigator.vendor.includes("Google Inc");
 
 export function disableSelection(elem: Element): void {
-  elem.setAttribute('unselectable', 'on');
-  elem.classList.add('unselectable');
+  elem.setAttribute("unselectable", "on");
+  elem.classList.add("unselectable");
 }
 
 export function enableSelection(elem: Element): void {
-  elem.removeAttribute('unselectable');
-  elem.classList.remove('unselectable');
+  elem.removeAttribute("unselectable");
+  elem.classList.remove("unselectable");
 }
 
 export const isTouchEvent = (event: MouseEvent | TouchEvent): boolean => {
   const type = event.type;
-  return type === 'touchstart' ||
-      type === 'touchmove' ||
-      type === 'touchend' ||
-      type === 'touchcancel';
+  return (
+    type === "touchstart" ||
+    type === "touchmove" ||
+    type === "touchend" ||
+    type === "touchcancel"
+  );
 };
 
-export function normalizeEvent(event: MouseEvent | TouchEvent): {
+export function normalizeEvent(
+  event: MouseEvent | TouchEvent
+): {
   clientX: number;
   clientY: number;
   pageX: number;
   pageY: number;
 } {
-  let result: {clientX: number; clientY: number; pageX: number; pageY: number};
+  let result: {
+    clientX: number;
+    clientY: number;
+    pageX: number;
+    pageY: number;
+  };
   if (isTouchEvent(event)) {
     const touch = (event as TouchEvent).touches[0];
     result = {

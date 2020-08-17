@@ -1,5 +1,5 @@
-import TableData from './TableData';
-import { RelationData } from '../realtion/Relation';
+import TableData from "./TableData";
+import { RelationData } from "../realtion/Relation";
 
 export default interface Callbacks {
   tableDblClick: (tableData: TableData) => void;
@@ -13,5 +13,5 @@ export default interface Callbacks {
   relationClick: (relationData: RelationData) => void;
   relationDblClick: (relationData: RelationData) => void;
   relationContextMenu: (relationData: RelationData) => void;
-// eslint-disable-next-line semi
+  // eslint-disable-next-line semi
 }

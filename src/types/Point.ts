@@ -1,5 +1,5 @@
 export default interface Point {
   x: number;
   y: number;
-// eslint-disable-next-line semi 
+  // eslint-disable-next-line semi
 }

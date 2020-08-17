@@ -30,7 +30,7 @@
   border-style: solid;
   border-width: 1px;
   border-color: #666;
-  background-color: var(--viewer-background-color,  #e3ebed);
+  background-color: var(--viewer-background-color, #e3ebed);
   margin-bottom: 5px;
   display: block;
 }
@@ -82,7 +82,7 @@
   user-select: none;
   cursor: default;
   display: block;
-  background-color: var(--viewer-background-color,  #e3ebed);
+  background-color: var(--viewer-background-color, #e3ebed);
 }
 
 #veiwer.pan {

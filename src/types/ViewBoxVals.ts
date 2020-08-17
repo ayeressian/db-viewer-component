@@ -3,5 +3,5 @@ export default interface ViewBoxVals {
   y: number;
   height: number;
   width: number;
-// eslint-disable-next-line semi
+  // eslint-disable-next-line semi
 }

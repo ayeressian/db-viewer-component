@@ -4,7 +4,12 @@ import Orientation from "../types/Orientation";
 import { PATH_START } from "./relationConfig";
 import circlePath from "./circlePath";
 
-export default (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): string => {
+export default (
+  start: Point,
+  end: Point,
+  oneTo?: boolean,
+  toMany?: boolean
+): string => {
   let dStartLine: string;
   let dPath: string;
   const p2X = start.x + (end.x - start.x) / 2;
@@ -13,9 +18,12 @@ export default (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): st
     dArrow = arrow(end, toMany, Orientation.Left);
     dPath = `M ${start.x} ${start.y}`;
     if (oneTo) {
-      dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START} v ${2 * PATH_START}`;
+      dStartLine = `M ${start.x - PATH_START} ${start.y - PATH_START} v ${
+        2 * PATH_START
+      }`;
       dPath += `H ${p2X}`;
-    } else { // zero to
+    } else {
+      // zero to
       dStartLine = circlePath(start.x - PATH_START, start.y);
       dPath += `m ${-PATH_START * 2} 0 H ${p2X}`;
     }
@@ -23,9 +31,12 @@ export default (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): st
     dArrow = arrow(end, toMany, Orientation.Right);
     dPath = `M ${start.x} ${start.y} `;
     if (oneTo) {
-      dStartLine = `M ${start.x + PATH_START} ${start.y - PATH_START} v ${2 * PATH_START}`;
+      dStartLine = `M ${start.x + PATH_START} ${start.y - PATH_START} v ${
+        2 * PATH_START
+      }`;
       dPath += `H ${p2X}`;
-    } else { // zero to
+    } else {
+      // zero to
       dStartLine = circlePath(start.x + PATH_START, start.y);
       dPath += `m ${PATH_START * 2} 0 H ${p2X}`;
     }

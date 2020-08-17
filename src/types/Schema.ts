@@ -1,4 +1,4 @@
-import Point from './Point';
+import Point from "./Point";
 
 export interface FkSchema {
   table: string;
@@ -13,7 +13,8 @@ export interface ColumnNoneFkSchema {
   nn?: boolean;
 }
 
-export declare interface ColumnFkSchema extends Omit<ColumnNoneFkSchema, 'type'> {
+export declare interface ColumnFkSchema
+  extends Omit<ColumnNoneFkSchema, "type"> {
   fk?: FkSchema;
 }
 
@@ -21,7 +22,7 @@ export type ColumnSchema = ColumnFkSchema | ColumnNoneFkSchema;
 
 export interface TableSchema {
   name: string;
-  pos?: Point| string;
+  pos?: Point | string;
   columns: ColumnSchema[];
 }
 
@@ -32,13 +33,13 @@ export interface Schema {
 }
 
 export const enum Viewport {
-  noChange = 'noChange',
-  centerByTablesWeight = 'centerByTablesWeight',
-  center = 'center',
-  centerByTables = 'centerByTables',
+  noChange = "noChange",
+  centerByTablesWeight = "centerByTablesWeight",
+  center = "center",
+  centerByTables = "centerByTables",
 }
 
 export const enum TableArrang {
-  spiral = 'spiral',
-  default = 'default',
+  spiral = "spiral",
+  default = "default",
 }

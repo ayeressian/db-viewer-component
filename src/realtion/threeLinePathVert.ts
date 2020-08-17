@@ -4,7 +4,12 @@ import arrow from "./arrow";
 import Orientation from "../types/Orientation";
 import circlePath from "./circlePath";
 
-export default (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): string => {
+export default (
+  start: Point,
+  end: Point,
+  oneTo?: boolean,
+  toMany?: boolean
+): string => {
   let dStartLine = `M ${start.x - PATH_START} `;
 
   let dPath: string;
@@ -15,18 +20,24 @@ export default (start: Point, end: Point, oneTo?: boolean, toMany?: boolean): st
     if (oneTo) {
       dStartLine += `${start.y - PATH_START} h ${2 * PATH_START}`;
       dPath = `M ${start.x} ${start.y} V ${p2Y} H ${end.x} V ${end.y}`;
-    } else { // zero to
+    } else {
+      // zero to
       dStartLine = circlePath(start.x, start.y - PATH_START);
-      dPath = `M ${start.x} ${start.y - PATH_START * 2} V ${p2Y} H ${end.x} V ${end.y}`;
+      dPath = `M ${start.x} ${start.y - PATH_START * 2} V ${p2Y} H ${end.x} V ${
+        end.y
+      }`;
     }
   } else {
     dArrow = arrow(end, toMany, Orientation.Bottom);
     dStartLine += `${start.y + PATH_START} h ${2 * PATH_START}`;
     if (oneTo) {
       dPath = `M ${start.x} ${start.y} V ${p2Y} H ${end.x} V ${end.y}`;
-    } else { // zero to
+    } else {
+      // zero to
       dStartLine = circlePath(start.x, start.y + PATH_START);
-      dPath = `M ${start.x} ${start.y + PATH_START * 2} V ${p2Y} H ${end.x} V ${end.y}`;
+      dPath = `M ${start.x} ${start.y + PATH_START * 2} V ${p2Y} H ${end.x} V ${
+        end.y
+      }`;
     }
   }
 

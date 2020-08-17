@@ -1,11 +1,11 @@
-import schemaParser from './schemaParser';
-import Table from './Table';
-import template from './template';
-import { Schema, TableArrang, Viewport } from './types/Schema';
-import TableData from './types/TableData';
-import validateJson from './validate-schema';
-import Viewer from './Viewer';
-import { cloneDeep } from 'lodash';
+import schemaParser from "./schemaParser";
+import Table from "./Table";
+import template from "./template";
+import { Schema, TableArrang, Viewport } from "./types/Schema";
+import TableData from "./types/TableData";
+import validateJson from "./validate-schema";
+import Viewer from "./Viewer";
+import { cloneDeep } from "lodash";
 
 import {
   LoadEvent,
@@ -21,13 +21,13 @@ import {
   DbViewerEventMap,
   RelationClickEvent,
   RelationDblClickEvent,
-} from './events';
-import Point from './types/Point';
-import { RelationData } from './realtion/Relation';
-import { RelationContextMenuEvent } from './events';
+} from "./events";
+import Point from "./types/Point";
+import { RelationData } from "./realtion/Relation";
+import { RelationContextMenuEvent } from "./events";
 
-const NO_TABLE = new Error('No table exist with the given name.');
-const INVALID_SCHEMA = new Error('Invalid schema.');
+const NO_TABLE = new Error("No table exist with the given name.");
+const INVALID_SCHEMA = new Error("Invalid schema.");
 
 class DbViewer extends HTMLElement {
   get scrollLeft(): number {
@@ -47,11 +47,11 @@ class DbViewer extends HTMLElement {
   }
 
   set src(src: string) {
-    this.setAttribute('src', src);
+    this.setAttribute("src", src);
   }
 
   static get observedAttributes(): string[] {
-    return ['src', 'disable-table-movement', 'viewport'];
+    return ["src", "disable-table-movement", "viewport"];
   }
 
   set schema(schema: Schema | undefined) {
@@ -62,15 +62,21 @@ class DbViewer extends HTMLElement {
       this.notParsedSchema = cloneDeep(schema);
       const schemaObj = cloneDeep(schema);
       this.tables = schemaParser(schemaObj);
-      this.viewer.load(this.tables, this.viewport ?? schemaObj.viewport, schemaObj.arrangement);
+      this.viewer.load(
+        this.tables,
+        this.viewport ?? schemaObj.viewport,
+        schemaObj.arrangement
+      );
     });
   }
 
   get schema(): Schema | undefined {
     if (this.notParsedSchema != null) {
       this.notParsedSchema.tables.forEach((notParsedTable) => {
-        const tablePos = this.tables.find((table) => table.name === notParsedTable.name)!.pos;
-        notParsedTable.pos = {...(tablePos as Point)};
+        const tablePos = this.tables.find(
+          (table) => table.name === notParsedTable.name
+        )!.pos;
+        notParsedTable.pos = { ...(tablePos as Point) };
       });
     }
     return cloneDeep(this.notParsedSchema);
@@ -78,9 +84,9 @@ class DbViewer extends HTMLElement {
 
   set disableTableMovement(value: boolean) {
     if (value) {
-      this.setAttribute('disable-table-movement', '');
+      this.setAttribute("disable-table-movement", "");
     } else {
-      this.removeAttribute('disable-table-movement');
+      this.removeAttribute("disable-table-movement");
     }
   }
 
@@ -90,16 +96,15 @@ class DbViewer extends HTMLElement {
 
   set viewport(value: Viewport | undefined) {
     if (value) {
-      this.setAttribute('viewport', value);
+      this.setAttribute("viewport", value);
     } else {
-      this.removeAttribute('viewport');
+      this.removeAttribute("viewport");
     }
   }
 
   get viewport(): Viewport | undefined {
     return this.viewportVal;
   }
-
 
   private readyPromise: Promise<null>;
   private readyPromiseResolve!: () => void;
@@ -117,7 +122,7 @@ class DbViewer extends HTMLElement {
     if (this.checkWindowLoaded()) {
       this.whenWindowLoaded();
     } else {
-      window.addEventListener('load', this.whenWindowLoaded.bind(this));
+      window.addEventListener("load", this.whenWindowLoaded.bind(this));
     }
   }
 
@@ -149,36 +154,46 @@ class DbViewer extends HTMLElement {
     table.setTablePos(xCord, yCord);
   }
 
-  attributeChangedCallback(name: string, _oldValue: string, newValue: string): void {
+  attributeChangedCallback(
+    name: string,
+    _oldValue: string,
+    newValue: string
+  ): void {
     switch (name) {
-      case 'src':
+      case "src":
         this.srcVal = newValue;
         this.readyPromise.then(() => {
-          fetch(this.srcVal).then((response) => response.json()).
-          then((response) => {
-            if (!validateJson(response)) {
-              throw INVALID_SCHEMA;
-            }
-            this.notParsedSchema = cloneDeep(response);
-            this.tables = schemaParser(response);
+          fetch(this.srcVal)
+            .then((response) => response.json())
+            .then((response) => {
+              if (!validateJson(response)) {
+                throw INVALID_SCHEMA;
+              }
+              this.notParsedSchema = cloneDeep(response);
+              this.tables = schemaParser(response);
 
-            let arrangement: TableArrang;
-            if (!this.notParsedSchema.arrangement) arrangement = TableArrang.default;
-            else arrangement = this.notParsedSchema.arrangement;
+              let arrangement: TableArrang;
+              if (!this.notParsedSchema.arrangement)
+                arrangement = TableArrang.default;
+              else arrangement = this.notParsedSchema.arrangement;
 
-            this.viewer.load(this.tables, this.viewport ?? response.viewport, arrangement);
-            this.dispatchEvent(new LoadEvent());
-          });
+              this.viewer.load(
+                this.tables,
+                this.viewport ?? response.viewport,
+                arrangement
+              );
+              this.dispatchEvent(new LoadEvent());
+            });
         });
         break;
-      case 'disable-table-movement':
-        if (this.hasAttribute('disable-table-movement')) {
+      case "disable-table-movement":
+        if (this.hasAttribute("disable-table-movement")) {
           this.readyPromise.then(() => this.viewer.disableTableMovement(true));
         } else {
           this.readyPromise.then(() => this.viewer.disableTableMovement(false));
         }
         break;
-      case 'viewport':
+      case "viewport":
         this.viewportVal = newValue as Viewport;
         if (this.viewer) this.viewer.setViewport(this.viewportVal);
         break;
@@ -199,7 +214,7 @@ class DbViewer extends HTMLElement {
 
   private whenWindowLoaded(): void {
     const shadowDom = this.attachShadow({
-      mode: 'open',
+      mode: "open",
     });
     this.shadowDomLoaded(shadowDom).then(() => {
       this.viewer = new Viewer(shadowDom);
@@ -223,64 +238,72 @@ class DbViewer extends HTMLElement {
   }
 
   private checkWindowLoaded(): boolean {
-    return document.readyState === 'complete';
+    return document.readyState === "complete";
   }
 
   private onViewportClick = (x: number, y: number): void => {
-    this.dispatchEvent(new ViewportClickEvent({x, y}));
-  }
+    this.dispatchEvent(new ViewportClickEvent({ x, y }));
+  };
 
   private onTableClick = (tableData: TableData): void => {
     this.dispatchEvent(new TableClickEvent(tableData));
-  }
+  };
 
   private onTableDblClick = (tableData: TableData): void => {
     this.dispatchEvent(new TableDblClickEvent(tableData));
-  }
+  };
 
   private onTableContextMenu = (tableData: TableData): void => {
     this.dispatchEvent(new TableContextMenuEvent(tableData));
-  }
+  };
 
   private onTableMove = (tableData: TableData): void => {
     this.dispatchEvent(new TableMoveEvent(tableData));
-  }
+  };
 
   private onTableMoveEnd = (tableData: TableData): void => {
     this.dispatchEvent(new TableMoveEndEvent(tableData));
-  }
+  };
 
   private onRelationClick = (relationData: RelationData): void => {
     this.dispatchEvent(new RelationClickEvent(relationData));
-  }
+  };
 
   private onRelationDblClick = (relationData: RelationData): void => {
     this.dispatchEvent(new RelationDblClickEvent(relationData));
-  }
+  };
 
   private onRelationContextMenu = (relationData: RelationData): void => {
     this.dispatchEvent(new RelationContextMenuEvent(relationData));
-  }
+  };
 
   private onZoomIn = (zoom: number): void => {
     this.dispatchEvent(new ZoomInEvent(zoom));
-  }
+  };
 
   private onZoomOut = (zoom: number): void => {
     this.dispatchEvent(new ZoomOutEvent(zoom));
-  }
+  };
 
-  addEventListener<K extends keyof DbViewerEventMap>(type: K, listener: (this: DbViewer, ev: DbViewerEventMap[K]) => unknown, options?: boolean | AddEventListenerOptions): void {
+  addEventListener<K extends keyof DbViewerEventMap>(
+    type: K,
+    listener: (this: DbViewer, ev: DbViewerEventMap[K]) => unknown,
+    options?: boolean | AddEventListenerOptions
+  ): void {
     super.addEventListener(type, listener as EventListener, options);
   }
-  removeEventListener<K extends keyof DbViewerEventMap>(type: K, listener: (this: HTMLFormElement, ev: DbViewerEventMap[K]) => unknown, options?: boolean | EventListenerOptions): void {
+  removeEventListener<K extends keyof DbViewerEventMap>(
+    type: K,
+    listener: (this: HTMLFormElement, ev: DbViewerEventMap[K]) => unknown,
+    options?: boolean | EventListenerOptions
+  ): void {
     super.removeEventListener(type, listener as EventListener, options);
   }
 }
 
-customElements.define('db-viewer', DbViewer);
+customElements.define("db-viewer", DbViewer);
 
-export * from './types/Schema';
-export {default as Point} from './types/Point';
-export * from './events';
+export * from "./types/Schema";
+export { default as Point } from "./types/Point";
+export * from "./events";
 export default DbViewer;

@@ -7,8 +7,8 @@ const constant = {
   VIEWER_PAN_HEIGHT: 5000,
   VIEWER_PAN_WIDTH: 5000,
   ZOOM: 1.2,
-  nsHtml: 'http://www.w3.org/1999/xhtml',
-  nsSvg: 'http://www.w3.org/2000/svg',
+  nsHtml: "http://www.w3.org/1999/xhtml",
+  nsSvg: "http://www.w3.org/2000/svg",
 };
 
 export default constant;

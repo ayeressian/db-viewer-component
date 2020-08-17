@@ -8,12 +8,19 @@
   "properties": {
     "arrangement": {
       "type": "string",
-      "enum": ["spiral"],
+      "enum": [
+        "spiral"
+      ],
       "description": "Arrangement of the tables. Note if this value is set the \"table.pos\" values will be ignored."
     },
     "viewport": {
       "type": "string",
-      "enum": ["noChange", "centerByTablesWeight", "center", "centerByTables"],
+      "enum": [
+        "noChange",
+        "centerByTablesWeight",
+        "center",
+        "centerByTables"
+      ],
       "description": "Viewport positioning strategy on initial load.",
       "default": "centerByTables"
     },
@@ -40,9 +47,11 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": ["center-viewport"],
+                "enum": [
+                  "center-viewport"
+                ],
                 "description": "If it's set to viewport-center it will be centered on viewport."
-              }, 
+              },
               {
                 "type": "object",
                 "required": [
