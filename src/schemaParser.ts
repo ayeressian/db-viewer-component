@@ -1,9 +1,14 @@
 import Table from "./Table";
 import { ColumnFk } from "./types/Column";
-import { ColumnFkSchema, TableSchema, Schema } from "./types/Schema";
+import {
+  ColumnFkSchema,
+  TableSchema,
+  Schema,
+  ColumnSchema,
+} from "./types/Schema";
 
 export default function schemaParser(schema: Schema): Table[] {
-  const tablesFk = new Map();
+  const tablesFk = new Map<TableSchema, ColumnSchema[]>();
   const tables: Table[] = [];
   schema.tables.forEach((table: TableSchema) => {
     const fks = table.columns.filter((column) => (column as ColumnFkSchema).fk);
@@ -19,7 +24,7 @@ export default function schemaParser(schema: Schema): Table[] {
   });
 
   schema.tables.forEach((sTable) => {
-    const fks = tablesFk.get(sTable);
+    const fks = tablesFk.get(sTable)!;
     fks.forEach((sFkColumn: ColumnFkSchema) => {
       const fkTable = tables.find(
         (table) => table.getName() === sFkColumn.fk!.table

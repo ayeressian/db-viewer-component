@@ -1,6 +1,6 @@
 import "./mathUtil.test";
 import "./Relation.test";
-import "./SpiralArrange.test";
+import "./spiralArrange.test";
 import "./relation/selfRelationBottom.test";
 import "./relation/selfRelationLeft.test";
 import "./relation/selfRelationRight.test";

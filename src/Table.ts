@@ -132,7 +132,7 @@ export default class Table {
     const thead = document.createElementNS(constant.nsHtml, "thead");
     const headingTr = document.createElementNS(constant.nsHtml, "tr");
     const headingTh = document.createElementNS(constant.nsHtml, "th");
-    headingTh.setAttributeNS(null, "colspan", 3 + "");
+    headingTh.setAttributeNS(null, "colspan", `${3}`);
     headingTh.innerHTML = this.nameValue;
     headingTr.appendChild(headingTh);
     thead.appendChild(headingTr);

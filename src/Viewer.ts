@@ -1,7 +1,7 @@
 import constant from "./const";
 import Minimap from "./Minimap";
 import Relation, { RelationData } from "./realtion/Relation";
-import SpiralArrange from "./SpiralArrange";
+import spiralArrange from "./spiralArrange";
 import Table from "./Table";
 import { isColumnFk } from "./types/Column";
 import CommonEventListener from "./types/CommonEventListener";
@@ -72,7 +72,7 @@ export default class Viewer {
     this.reset();
 
     this.isTableMovementDisabled = false;
-    this.setViewport(Viewport.center);
+    void this.setViewport(Viewport.center);
   }
 
   load(
@@ -119,7 +119,7 @@ export default class Viewer {
       this.minimap.createTable(table);
 
       const tableElm = table.render();
-      tableElm.setAttribute("id", i + "table");
+      tableElm.setAttribute("id", `${i}table`);
       this.svgElem.appendChild(tableElm);
       table.addedToView();
 
@@ -167,11 +167,11 @@ export default class Viewer {
     }
 
     if (this.tableArrang === TableArrang.spiral) {
-      SpiralArrange.call(this.tables);
+      spiralArrange(this.tables);
     }
 
     this.drawRelations();
-    this.setViewport(viewport).then(() =>
+    void this.setViewport(viewport).then(() =>
       this.tables.forEach((table) => table.postDraw())
     );
     this.tablesLoaded = true;
@@ -308,8 +308,8 @@ export default class Viewer {
   private reset(): void {
     this.zoom = 1;
 
-    this.svgElem.style.height = constant.VIEWER_PAN_HEIGHT + "px";
-    this.svgElem.style.width = constant.VIEWER_PAN_WIDTH + "px";
+    this.svgElem.style.height = `${constant.VIEWER_PAN_HEIGHT}px`;
+    this.svgElem.style.width = `${constant.VIEWER_PAN_WIDTH}px`;
     this.svgElem.setAttribute(
       "viewBox",
       `0 0 ${constant.VIEWER_PAN_WIDTH} ${constant.VIEWER_PAN_HEIGHT}`
@@ -581,8 +581,8 @@ export default class Viewer {
       if (targetX == null) targetX = this.svgContainer.clientWidth / 2;
       if (targetY == null) targetY = this.svgContainer.clientHeight / 2;
 
-      this.svgElem.style.height = constant.VIEWER_PAN_HEIGHT * zoom + "px";
-      this.svgElem.style.width = constant.VIEWER_PAN_WIDTH * zoom + "px";
+      this.svgElem.style.height = `${constant.VIEWER_PAN_HEIGHT * zoom}px`;
+      this.svgElem.style.width = `${constant.VIEWER_PAN_WIDTH * zoom}px`;
 
       const newWidth = this.svgContainer.clientWidth / zoom;
       const newHeight = this.svgContainer.clientHeight / zoom;

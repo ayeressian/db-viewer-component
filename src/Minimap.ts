@@ -40,12 +40,12 @@ export default class Minimap {
     const xCord = (x - viewpointBoundingClientRect.width / 2) * ratioX;
     const yCord = (y - viewpointBoundingClientRect.height / 2) * ratioY;
 
-    this.viewer.setPanX(xCord);
-    this.viewer.setPanY(yCord);
+    void this.viewer.setPanX(xCord);
+    void this.viewer.setPanY(yCord);
   }
 
   removeTables(): void {
-    this.tableMinimap = new Map();
+    this.tableMinimap = new Map<Table, SVGGraphicsElement>();
     this.minimap
       .querySelectorAll(".mini_table")
       .forEach((miniTable) => miniTable.remove());

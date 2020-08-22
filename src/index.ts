@@ -35,7 +35,7 @@ class DbViewer extends HTMLElement {
   }
 
   set scrollLeft(value: number) {
-    this.viewer.setPanX(value);
+    void this.viewer.setPanX(value);
   }
 
   get scrollTop(): number {
@@ -43,7 +43,7 @@ class DbViewer extends HTMLElement {
   }
 
   set scrollTop(value: number) {
-    this.viewer.setPanY(value);
+    void this.viewer.setPanY(value);
   }
 
   set src(src: string) {
@@ -55,7 +55,7 @@ class DbViewer extends HTMLElement {
   }
 
   set schema(schema: Schema | undefined) {
-    this.readyPromise.then(() => {
+    void this.readyPromise.then(() => {
       if (schema == null || !validateJson(schema)) {
         throw INVALID_SCHEMA;
       }
@@ -162,14 +162,14 @@ class DbViewer extends HTMLElement {
     switch (name) {
       case "src":
         this.srcVal = newValue;
-        this.readyPromise.then(() => {
-          fetch(this.srcVal)
+        void this.readyPromise.then(() => {
+          void fetch(this.srcVal)
             .then((response) => response.json())
             .then((response) => {
               if (!validateJson(response)) {
                 throw INVALID_SCHEMA;
               }
-              this.notParsedSchema = cloneDeep(response);
+              this.notParsedSchema = cloneDeep<Schema>(response);
               this.tables = schemaParser(response);
 
               let arrangement: TableArrang;
@@ -179,7 +179,7 @@ class DbViewer extends HTMLElement {
 
               this.viewer.load(
                 this.tables,
-                this.viewport ?? response.viewport,
+                this.viewport ?? (response as Schema).viewport,
                 arrangement
               );
               this.dispatchEvent(new LoadEvent());
@@ -188,14 +188,18 @@ class DbViewer extends HTMLElement {
         break;
       case "disable-table-movement":
         if (this.hasAttribute("disable-table-movement")) {
-          this.readyPromise.then(() => this.viewer.disableTableMovement(true));
+          void this.readyPromise.then(() =>
+            this.viewer.disableTableMovement(true)
+          );
         } else {
-          this.readyPromise.then(() => this.viewer.disableTableMovement(false));
+          void this.readyPromise.then(() =>
+            this.viewer.disableTableMovement(false)
+          );
         }
         break;
       case "viewport":
         this.viewportVal = newValue as Viewport;
-        if (this.viewer) this.viewer.setViewport(this.viewportVal);
+        if (this.viewer) void this.viewer.setViewport(this.viewportVal);
         break;
     }
   }
@@ -216,7 +220,7 @@ class DbViewer extends HTMLElement {
     const shadowDom = this.attachShadow({
       mode: "open",
     });
-    this.shadowDomLoaded(shadowDom).then(() => {
+    void this.shadowDomLoaded(shadowDom).then(() => {
       this.viewer = new Viewer(shadowDom);
       this.viewer.setCallbacks({
         tableClick: this.onTableClick,
