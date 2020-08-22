@@ -71,7 +71,7 @@
     "start-server-and-test": "^1.11.3",
     "ts-loader": "^6.2.2",
     "ts-node": "^8.10.2",
-    "typescript": "^3.9.7",
+    "typescript": "^3.9.2",
     "url-loader": "^1.1.1",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",
