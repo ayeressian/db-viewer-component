@@ -32,8 +32,8 @@ export default class Viewer {
   private zoom!: number;
   private callbacks!: Callbacks;
   private relationInfos!: Relation[];
-  private panXResolver!: () => void;
-  private panYResolver!: () => void;
+  private panXResolver?: () => void;
+  private panYResolver?: () => void;
   private safariScale!: number;
   private tablesLoaded = false;
   private gestureStart = false;
