@@ -1,4 +1,4 @@
-import Table from "./Table";
+import Table from "./table";
 import { ColumnFk } from "./types/column";
 import {
   ColumnFkSchema,

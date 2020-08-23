@@ -1,5 +1,5 @@
 import constant from "./const";
-import Table from "./Table";
+import Table from "./table";
 
 export default function spiralArrange(tables: Table[]): Table[] {
   let currentX = constant.VIEWER_PAN_WIDTH / 2;

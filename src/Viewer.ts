@@ -2,7 +2,7 @@ import constant from "./const";
 import Minimap from "./minimap";
 import Relation, { RelationData } from "./realtion/relation";
 import spiralArrange from "./spiral-arrange";
-import Table from "./Table";
+import Table from "./table";
 import { isColumnFk } from "./types/column";
 import CommonEventListener from "./types/common-event-listener";
 import Callbacks from "./types/callbacks";

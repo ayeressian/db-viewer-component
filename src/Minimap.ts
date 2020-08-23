@@ -1,5 +1,5 @@
 import constant from "./const";
-import Table from "./Table";
+import Table from "./table";
 import CommonEventListener from "./types/common-event-listener";
 import ViewBoxVals from "./types/view-box-vals";
 import Viewer from "./viewer";

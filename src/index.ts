@@ -1,5 +1,5 @@
 import schemaParser from "./schema-parser";
-import Table from "./Table";
+import Table from "./table";
 import template from "./template";
 import { Schema, TableArrang, Viewport } from "./types/schema";
 import TableData from "./types/table-data";
