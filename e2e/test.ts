@@ -25,7 +25,6 @@ describe("New file", () => {
     browser = await getBrowser();
 
     page = await browser.newPage();
-    await page.waitForTimeout(2000);
     await page.goto("http://localhost:9998/");
     await page.waitForLoadState("domcontentloaded");
   });
