@@ -1,6 +1,6 @@
-import selfRelationTop from "../../src/realtion/selfRelationTop";
+import selfRelationTop from "../../src/realtion/self-relation-top";
 import { expect } from "chai";
-import { start } from "./commonTestData";
+import { start } from "./common-test-data";
 
 describe("selfRelationTop", () => {
   it("returns correct data", () => {

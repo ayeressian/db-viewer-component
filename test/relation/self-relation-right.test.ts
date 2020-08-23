@@ -1,6 +1,6 @@
-import selfRelationRight from "../../src/realtion/selfRelationRight";
+import selfRelationRight from "../../src/realtion/self-relation-right";
 import { expect } from "chai";
-import { start } from "./commonTestData";
+import { start } from "./common-test-data";
 
 describe("selfRelationRight", () => {
   it("returns correct data", () => {

@@ -3,7 +3,7 @@ import {
   lineIntersection,
   segmentIntersection,
   to3FixedNumber,
-} from "../src/mathUtil";
+} from "../src/math-util";
 
 const expect = chai.expect;
 describe("mathUtil", () => {

@@ -1,8 +1,8 @@
 import constant from "./const";
 import Table from "./Table";
-import CommonEventListener from "./types/CommonEventListener";
-import ViewBoxVals from "./types/ViewBoxVals";
-import Viewer from "./Viewer";
+import CommonEventListener from "./types/common-event-listener";
+import ViewBoxVals from "./types/view-box-vals";
+import Viewer from "./viewer";
 
 export default class Minimap {
   onContainerMouseLeave?: () => void;

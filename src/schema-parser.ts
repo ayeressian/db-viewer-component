@@ -1,11 +1,11 @@
 import Table from "./Table";
-import { ColumnFk } from "./types/Column";
+import { ColumnFk } from "./types/column";
 import {
   ColumnFkSchema,
   TableSchema,
   Schema,
   ColumnSchema,
-} from "./types/Schema";
+} from "./types/schema";
 
 export default function schemaParser(schema: Schema): Table[] {
   const tablesFk = new Map<TableSchema, ColumnSchema[]>();

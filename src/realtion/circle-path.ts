@@ -1,4 +1,4 @@
-import { PATH_START } from "./relationConfig";
+import { PATH_START } from "./relation-config";
 
 export default (x: number, y: number): string => {
   return (

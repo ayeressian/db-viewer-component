@@ -1,6 +1,6 @@
-import twoLinePathFlatBottom from "../../src/realtion/twoLinePathFlatBottom";
+import twoLinePathFlatBottom from "../../src/realtion/two-line-path-flat-bottom";
 import { expect } from "chai";
-import { start, end } from "./commonTestData";
+import { start, end } from "./common-test-data";
 
 describe("twoLinePathFlatBottom", () => {
   it("returns correct data", () => {

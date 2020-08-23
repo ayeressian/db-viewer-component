@@ -1,19 +1,19 @@
 import constant from "../const";
-import { segmentIntersection } from "../mathUtil";
+import { segmentIntersection } from "../math-util";
 import Table from "../Table";
-import { Column } from "../types/Column";
-import Orientation from "../types/Orientation";
-import Vertices from "../types/Vertices";
-import Point from "../types/Point";
-import selfRelationLeft from "./selfRelationLeft";
-import threeLinePathHoriz from "./threeLinePathHoriz";
-import twoLinePathFlatTop from "./twoLinePathFlatTop";
-import twoLinePathFlatBottom from "./twoLinePathFlatBottom";
-import selfRelationRight from "./selfRelationRight";
-import selfRelationTop from "./selfRelationTop";
-import threeLinePathVert from "./threeLinePathVert";
-import selfRelationBottom from "./selfRelationBottom";
-import Viewer from "../Viewer";
+import { Column } from "../types/column";
+import Orientation from "../types/orientation";
+import Vertices from "../types/vertices";
+import Point from "../types/point";
+import selfRelationLeft from "./self-relation-left";
+import threeLinePathHoriz from "./three-line-path-horiz";
+import twoLinePathFlatTop from "./two-line-path-flat-top";
+import twoLinePathFlatBottom from "./two-line-path-flat-bottom";
+import selfRelationRight from "./self-relation-right";
+import selfRelationTop from "./self-relation-top";
+import threeLinePathVert from "./three-line-path-vert";
+import selfRelationBottom from "./self-relation-bottom";
+import Viewer from "../viewer";
 
 enum Axis {
   x = "x",

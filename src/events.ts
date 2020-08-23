@@ -1,6 +1,6 @@
-import Point from "./types/Point";
-import TableData from "./types/TableData";
-import { RelationData } from "./realtion/Relation";
+import Point from "./types/point";
+import TableData from "./types/table-data";
+import { RelationData } from "./realtion/relation";
 
 export class ViewportClickEvent extends CustomEvent<Point> {
   constructor(point: Point) {

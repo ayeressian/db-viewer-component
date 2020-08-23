@@ -1,9 +1,9 @@
 import chai from "chai";
 import sinon from "sinon";
 import sinonChai from "sinon-chai";
-import Orientation from "../src/types/Orientation";
-import Vertices from "../src/types/Vertices";
-import Relation from "../src/realtion/Relation";
+import Orientation from "../src/types/orientation";
+import Vertices from "../src/types/vertices";
+import Relation from "../src/realtion/relation";
 
 const expect = chai.expect;
 

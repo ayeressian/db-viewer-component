@@ -3,8 +3,8 @@ import sinon from "sinon";
 import sinonChai from "sinon-chai";
 
 import constant from "../src/const";
-import schemaParser from "../src/schemaParser";
-import spiralArrange from "../src/spiralArrange";
+import schemaParser from "../src/schema-parser";
+import spiralArrange from "../src/spiral-arrange";
 
 const expect = chai.expect;
 

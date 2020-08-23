@@ -1,6 +1,6 @@
-import threeLinePathHoriz from "../../src/realtion/threeLinePathHoriz";
+import threeLinePathHoriz from "../../src/realtion/three-line-path-horiz";
 import { expect } from "chai";
-import { start, end } from "./commonTestData";
+import { start, end } from "./common-test-data";
 
 describe("threeLinePathHoriz", () => {
   it("returns correct data", () => {

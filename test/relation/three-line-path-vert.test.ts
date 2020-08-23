@@ -1,6 +1,6 @@
-import threeLinePathVert from "../../src/realtion/threeLinePathVert";
+import threeLinePathVert from "../../src/realtion/three-line-path-vert";
 import { expect } from "chai";
-import { start, end } from "./commonTestData";
+import { start, end } from "./common-test-data";
 
 describe("threeLinePathVert", () => {
   it("returns correct data", () => {

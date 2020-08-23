@@ -1,5 +1,5 @@
-import TableData from "./types/TableData";
-import Point from "./types/Point";
+import TableData from "./types/table-data";
+import Point from "./types/point";
 
 export class ViewportClickEvent extends CustomEvent<Point> {
   constructor(point: Point) {

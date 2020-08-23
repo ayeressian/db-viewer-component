@@ -1,6 +1,6 @@
-import Point from "../types/Point";
-import Orientation from "../types/Orientation";
-import { PATH_ARROW_LENGTH, PATH_ARROW_HEIGHT } from "./relationConfig";
+import Point from "../types/point";
+import Orientation from "../types/orientation";
+import { PATH_ARROW_LENGTH, PATH_ARROW_HEIGHT } from "./relation-config";
 
 export default (
   { x, y }: Point,

@@ -1,6 +1,6 @@
-import twoLinePathFlatTop from "../../src/realtion/twoLinePathFlatTop";
+import twoLinePathFlatTop from "../../src/realtion/two-line-path-flat-top";
 import { expect } from "chai";
-import { start, end } from "./commonTestData";
+import { start, end } from "./common-test-data";
 
 describe("twoLinePathFlatTop", () => {
   it("returns correct data", () => {

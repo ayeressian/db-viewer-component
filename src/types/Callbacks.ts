@@ -1,5 +1,5 @@
-import TableData from "./TableData";
-import { RelationData } from "../realtion/Relation";
+import TableData from "./table-data";
+import { RelationData } from "../realtion/relation";
 
 export default interface Callbacks {
   tableDblClick: (tableData: TableData) => void;

@@ -2,8 +2,8 @@ import { Browser, Page } from "playwright";
 import getBrowser from "./get-browser";
 import schoolSchema from "../example/schema/school.json";
 import benchmarkSchema from "../example/schema/benchmark.json";
-import { ColumnFk } from "../src/types/Column";
-import { Schema } from "../src/types/Schema";
+import { ColumnFk } from "../src/types/column";
+import { Schema } from "../src/types/schema";
 import { Point } from "../src";
 
 const getNumberOfTables = (schema: Schema): number => schema.tables.length;

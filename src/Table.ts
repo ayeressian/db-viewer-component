@@ -1,11 +1,11 @@
 import constant from "./const";
-import { Column, ColumnFk, isColumnFk } from "./types/Column";
-import CommonEventListener from "./types/CommonEventListener";
-import Point from "./types/Point";
-import { TableSchema, TableArrang } from "./types/Schema";
-import TableData from "./types/TableData";
-import Vertices from "./types/Vertices";
-import Viewer from "./Viewer";
+import { Column, ColumnFk, isColumnFk } from "./types/column";
+import CommonEventListener from "./types/common-event-listener";
+import Point from "./types/point";
+import { TableSchema, TableArrang } from "./types/schema";
+import TableData from "./types/table-data";
+import Vertices from "./types/vertices";
+import Viewer from "./viewer";
 import { isTouchEvent, normalizeEvent } from "./util";
 
 const OUT_OF_VIEW_CORD = -1000;

@@ -1,8 +1,8 @@
-import Point from "../types/Point";
+import Point from "../types/point";
 import arrow from "./arrow";
-import Orientation from "../types/Orientation";
-import { PATH_START } from "./relationConfig";
-import circlePath from "./circlePath";
+import Orientation from "../types/orientation";
+import { PATH_START } from "./relation-config";
+import circlePath from "./circle-path";
 
 export default (
   start: Point,

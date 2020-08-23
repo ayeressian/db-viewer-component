@@ -1,18 +1,18 @@
 import constant from "./const";
-import Minimap from "./Minimap";
-import Relation, { RelationData } from "./realtion/Relation";
-import spiralArrange from "./spiralArrange";
+import Minimap from "./minimap";
+import Relation, { RelationData } from "./realtion/relation";
+import spiralArrange from "./spiral-arrange";
 import Table from "./Table";
-import { isColumnFk } from "./types/Column";
-import CommonEventListener from "./types/CommonEventListener";
-import Callbacks from "./types/Callbacks";
-import Orientation from "./types/Orientation";
-import TableData from "./types/TableData";
-import ViewBoxVals from "./types/ViewBoxVals";
-import Point from "./types/Point";
+import { isColumnFk } from "./types/column";
+import CommonEventListener from "./types/common-event-listener";
+import Callbacks from "./types/callbacks";
+import Orientation from "./types/orientation";
+import TableData from "./types/table-data";
+import ViewBoxVals from "./types/view-box-vals";
+import Point from "./types/point";
 import { normalizeEvent, isSafari } from "./util";
-import { TableArrang, Viewport } from "./types/Schema";
-import { center, distance } from "./mathUtil";
+import { TableArrang, Viewport } from "./types/schema";
+import { center, distance } from "./math-util";
 
 interface SideAndCount {
   side: Orientation;

@@ -1,4 +1,4 @@
-import Point from "./Point";
+import Point from "./point";
 export default interface TableData {
   name: string;
   pos: Point;

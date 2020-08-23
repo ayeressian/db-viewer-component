@@ -1,10 +1,10 @@
-import schemaParser from "./schemaParser";
+import schemaParser from "./schema-parser";
 import Table from "./Table";
 import template from "./template";
-import { Schema, TableArrang, Viewport } from "./types/Schema";
-import TableData from "./types/TableData";
+import { Schema, TableArrang, Viewport } from "./types/schema";
+import TableData from "./types/table-data";
 import validateJson from "./validate-schema";
-import Viewer from "./Viewer";
+import Viewer from "./viewer";
 import { cloneDeep } from "lodash";
 
 import {
@@ -22,8 +22,8 @@ import {
   RelationClickEvent,
   RelationDblClickEvent,
 } from "./events";
-import Point from "./types/Point";
-import { RelationData } from "./realtion/Relation";
+import Point from "./types/point";
+import { RelationData } from "./realtion/relation";
 import { RelationContextMenuEvent } from "./events";
 
 const NO_TABLE = new Error("No table exist with the given name.");
@@ -307,7 +307,7 @@ class DbViewer extends HTMLElement {
 
 customElements.define("db-viewer", DbViewer);
 
-export * from "./types/Schema";
-export { default as Point } from "./types/Point";
+export * from "./types/schema";
+export { default as Point } from "./types/point";
 export * from "./events";
 export default DbViewer;

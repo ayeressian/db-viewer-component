@@ -1,4 +1,4 @@
-import Point from "./types/Point";
+import Point from "./types/point";
 
 export function to3FixedNumber(num: number): number {
   return Math.round(num * 1e3) / 1e3;
