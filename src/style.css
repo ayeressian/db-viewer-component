@@ -168,3 +168,12 @@ path {
   stroke-width: 12;
   stroke: transparent;
 }
+
+@media print {
+  .table {
+    border-top: 2px solid var(--table-boarder-color);
+  }
+  :host {
+    border: 1px solid #333;
+  }
+}
