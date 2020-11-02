@@ -377,7 +377,7 @@ export default class Table {
       ) as HTMLTableRowElement;
 
       if (column.class) {
-        columnTr.classList.add(column.class)
+        columnTr.classList.add(column.class);
       }
       column.elem = columnTr;
 
