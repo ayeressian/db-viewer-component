@@ -375,6 +375,10 @@ export default class Table {
         constant.nsHtml,
         "tr"
       ) as HTMLTableRowElement;
+
+      if (column.class) {
+        columnTr.classList.add(column.class)
+      }
       column.elem = columnTr;
 
       const columnStatusTd = document.createElementNS(constant.nsHtml, "td");

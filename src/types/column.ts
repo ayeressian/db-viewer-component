@@ -12,6 +12,7 @@ export interface ColumnNoneFk {
   uq?: boolean;
   nn?: boolean;
   type: string;
+  class?: string;
 }
 
 export interface ColumnFk extends Omit<ColumnNoneFk, "type"> {
