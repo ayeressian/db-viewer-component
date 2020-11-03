@@ -63,20 +63,22 @@ export default class Relation {
       }
     });
   }
-  fromColumn: Column;
+  private fromColumn: Column;
+  private toColumn: Column;
+  private pathElem?: SVGGraphicsElement;
+  private fromIntersectPoint?: Point;
+  private toIntersectPoint?: Point;
+  private highlightTrigger?: SVGGraphicsElement;
+
   fromPathCount?: number;
   fromPathIndex?: number;
   fromTable: Table;
-  toColumn: Column;
   toPathCount?: number;
   toPathIndex?: number;
   toTable: Table;
-  pathElem?: SVGGraphicsElement;
-  highlightTrigger?: SVGGraphicsElement;
   fromTablePathSide?: Orientation;
   toTablePathSide?: Orientation;
-  fromIntersectPoint?: Point;
-  toIntersectPoint?: Point;
+  
 
   constructor(
     { fromColumn, fromTable, toColumn, toTable }: BasicRelation,
@@ -100,7 +102,7 @@ export default class Relation {
     const fromTableVertices = this.fromTable.getVertices();
     const toTableVertices = this.toTable.getVertices();
 
-    const toMany = !this.fromColumn.uq;
+    const toMany = !this.toColumn.uq;
 
     type StartEndMethod = (
       tableVertices: Vertices,
@@ -230,7 +232,7 @@ export default class Relation {
         this,
         start,
         end,
-        this.fromColumn.nn,
+        this.toColumn.nn,
         toMany
       );
       const path = this.createPath(result);

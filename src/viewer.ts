@@ -134,10 +134,10 @@ export default class Viewer {
       table.getColumns().forEach((column) => {
         if (isColumnFk(column)) {
           const relationInfo = {
-            fromColumn: column,
-            fromTable: table,
-            toColumn: column.fk!.column,
-            toTable: column.fk!.table,
+            fromColumn: column.fk!.column,
+            fromTable: column.fk!.table,
+            toColumn: column,
+            toTable: table,
           };
           const relation = new Relation(relationInfo, this);
           this.relationInfos.push(relation);
