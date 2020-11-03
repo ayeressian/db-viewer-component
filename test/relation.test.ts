@@ -40,9 +40,12 @@ describe("Relation", () => {
 
       fakeRlationObj.calcPathTableSides();
 
-      expect(fakeRlationObj['fromIntersectPoint']).to.deep.eq({ x: 150, y: 150 });
+      expect(fakeRlationObj["fromIntersectPoint"]).to.deep.eq({
+        x: 150,
+        y: 150,
+      });
       expect(fakeRlationObj.fromTablePathSide).eq(Orientation.Bottom);
-      expect(fakeRlationObj['toIntersectPoint']).to.deep.eq({ x: 450, y: 450 });
+      expect(fakeRlationObj["toIntersectPoint"]).to.deep.eq({ x: 450, y: 450 });
       expect(fakeRlationObj.toTablePathSide).eq(Orientation.Top);
     });
   });

@@ -78,7 +78,6 @@ export default class Relation {
   toTable: Table;
   fromTablePathSide?: Orientation;
   toTablePathSide?: Orientation;
-  
 
   constructor(
     { fromColumn, fromTable, toColumn, toTable }: BasicRelation,
