@@ -5,7 +5,7 @@
 
 # db-viewer-component
 
-Database viewer web component. This web component can be used to view database diagrams.
+Database schema viewer web component. This web component can be used to view interactive database diagrams.
 See an [example](https://stackblitz.com/edit/db-viewer-component-simple-example).
 
 Note: This component doesn't work on old browsers that don't support web components.
@@ -81,6 +81,6 @@ Name | Description
 `--color` | Text color
 
 ### To run
-  1. npm i
-  2. npm start
+  1. yarn
+  2. yarn start
   3. Navigate to http://localhost:9998

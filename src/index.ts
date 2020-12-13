@@ -107,7 +107,7 @@ class DbViewer extends HTMLElement {
   }
 
   private readyPromise: Promise<null>;
-  private readyPromiseResolve!: () => void;
+  private readyPromiseResolve!: (value: PromiseLike<null> | null) => void;
   private viewer!: Viewer;
   private tables!: Table[];
   private srcVal!: string;
@@ -208,7 +208,7 @@ class DbViewer extends HTMLElement {
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
           if (mutation.addedNodes) {
-            resolve();
+            resolve(undefined);
           }
         });
       });
@@ -235,7 +235,7 @@ class DbViewer extends HTMLElement {
         zoomIn: this.onZoomIn.bind(this),
         zoomOut: this.onZoomOut.bind(this),
       });
-      this.readyPromiseResolve();
+      this.readyPromiseResolve(null);
       this.dispatchEvent(new ReadyEvent());
     });
     shadowDom.innerHTML = template;

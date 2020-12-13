@@ -3,6 +3,8 @@ node_modules/
 .DS_Store
 src/
 test/
+e2e/
 webpack.config/
 example/
 .editorconfig
+tsconfig.json

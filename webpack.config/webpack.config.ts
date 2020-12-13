@@ -2,15 +2,6 @@ import path from "path";
 import { Configuration } from "webpack";
 
 const config: Configuration = {
-  devServer: {
-    contentBase: "./",
-    historyApiFallback: {
-      index: "./example/index.html",
-    },
-    port: 9998,
-    publicPath: "/dist",
-  },
-  devtool: "source-map",
   entry: "./src/index.ts",
   module: {
     rules: [
@@ -39,6 +30,7 @@ const config: Configuration = {
   resolve: {
     extensions: [".ts", ".js"],
   },
+  devtool: "source-map",
 };
 
 export default config;
