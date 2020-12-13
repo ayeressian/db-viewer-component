@@ -23,7 +23,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       # Runs a single command using the runners shell
-      - run: npm i -g yarn
+      - run: sudo npm i -g yarn
       - run: yarn
       - run: yarn lint
       - run: yarn test
