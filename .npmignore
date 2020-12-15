@@ -1,10 +1,13 @@
-node_modules/
+.github/
 .vscode/
 .DS_Store
+node_modules/
 src/
 test/
 e2e/
 webpack.config/
 example/
 .editorconfig
+.eslintignore
+.eslintrc.js
 tsconfig.json
