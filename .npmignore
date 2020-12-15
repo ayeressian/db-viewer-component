@@ -7,6 +7,9 @@
 /e2e/
 /webpack.config/
 /example/
+/dist/e2e/
+/dist/test/
+/dist/webpack.config/
 /.editorconfig
 /.eslintignore
 /.eslintrc.js
