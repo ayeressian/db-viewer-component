@@ -27,7 +27,7 @@ export default class Table {
   private posValue: Point | string;
   private disableMovementValue: boolean;
   private elem!: SVGGraphicsElement;
-  private veiwer!: Viewer;
+  private viewer!: Viewer;
   private table!: HTMLElement;
   private onMove!: OnMove;
   private initialClientX!: number;
@@ -219,7 +219,7 @@ export default class Table {
   }
 
   setVeiwer(veiwer: Viewer): void {
-    this.veiwer = veiwer;
+    this.viewer = veiwer;
   }
 
   highlightFrom(column: Column): void {
@@ -257,28 +257,38 @@ export default class Table {
 
   private clickEvents(): void {
     this.elem.addEventListener("dblclick", () => {
-      this.veiwer.tableDblClick(this.data());
+      this.viewer.tableDblClick(this.data());
     });
     const onClick = (): void => {
-      this.veiwer.tableClick(this.data());
+      this.viewer.tableClick(this.data());
     };
     this.elem.addEventListener("click", onClick);
     this.elem.addEventListener("touch", onClick);
     this.elem.addEventListener("contextmenu", () => {
-      this.veiwer.tableContextMenu(this.data());
+      this.viewer.tableContextMenu(this.data());
     });
   }
 
   private notAllowOutOfBound(x: number, y: number): Point {
     if (x < 0) x = 0;
     if (y < 0) y = 0;
-    if (x + this.table.offsetWidth > constant.VIEWER_PAN_WIDTH) {
-      x = constant.VIEWER_PAN_WIDTH - this.table.offsetWidth;
+    if (x + this.table.offsetWidth > this.viewer.getViewerPanWidth()) {
+      x = this.viewer.getViewerPanWidth() - this.table.offsetWidth;
     }
-    if (y + this.table.offsetHeight > constant.VIEWER_PAN_HEIGHT) {
-      y = constant.VIEWER_PAN_HEIGHT - this.table.offsetHeight;
+    if (y + this.table.offsetHeight > this.viewer.getViewerPanHeight()) {
+      y = this.viewer.getViewerPanHeight() - this.table.offsetHeight;
     }
     return { x, y };
+  }
+
+  private isPoint(pos: Point | string): pos is Point {
+    return (pos as Point).x !== undefined;
+  }
+
+  keepInView(): void {
+    if (this.isPoint(this.posValue)) {
+      this.setTablePos(this.posValue.x, this.posValue.y);
+    }
   }
 
   private moveEvents(): void {
@@ -286,15 +296,15 @@ export default class Table {
     let mouseDownInitialElemY: number;
 
     const mouseMove = (event: MouseEvent | TouchEvent): void => {
-      if (!this.veiwer.getGestureStart()) {
-        const mousePos = this.veiwer.getMousePosRelativeContainer(event);
+      if (!this.viewer.getGestureStart()) {
+        const mousePos = this.viewer.getMousePosRelativeContainer(event);
 
         const normalizedClientX =
-          mousePos.x / this.veiwer.getZoom()! +
-          this.veiwer.getPan().x / this.veiwer.getZoom()!;
+          mousePos.x / this.viewer.getZoom()! +
+          this.viewer.getPan().x / this.viewer.getZoom()!;
         const normalizedClientY =
-          mousePos.y / this.veiwer.getZoom()! +
-          this.veiwer.getPan().y / this.veiwer.getZoom()!;
+          mousePos.y / this.viewer.getZoom()! +
+          this.viewer.getPan().y / this.viewer.getZoom()!;
         const x = normalizedClientX - mouseDownInitialElemX;
         const y = normalizedClientY - mouseDownInitialElemY;
 
@@ -316,7 +326,7 @@ export default class Table {
         const eventVal = normalizeEvent(event);
         this.table.classList.add("move");
         const boundingRect = this.elem.getBoundingClientRect();
-        const zoom = this.veiwer.getZoom()!;
+        const zoom = this.viewer.getZoom()!;
         mouseDownInitialElemX = (eventVal.clientX - boundingRect.left) / zoom;
         mouseDownInitialElemY = (eventVal.clientY - boundingRect.top) / zoom;
 
@@ -407,15 +417,15 @@ export default class Table {
   }
 
   private center(): void {
-    const viewport = this.veiwer.getViewPort();
+    const viewport = this.viewer.getViewPort();
     const x =
       viewport.x +
       viewport.width / 2 -
-      this.table.offsetWidth / this.veiwer.getZoom()! / 2;
+      this.table.offsetWidth / this.viewer.getZoom()! / 2;
     const y =
       viewport.y +
       viewport.height / 2 -
-      this.table.offsetHeight / this.veiwer.getZoom()! / 2;
+      this.table.offsetHeight / this.viewer.getZoom()! / 2;
     this.setTablePos(x, y);
   }
 }

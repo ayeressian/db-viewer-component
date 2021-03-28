@@ -51,12 +51,16 @@ export default class Minimap {
       .forEach((miniTable) => miniTable.remove());
   }
 
-  reset(): void {
-    this.removeTables();
+  resetViewBox(): void {
     this.minimap.setAttribute(
       "viewBox",
-      `0 0 ${constant.VIEWER_PAN_WIDTH} ${constant.VIEWER_PAN_HEIGHT}`
+      `0 0 ${this.viewer.getViewerPanWidth()} ${this.viewer.getViewerPanHeight()}`
     );
+  }
+
+  reset(): void {
+    this.removeTables();
+    this.resetViewBox();
   }
 
   setMinimapViewPoint(viewBoxVals: ViewBoxVals): void {

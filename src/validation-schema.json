@@ -11,7 +11,7 @@
       "enum": [
         "spiral"
       ],
-      "description": "Arrangement of the tables. Note if this value is set the \"table.pos\" values will be ignored."
+      "description": "Arrangement of the tables. Note if this value is set, the \"table.pos\" values will be ignored."
     },
     "viewport": {
       "type": "string",
@@ -23,6 +23,14 @@
       ],
       "description": "Viewport positioning strategy on initial load.",
       "default": "centerByTables"
+    },
+    "viewHeight": {
+      "type": "integer",
+      "default": 5000
+    },
+    "viewWidth": {
+      "type": "integer",
+      "default": 5000
     },
     "tables": {
       "type": "array",

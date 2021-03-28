@@ -32,6 +32,7 @@ export default function schemaParser(schema: Schema): Table[] {
       const fkColumn = fkTable
         .getColumns()
         .find((column) => column.name === sFkColumn.fk!.column);
+      if (fkColumn == null) throw new Error("fk column not found");
       tables
         .find((table) => sTable.name === table.getName())!
         .addColumn({

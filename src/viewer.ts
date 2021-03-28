@@ -39,6 +39,8 @@ export default class Viewer {
   private gestureStart = false;
 
   private tableArrang?: TableArrang;
+  private viewHeight = constant.VIEW_HEIGHT;
+  private viewWidth = constant.VIEW_WIDTH;
 
   constructor(private mainElem: ShadowRoot) {
     this.container = this.mainElem.getElementById("veiwer-container")!;
@@ -75,11 +77,21 @@ export default class Viewer {
     void this.setViewport(Viewport.center);
   }
 
-  load(
+  getViewerPanWidth(): number {
+    return this.viewWidth;
+  }
+
+  getViewerPanHeight(): number {
+    return this.viewHeight;
+  }
+
+  async load(
     tables: Table[],
     viewport: Viewport = Viewport.centerByTables,
-    tableArrang: TableArrang = TableArrang.default
-  ): void {
+    tableArrang: TableArrang = TableArrang.default,
+    viewWidth = constant.VIEW_WIDTH,
+    viewHeight = constant.VIEW_HEIGHT
+  ): Promise<void> {
     this.relationInfos = [];
     this.svgElem.innerHTML = "";
     this.tables = tables;
@@ -90,7 +102,17 @@ export default class Viewer {
       table.disableMovement(this.isTableMovementDisabled);
     });
     this.tableArrang = tableArrang;
-    this.draw(viewport);
+    await this.draw(viewport);
+
+    if (this.viewWidth !== viewWidth || this.viewHeight !== viewHeight) {
+      this.viewWidth = viewWidth;
+      this.viewHeight = viewHeight;
+      this.resetViewBox();
+      this.setZoom(this.zoom);
+      for (const table of tables) {
+        table.keepInView();
+      }
+    }
   }
 
   onTableMove(table: Table, deltaX: number, deltaY: number): void {
@@ -105,7 +127,7 @@ export default class Viewer {
     this.callbacks?.tableMoveEnd(table.data());
   }
 
-  draw(viewport: Viewport): void {
+  async draw(viewport: Viewport): Promise<void> {
     this.tablesLoaded = false;
     let minX = Number.MAX_SAFE_INTEGER;
     let maxX = Number.MIN_SAFE_INTEGER;
@@ -167,13 +189,12 @@ export default class Viewer {
     }
 
     if (this.tableArrang === TableArrang.spiral) {
-      spiralArrange(this.tables);
+      spiralArrange(this.tables, this.viewWidth, this.viewHeight);
     }
 
     this.drawRelations();
-    void this.setViewport(viewport).then(() =>
-      this.tables.forEach((table) => table.postDraw())
-    );
+    await this.setViewport(viewport);
+    this.tables.forEach((table) => table.postDraw());
     this.tablesLoaded = true;
   }
 
@@ -190,7 +211,7 @@ export default class Viewer {
       this.viewBoxVals.x = 0;
     } else {
       const offsetWidth =
-        this.viewBoxVals.width + this.viewBoxVals.x - constant.VIEWER_PAN_WIDTH;
+        this.viewBoxVals.width + this.viewBoxVals.x - this.viewWidth;
       if (offsetWidth > 0) {
         this.viewBoxVals.x -= offsetWidth;
       }
@@ -200,9 +221,7 @@ export default class Viewer {
       this.viewBoxVals.y = 0;
     } else {
       const offsetHeight =
-        this.viewBoxVals.height +
-        this.viewBoxVals.y -
-        constant.VIEWER_PAN_HEIGHT;
+        this.viewBoxVals.height + this.viewBoxVals.y - this.viewHeight;
       if (offsetHeight > 0) {
         this.viewBoxVals.y -= offsetHeight;
       }
@@ -305,19 +324,18 @@ export default class Viewer {
     }
   }
 
-  private reset(): void {
-    this.zoom = 1;
-
-    this.svgElem.style.height = `${constant.VIEWER_PAN_HEIGHT}px`;
-    this.svgElem.style.width = `${constant.VIEWER_PAN_WIDTH}px`;
+  private resetViewBox(): void {
     this.svgElem.setAttribute(
       "viewBox",
-      `0 0 ${constant.VIEWER_PAN_WIDTH} ${constant.VIEWER_PAN_HEIGHT}`
+      `0 0 ${this.viewWidth} ${this.viewHeight}`
     );
+    this.minimap.resetViewBox();
+  }
 
+  private reset(): void {
+    this.resetViewBox();
+    this.setZoom(1);
     this.relationInfos = [];
-
-    this.minimap.reset();
   }
 
   private updatePathIndex(
@@ -476,7 +494,7 @@ export default class Viewer {
     });
   }
 
-  setViewport(type: Viewport): Promise<[void, void]> {
+  setViewport(type = Viewport.noChange): Promise<[void, void]> {
     let viewportX;
     let viewportY;
     switch (type) {
@@ -505,8 +523,8 @@ export default class Viewer {
         {
           const width = this.svgContainer.clientWidth;
           const height = this.svgContainer.clientHeight;
-          viewportX = constant.VIEWER_PAN_WIDTH / 2 - width / 2;
-          viewportY = constant.VIEWER_PAN_HEIGHT / 2 - height / 2;
+          viewportX = this.viewWidth / 2 - width / 2;
+          viewportY = this.viewHeight / 2 - height / 2;
         }
         break;
       default:
@@ -539,6 +557,7 @@ export default class Viewer {
         }
         break;
     }
+
     return Promise.all([this.setPanX(viewportX), this.setPanY(viewportY)]);
   }
 
@@ -564,10 +583,9 @@ export default class Viewer {
   ): void {
     let minZoomValue: number;
     if (this.svgContainer.offsetWidth > this.svgContainer.offsetHeight) {
-      minZoomValue = this.svgContainer.clientWidth / constant.VIEWER_PAN_WIDTH;
+      minZoomValue = this.svgContainer.clientWidth / this.viewWidth;
     } else {
-      minZoomValue =
-        this.svgContainer.clientHeight / constant.VIEWER_PAN_HEIGHT;
+      minZoomValue = this.svgContainer.clientHeight / this.viewHeight;
     }
     if (minZoomValue > zoom) {
       zoom = minZoomValue;
@@ -577,43 +595,41 @@ export default class Viewer {
       zoom = constant.MAXZOOM_VALUE;
     }
 
-    if (zoom !== this.zoom) {
-      if (targetX == null) targetX = this.svgContainer.clientWidth / 2;
-      if (targetY == null) targetY = this.svgContainer.clientHeight / 2;
+    if (targetX == null) targetX = this.svgContainer.clientWidth / 2;
+    if (targetY == null) targetY = this.svgContainer.clientHeight / 2;
 
-      this.svgElem.style.height = `${constant.VIEWER_PAN_HEIGHT * zoom}px`;
-      this.svgElem.style.width = `${constant.VIEWER_PAN_WIDTH * zoom}px`;
+    this.svgElem.style.height = `${this.viewHeight * zoom}px`;
+    this.svgElem.style.width = `${this.viewWidth * zoom}px`;
 
-      const newWidth = this.svgContainer.clientWidth / zoom;
-      const newHeight = this.svgContainer.clientHeight / zoom;
+    const newWidth = this.svgContainer.clientWidth / zoom;
+    const newHeight = this.svgContainer.clientHeight / zoom;
 
-      const resizeWidth = newWidth - this.viewBoxVals.width;
-      const resizeHeight = newHeight - this.viewBoxVals.height;
+    const resizeWidth = newWidth - this.viewBoxVals.width;
+    const resizeHeight = newHeight - this.viewBoxVals.height;
 
-      const dividerX = this.svgContainer.clientWidth / targetX;
-      const dividerY = this.svgContainer.clientHeight / targetY;
+    const dividerX = this.svgContainer.clientWidth / targetX;
+    const dividerY = this.svgContainer.clientHeight / targetY;
 
-      this.viewBoxVals.width = newWidth;
-      this.viewBoxVals.height = newHeight;
+    this.viewBoxVals.width = newWidth;
+    this.viewBoxVals.height = newHeight;
 
-      this.viewBoxVals.x -= resizeWidth / dividerX;
-      this.viewBoxVals.y -= resizeHeight / dividerY;
+    this.viewBoxVals.x -= resizeWidth / dividerX;
+    this.viewBoxVals.y -= resizeHeight / dividerY;
 
-      this.viewportAddjustment();
+    this.viewportAddjustment();
 
-      this.disbleScrollEvent = true;
-      this.svgContainer.scrollLeft = this.viewBoxVals.x * zoom;
-      this.svgContainer.scrollTop = this.viewBoxVals.y * zoom;
+    this.disbleScrollEvent = true;
+    this.svgContainer.scrollLeft = this.viewBoxVals.x * zoom;
+    this.svgContainer.scrollTop = this.viewBoxVals.y * zoom;
 
-      this.minimap.setMinimapViewPoint(this.viewBoxVals);
+    this.minimap.setMinimapViewPoint(this.viewBoxVals);
 
-      if (this.zoom < zoom) {
-        this.callbacks?.zoomIn(zoom);
-      } else {
-        this.callbacks?.zoomOut(zoom);
-      }
-      this.zoom = zoom;
+    if (this.zoom < zoom) {
+      this.callbacks?.zoomIn(zoom);
+    } else {
+      this.callbacks?.zoomOut(zoom);
     }
+    this.zoom = zoom;
   }
 
   private noneTableAndMinmapEvent(event: Event): boolean {

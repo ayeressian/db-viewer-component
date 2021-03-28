@@ -19,10 +19,10 @@ describe("spiralArrange", () => {
     };
     let tables = schemaParser(schema);
     tables.forEach((table) => (table.setTablePos = sinon.fake()));
-    tables = spiralArrange(tables);
+    tables = spiralArrange(tables, 5000, 5000);
 
-    const centerX = constant.VIEWER_PAN_WIDTH / 2;
-    const centerY = constant.VIEWER_PAN_HEIGHT / 2;
+    const centerX = constant.VIEW_WIDTH / 2;
+    const centerY = constant.VIEW_HEIGHT / 2;
 
     expect(tables[0].setTablePos).to.have.been.calledWith(centerX, centerY);
     expect(tables[1].setTablePos).to.have.been.calledWith(

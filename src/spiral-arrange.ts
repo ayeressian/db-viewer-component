@@ -1,9 +1,13 @@
 import constant from "./const";
 import Table from "./table";
 
-export default function spiralArrange(tables: Table[]): Table[] {
-  let currentX = constant.VIEWER_PAN_WIDTH / 2;
-  let currentY = constant.VIEWER_PAN_HEIGHT / 2;
+export default function spiralArrange(
+  tables: Table[],
+  viewWidth: number,
+  viewHeight: number
+): Table[] {
+  let currentX = viewWidth / 2;
+  let currentY = viewHeight / 2;
   tables[0].setTablePos(currentX, currentY);
   let direction = 0;
   let index = 1;

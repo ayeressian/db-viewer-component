@@ -1,35 +1,44 @@
 <!DOCTYPE html>
 <html>
+  <head lang="en">
+    <title>DB Viewer Component Example</title>
 
-<head lang="en">
-  <title>DB Viewer Component Example</title>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
 
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script src="../dist/main.js"></script>
+    <script src="/example/script.js"></script>
+    <style>
+      db-viewer {
+        padding-bottom: 20px;
+        width: 800px;
+        height: 600px;
+      }
 
-  <script src="../dist/main.js"></script>
-  <script src="/example/script.js"></script>
-  <style>
-    db-viewer {
-      padding-bottom: 20px;
-      width: 800px;
-      height: 600px;
-    }
+      body {
+        background-color: black;
+      }
+    </style>
+  </head>
 
-    body {
-      background-color: black;
-    }
-  </style>
-</head>
-
-<body>
-  <div>
-    <h1>Example</h1>
-  </div>
-  <db-viewer id="school-db"></db-viewer>
-  <db-viewer id="benchmark" src="example/schema/benchmark.json"></db-viewer>
-  <db-viewer id="table-center" src="example/schema/table-center.json" disable-table-movement></db-viewer>
-  <db-viewer id="spiral" src="example/schema/spiral.json"></db-viewer>
-</body>
-
+  <body>
+    <div>
+      <h1>Example</h1>
+    </div>
+    <button id="increase-view-height">increase view height</button>
+    <button id="increase-view-width">increase view width</button>
+    <button id="decrease-view-height">decrease view height</button>
+    <button id="decrease-view-width">decrease view width</button>
+    <db-viewer id="school-db"></db-viewer>
+    <db-viewer id="benchmark" src="example/schema/benchmark.json"></db-viewer>
+    <db-viewer
+      id="table-center"
+      src="example/schema/table-center.json"
+      disable-table-movement
+    ></db-viewer>
+    <db-viewer id="spiral" src="example/schema/spiral.json"></db-viewer>
+  </body>
 </html>

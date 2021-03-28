@@ -30,6 +30,8 @@ export interface Schema {
   tables: TableSchema[];
   arrangement?: TableArrang;
   viewport?: Viewport;
+  viewWidth?: number;
+  viewHeight?: number;
 }
 
 export const enum Viewport {

@@ -65,7 +65,9 @@ class DbViewer extends HTMLElement {
       this.viewer.load(
         this.tables,
         this.viewport ?? schemaObj.viewport,
-        schemaObj.arrangement
+        schemaObj.arrangement ?? TableArrang.default,
+        schemaObj.viewWidth,
+        schemaObj.viewHeight
       );
     });
   }
@@ -172,16 +174,15 @@ class DbViewer extends HTMLElement {
               this.notParsedSchema = cloneDeep<Schema>(response);
               this.tables = schemaParser(response);
 
-              let arrangement: TableArrang;
-              if (!this.notParsedSchema.arrangement)
-                arrangement = TableArrang.default;
-              else arrangement = this.notParsedSchema.arrangement;
-
-              this.viewer.load(
+              return this.viewer.load(
                 this.tables,
                 this.viewport ?? (response as Schema).viewport,
-                arrangement
+                this.notParsedSchema.arrangement ?? TableArrang.default,
+                this.notParsedSchema.viewWidth,
+                this.notParsedSchema.viewHeight
               );
+            })
+            .then(() => {
               this.dispatchEvent(new LoadEvent());
             });
         });
