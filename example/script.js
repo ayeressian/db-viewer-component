@@ -4,6 +4,7 @@ const schoolDbSetup = () => {
   const decreaseViewHeight = document.querySelector("#decrease-view-height");
   const decreaseViewWidth = document.querySelector("#decrease-view-width");
   const dbViewerSchoolElem = document.querySelector("#school-db");
+  const zoomIn = document.querySelector("#zoom-in");
 
   dbViewerSchoolElem.addEventListener("ready", () => {
     // dbViewerSchoolElem.scrollLeft = 1000;
@@ -86,6 +87,10 @@ const schoolDbSetup = () => {
     dbViewerSchoolElem.addEventListener("scroll", (event) =>
       console.log("scroll", event.detail)
     );
+
+    zoomIn.addEventListener("click", () => {
+      dbViewerSchoolElem.zoomIn();
+    });
   });
 };
 

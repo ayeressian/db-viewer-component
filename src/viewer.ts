@@ -21,7 +21,7 @@ interface SideAndCount {
 }
 
 export default class Viewer {
-  isTableMovementDisabled: boolean;
+  isTableMovementDisabled = false;
   tables: Table[] = [];
   private container: HTMLElement;
   private svgElem: SVGGraphicsElement;
@@ -34,6 +34,7 @@ export default class Viewer {
   private relationInfos!: Relation[];
   private panXResolver?: () => void;
   private panYResolver?: () => void;
+  private zoomResolve?: () => void;
   private safariScale!: number;
   private tablesLoaded = false;
   private gestureStart = false;
@@ -71,10 +72,9 @@ export default class Viewer {
       const y = event.offsetY / this.zoom;
       this.callbacks?.viewportClick(x, y);
     });
-    this.reset();
-
-    this.isTableMovementDisabled = false;
-    void this.setViewport(Viewport.center);
+    this.reset().then(() => {
+      void this.setViewport(Viewport.center);
+    });
   }
 
   getViewerPanWidth(): number {
@@ -332,9 +332,9 @@ export default class Viewer {
     this.minimap.resetViewBox();
   }
 
-  private reset(): void {
+  private async reset(): Promise<void> {
     this.resetViewBox();
-    this.setZoom(1);
+    await this.setZoom(1);
     this.relationInfos = [];
   }
 
@@ -576,11 +576,11 @@ export default class Viewer {
     this.minimap.setMinimapViewPoint(this.viewBoxVals);
   }
 
-  private setZoom(
+  private async setZoom(
     zoom: number,
     targetX = this.svgContainer.clientWidth / 2,
     targetY = this.svgContainer.clientHeight / 2
-  ): void {
+  ): Promise<void> {
     let minZoomValue: number;
     if (this.svgContainer.offsetWidth > this.svgContainer.offsetHeight) {
       minZoomValue = this.svgContainer.clientWidth / this.viewWidth;
@@ -630,6 +630,8 @@ export default class Viewer {
       this.callbacks?.zoomOut(zoom);
     }
     this.zoom = zoom;
+
+    return new Promise((resolve) => (this.zoomResolve = resolve));
   }
 
   private noneTableAndMinmapEvent(event: Event): boolean {
@@ -730,6 +732,10 @@ export default class Viewer {
           this.panYResolver();
           delete this.panYResolver;
         }
+      }
+      if (this.zoomResolve) {
+        this.zoomResolve();
+        delete this.panYResolver;
       }
       this.disbleScrollEvent = false;
     });
