@@ -115,12 +115,17 @@ export default class Viewer {
     }
   }
 
-  onTableMove(table: Table, deltaX: number, deltaY: number): void {
+  onTableMove(
+    table: Table,
+    deltaX: number,
+    deltaY: number,
+    cordinatesChanged: boolean
+  ): void {
     if (this.tablesLoaded) this.drawRelations();
 
     this.minimap.onTableMove(table, deltaX, deltaY);
 
-    this.callbacks?.tableMove(table.data());
+    if (cordinatesChanged) this.callbacks?.tableMove(table.data());
   }
 
   onTableMoveEnd(table: Table): void {

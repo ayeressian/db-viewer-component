@@ -10,7 +10,12 @@ import { isTouchEvent, normalizeEvent } from "./util";
 
 const OUT_OF_VIEW_CORD = -1000;
 
-type OnMove = (table: Table, x: number, y: number) => void;
+type OnMove = (
+  table: Table,
+  x: number,
+  y: number,
+  cordinatesChanged: boolean
+) => void;
 
 type OnMoveEnd = (table: Table) => void;
 
@@ -200,7 +205,7 @@ export default class Table {
       x = result.x;
       y = result.y;
     }
-    const positionChanged =
+    const cordinatesChanged =
       this.isPoint(this.posValue) &&
       (this.posValue.x !== x || this.posValue.y !== y);
 
@@ -210,7 +215,7 @@ export default class Table {
     };
     this.foreignObject.setAttributeNS(null, "x", x.toString());
     this.foreignObject.setAttributeNS(null, "y", y.toString());
-    if (this.onMove && positionChanged) this.onMove(this, x, y);
+    if (this.onMove) this.onMove(this, x, y, cordinatesChanged);
   };
 
   data(): TableData {
@@ -314,7 +319,7 @@ export default class Table {
 
         this.setTablePos(x, y);
         const pos = this.posValue as Point;
-        if (this.onMove) this.onMove(this, pos.x, pos.y);
+        if (this.onMove) this.onMove(this, pos.x, pos.y, true);
       }
     };
 
