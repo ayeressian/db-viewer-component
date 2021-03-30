@@ -200,13 +200,17 @@ export default class Table {
       x = result.x;
       y = result.y;
     }
+    const positionChanged =
+      this.isPoint(this.posValue) &&
+      (this.posValue.x !== x || this.posValue.y !== y);
+
     this.posValue = {
       x,
       y,
     };
     this.foreignObject.setAttributeNS(null, "x", x.toString());
     this.foreignObject.setAttributeNS(null, "y", y.toString());
-    if (this.onMove) this.onMove(this, x, y);
+    if (this.onMove && positionChanged) this.onMove(this, x, y);
   };
 
   data(): TableData {

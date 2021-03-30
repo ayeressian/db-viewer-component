@@ -626,7 +626,7 @@ export default class Viewer {
 
     if (this.zoom < zoom) {
       this.callbacks?.zoomIn(zoom);
-    } else {
+    } else if (this.zoom > zoom) {
       this.callbacks?.zoomOut(zoom);
     }
     this.zoom = zoom;
