@@ -20,6 +20,10 @@ interface SideAndCount {
   count: number;
 }
 
+interface GestureEvent extends MouseEvent {
+  scale: number;
+}
+
 export default class Viewer {
   isTableMovementDisabled = false;
   tables: Table[] = [];
@@ -48,6 +52,7 @@ export default class Viewer {
     this.container = this.mainElem.getElementById("veiwer-container")!;
 
     this.svgElem = this.mainElem.querySelector<SVGGraphicsElement>("#veiwer")!;
+
     this.svgContainer = this.mainElem.querySelector<HTMLElement>(
       ".svg-container"
     )!;
@@ -68,11 +73,6 @@ export default class Viewer {
     };
     this.minimap.setMinimapViewPoint(this.viewBoxVals);
 
-    this.svgContainer.addEventListener("click", (event: MouseEvent) => {
-      const x = event.offsetX / this.zoom;
-      const y = event.offsetY / this.zoom;
-      this.callbacks?.viewportClick(x, y);
-    });
     this.viewLoaded = this.reset().then(() => {
       void this.setViewport(Viewport.center);
     });
@@ -653,65 +653,183 @@ export default class Viewer {
     });
   }
 
+  private onScroll = () => {
+    if (!this.disbleScrollEvent) {
+      this.viewBoxVals.x = this.svgContainer.scrollLeft / this.zoom;
+      this.viewBoxVals.y = this.svgContainer.scrollTop / this.zoom;
+      this.minimap.setMinimapViewPoint(this.viewBoxVals);
+      if (this.panXResolver) {
+        this.panXResolver();
+        delete this.panXResolver;
+      }
+      if (this.panYResolver) {
+        this.panYResolver();
+        delete this.panYResolver;
+      }
+    }
+    if (this.zoomResolve) {
+      this.zoomResolve();
+      delete this.zoomResolve;
+    }
+    this.disbleScrollEvent = false;
+  };
+
+  private onWheel = (event: WheelEvent) => {
+    if (event.ctrlKey) {
+      const clientRect = this.svgContainer.getBoundingClientRect();
+      const targetX = event.clientX - clientRect.left;
+      const targetY = event.clientY - clientRect.top;
+      this.setZoom(
+        this.zoom - event.deltaY * constant.SCROLL_TO_ZOOM_MULTIPLIER,
+        targetX,
+        targetY
+      );
+      event.preventDefault();
+    }
+  };
+
+  private onTouchMove = (event: Event) => {
+    // Don't move viewport when table is being moved
+    if (!this.noneTableAndMinmapEvent(event)) event.preventDefault();
+  };
+
+  private onGesturestart = (event: GestureEvent) => {
+    this.gestureStart = true;
+    if (event.scale != null) {
+      this.safariScale = event.scale;
+    }
+    event.preventDefault();
+  };
+
+  private onGesturechange = (event: GestureEvent) => {
+    event.preventDefault();
+    const clientRect = this.svgContainer.getBoundingClientRect();
+    const targetX = event.clientX - clientRect.left;
+    const targetY = event.clientY - clientRect.top;
+    const scaleChange = event.scale - this.safariScale;
+    this.setZoom(this.zoom + scaleChange, targetX, targetY);
+    this.safariScale = event.scale;
+  };
+
+  private onGestureend = () => {
+    this.gestureStart = false;
+  };
+
+  private prevMouseCordX!: number;
+  private prevMouseCordY!: number;
+
+  private onMouseMove = (event: MouseEvent) => {
+    event.preventDefault();
+    if (this.noneTableAndMinmapEvent(event)) {
+      const deltaX = event.clientX - this.prevMouseCordX;
+      const deltaY = event.clientY - this.prevMouseCordY;
+      this.prevMouseCordY = event.clientY;
+      this.prevMouseCordX = event.clientX;
+      const originalScrollLeft = this.svgContainer.scrollLeft;
+      this.svgContainer.scrollLeft -= deltaX;
+      if (originalScrollLeft !== this.svgContainer.scrollLeft) {
+        this.viewBoxVals.x -= deltaX;
+      }
+      const originalScrollTop = this.svgContainer.scrollTop;
+      this.svgContainer.scrollTop -= deltaY;
+      if (originalScrollTop !== this.svgContainer.scrollTop) {
+        this.viewBoxVals.y -= deltaY;
+      }
+      this.minimap.setMinimapViewPoint(this.viewBoxVals);
+    }
+  };
+
+  private onMousedown = (event: MouseEvent) => {
+    if (event.button === 0 && this.noneTableAndMinmapEvent(event)) {
+      this.svgElem.classList.add("pan");
+      this.prevMouseCordX = event.clientX;
+      this.prevMouseCordY = event.clientY;
+      this.mainElem.addEventListener(
+        "mousemove",
+        this.onMouseMove as CommonEventListener
+      );
+    }
+  };
+
+  private onMouseup = () => {
+    this.svgElem.classList.remove("pan");
+    this.mainElem.removeEventListener(
+      "mousemove",
+      this.onMouseMove as CommonEventListener
+    );
+  };
+
+  private evCache: PointerEvent[] = [];
+  private prevDiff?: number;
+
+  private onPointerdown = (event: PointerEvent) => {
+    this.evCache.push(event);
+  };
+
+  private onPointermove = (event: PointerEvent) => {
+    const index = this.evCache.findIndex(
+      (item) => item.pointerId === event.pointerId
+    );
+    if (index !== -1) {
+      this.evCache[index] = event;
+    }
+    if (this.evCache.length == 2) {
+      this.gestureStart = true;
+      // Calculate the distance between the two pointers
+      const p1 = { x: this.evCache[0].clientX, y: this.evCache[0].clientY };
+      const p2 = { x: this.evCache[1].clientX, y: this.evCache[1].clientY };
+      const centerPoint = center(p1, p2);
+      const curDiff = distance(p1, p2);
+      if (this.prevDiff != null) {
+        const delta = curDiff - this.prevDiff;
+        event.preventDefault();
+        this.setZoom(
+          this.zoom + delta * constant.PINCH_TO_ZOOM_MULTIPLIER,
+          centerPoint.x,
+          centerPoint.y
+        );
+      }
+      this.prevDiff = curDiff;
+    }
+  };
+
+  private onPointer = (event: PointerEvent) => {
+    // Remove this pointer from the cache and reset the target's
+    // background and border
+    const index = this.evCache.findIndex(
+      (item) => item.pointerId === event.pointerId
+    );
+    if (index !== -1) this.evCache.splice(index, 1);
+
+    // If the number of pointers down is less than two then reset diff tracker
+    if (this.evCache.length < 2) {
+      this.prevDiff = undefined;
+      this.gestureStart = false;
+    }
+  };
+
+  private onClick = (event: MouseEvent) => {
+    const x = event.offsetX / this.zoom;
+    const y = event.offsetY / this.zoom;
+    this.callbacks?.viewportClick(x, y);
+  };
+
   private setUpEvents(): void {
     window.addEventListener("resize", this.windowResizeEvent.bind(this));
 
-    let prevMouseCordX: number;
-    let prevMouseCordY: number;
-
-    const mouseMove = (event: MouseEvent): void => {
-      event.preventDefault();
-      if (this.noneTableAndMinmapEvent(event)) {
-        const deltaX = event.clientX - prevMouseCordX;
-        const deltaY = event.clientY - prevMouseCordY;
-        prevMouseCordY = event.clientY;
-        prevMouseCordX = event.clientX;
-        const originalScrollLeft = this.svgContainer.scrollLeft;
-        this.svgContainer.scrollLeft -= deltaX;
-        if (originalScrollLeft !== this.svgContainer.scrollLeft) {
-          this.viewBoxVals.x -= deltaX;
-        }
-        const originalScrollTop = this.svgContainer.scrollTop;
-        this.svgContainer.scrollTop -= deltaY;
-        if (originalScrollTop !== this.svgContainer.scrollTop) {
-          this.viewBoxVals.y -= deltaY;
-        }
-        this.minimap.setMinimapViewPoint(this.viewBoxVals);
-      }
-    };
-
-    this.mainElem.addEventListener("touchmove", (event: Event) => {
-      // Don't move viewport when table is being moved
-      if (!this.noneTableAndMinmapEvent(event)) event.preventDefault();
-    });
+    this.mainElem.addEventListener("touchmove", this.onTouchMove);
 
     this.container.addEventListener("mouseleave", () => {
       this.svgElem.classList.remove("pan");
       this.mainElem.removeEventListener(
         "mousemove",
-        mouseMove as CommonEventListener
+        this.onMouseMove as CommonEventListener
       );
     });
 
-    this.container.addEventListener("mousedown", (event: MouseEvent) => {
-      if (event.button === 0 && this.noneTableAndMinmapEvent(event)) {
-        this.svgElem.classList.add("pan");
-        prevMouseCordX = event.clientX;
-        prevMouseCordY = event.clientY;
-        this.mainElem.addEventListener(
-          "mousemove",
-          mouseMove as CommonEventListener
-        );
-      }
-    });
+    this.container.addEventListener("mousedown", this.onMousedown);
 
-    this.mainElem.addEventListener("mouseup", () => {
-      this.svgElem.classList.remove("pan");
-      this.mainElem.removeEventListener(
-        "mousemove",
-        mouseMove as CommonEventListener
-      );
-    });
+    this.mainElem.addEventListener("mouseup", this.onMouseup);
 
     this.container.addEventListener(
       "mouseleave",
@@ -728,130 +846,32 @@ export default class Viewer {
       });
     }
 
-    this.svgContainer.addEventListener("scroll", () => {
-      if (!this.disbleScrollEvent) {
-        this.viewBoxVals.x = this.svgContainer.scrollLeft / this.zoom;
-        this.viewBoxVals.y = this.svgContainer.scrollTop / this.zoom;
-        this.minimap.setMinimapViewPoint(this.viewBoxVals);
-        if (this.panXResolver) {
-          this.panXResolver();
-          delete this.panXResolver;
-        }
-        if (this.panYResolver) {
-          this.panYResolver();
-          delete this.panYResolver;
-        }
-      }
-      if (this.zoomResolve) {
-        this.zoomResolve();
-        delete this.zoomResolve;
-      }
-      this.disbleScrollEvent = false;
-    });
+    this.svgContainer.addEventListener("scroll", this.onScroll);
 
-    this.container.addEventListener("wheel", (event: MouseWheelEvent) => {
-      if (event.ctrlKey) {
-        const clientRect = this.svgContainer.getBoundingClientRect();
-        const targetX = event.clientX - clientRect.left;
-        const targetY = event.clientY - clientRect.top;
-        this.setZoom(
-          this.zoom - event.deltaY * constant.SCROLL_TO_ZOOM_MULTIPLIER,
-          targetX,
-          targetY
-        );
-        event.preventDefault();
-      }
-    });
+    this.svgContainer.addEventListener("click", this.onClick);
+
+    this.container.addEventListener("wheel", this.onWheel);
 
     if (isSafari) {
-      interface GestureEvent extends MouseEvent {
-        scale: number;
-      }
-
-      this.container.addEventListener("gesturestart", ((
-        event: GestureEvent
-      ) => {
-        this.gestureStart = true;
-        if (event.scale != null) {
-          this.safariScale = event.scale;
-        }
-        event.preventDefault();
-      }) as CommonEventListener);
+      this.container.addEventListener(
+        "gesturestart",
+        this.onGesturestart as CommonEventListener
+      );
       this.container.addEventListener(
         "gesturechange",
-        ((event: GestureEvent) => {
-          event.preventDefault();
-          const clientRect = this.svgContainer.getBoundingClientRect();
-          const targetX = event.clientX - clientRect.left;
-          const targetY = event.clientY - clientRect.top;
-          const scaleChange = event.scale - this.safariScale;
-          this.setZoom(this.zoom + scaleChange, targetX, targetY);
-          this.safariScale = event.scale;
-        }) as CommonEventListener,
+        this.onGesturechange as CommonEventListener,
         true
       );
 
-      this.container.addEventListener("gestureend", () => {
-        this.gestureStart = false;
-      });
+      this.container.addEventListener("gestureend", this.onGestureend);
     } else {
-      const evCache: PointerEvent[] = [];
-      let prevDiff: number | null;
-      this.container.addEventListener(
-        "pointerdown",
-        (event: PointerEvent): void => {
-          evCache.push(event);
-        }
-      );
-      this.container.addEventListener(
-        "pointermove",
-        (event: PointerEvent): void => {
-          const index = evCache.findIndex(
-            (item) => item.pointerId === event.pointerId
-          );
-          if (index !== -1) {
-            evCache[index] = event;
-          }
-          if (evCache.length == 2) {
-            this.gestureStart = true;
-            // Calculate the distance between the two pointers
-            const p1 = { x: evCache[0].clientX, y: evCache[0].clientY };
-            const p2 = { x: evCache[1].clientX, y: evCache[1].clientY };
-            const centerPoint = center(p1, p2);
-            const curDiff = distance(p1, p2);
-            if (prevDiff != null) {
-              const delta = curDiff - prevDiff;
-              event.preventDefault();
-              this.setZoom(
-                this.zoom + delta * constant.PINCH_TO_ZOOM_MULTIPLIER,
-                centerPoint.x,
-                centerPoint.y
-              );
-            }
-            prevDiff = curDiff;
-          }
-        }
-      );
+      this.container.addEventListener("pointerdown", this.onPointerdown);
+      this.container.addEventListener("pointermove", this.onPointermove);
 
-      const pointerupHandler = (event: PointerEvent): void => {
-        // Remove this pointer from the cache and reset the target's
-        // background and border
-        const index = evCache.findIndex(
-          (item) => item.pointerId === event.pointerId
-        );
-        if (index !== -1) evCache.splice(index, 1);
-
-        // If the number of pointers down is less than two then reset diff tracker
-        if (evCache.length < 2) {
-          prevDiff = null;
-          this.gestureStart = false;
-        }
-      };
-
-      this.container.addEventListener("pointerup", pointerupHandler, true);
-      this.container.addEventListener("pointercancel", pointerupHandler, true);
-      this.container.addEventListener("pointerout", pointerupHandler, true);
-      this.container.addEventListener("pointerleave", pointerupHandler, true);
+      this.container.addEventListener("pointerup", this.onPointer, true);
+      this.container.addEventListener("pointercancel", this.onPointer, true);
+      this.container.addEventListener("pointerout", this.onPointer, true);
+      this.container.addEventListener("pointerleave", this.onPointer, true);
     }
   }
 }
