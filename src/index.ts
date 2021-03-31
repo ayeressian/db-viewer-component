@@ -35,7 +35,7 @@ class DbViewer extends HTMLElement {
   }
 
   set scrollLeft(value: number) {
-    void this.viewer.setPanX(value);
+    this.readyPromise.then(() => void this.viewer.setPanX(value));
   }
 
   get scrollTop(): number {
@@ -43,7 +43,7 @@ class DbViewer extends HTMLElement {
   }
 
   set scrollTop(value: number) {
-    void this.viewer.setPanY(value);
+    this.readyPromise.then(() => void this.viewer.setPanY(value));
   }
 
   set src(src: string) {
@@ -133,11 +133,11 @@ class DbViewer extends HTMLElement {
   }
 
   zoomIn(): void {
-    this.viewer.zoomIn();
+    this.readyPromise.then(() => this.viewer.zoomIn());
   }
 
   zoomOut(): void {
-    this.viewer.zoomOut();
+    this.readyPromise.then(() => this.viewer.zoomOut());
   }
 
   getTableInfo(name: string): TableData {
@@ -221,24 +221,28 @@ class DbViewer extends HTMLElement {
     const shadowDom = this.attachShadow({
       mode: "open",
     });
-    void this.shadowDomLoaded(shadowDom).then(() => {
-      this.viewer = new Viewer(shadowDom);
-      this.viewer.setCallbacks({
-        tableClick: this.onTableClick,
-        tableContextMenu: this.onTableContextMenu,
-        tableDblClick: this.onTableDblClick,
-        tableMove: this.onTableMove,
-        tableMoveEnd: this.onTableMoveEnd,
-        relationClick: this.onRelationClick,
-        relationDblClick: this.onRelationDblClick,
-        relationContextMenu: this.onRelationContextMenu,
-        viewportClick: this.onViewportClick,
-        zoomIn: this.onZoomIn.bind(this),
-        zoomOut: this.onZoomOut.bind(this),
+    void this.shadowDomLoaded(shadowDom)
+      .then(() => {
+        this.viewer = new Viewer(shadowDom);
+        this.viewer.setCallbacks({
+          tableClick: this.onTableClick,
+          tableContextMenu: this.onTableContextMenu,
+          tableDblClick: this.onTableDblClick,
+          tableMove: this.onTableMove,
+          tableMoveEnd: this.onTableMoveEnd,
+          relationClick: this.onRelationClick,
+          relationDblClick: this.onRelationDblClick,
+          relationContextMenu: this.onRelationContextMenu,
+          viewportClick: this.onViewportClick,
+          zoomIn: this.onZoomIn.bind(this),
+          zoomOut: this.onZoomOut.bind(this),
+        });
+        return this.viewer.getViewLoaded();
+      })
+      .then(() => {
+        this.readyPromiseResolve(null);
+        this.dispatchEvent(new ReadyEvent());
       });
-      this.readyPromiseResolve(null);
-      this.dispatchEvent(new ReadyEvent());
-    });
     shadowDom.innerHTML = template;
   }
 

@@ -38,6 +38,7 @@ export default class Viewer {
   private safariScale!: number;
   private tablesLoaded = false;
   private gestureStart = false;
+  private viewLoaded: Promise<void>;
 
   private tableArrang?: TableArrang;
   private viewHeight = constant.VIEW_HEIGHT;
@@ -72,9 +73,13 @@ export default class Viewer {
       const y = event.offsetY / this.zoom;
       this.callbacks?.viewportClick(x, y);
     });
-    this.reset().then(() => {
+    this.viewLoaded = this.reset().then(() => {
       void this.setViewport(Viewport.center);
     });
+  }
+
+  getViewLoaded(): Promise<void> {
+    return this.viewLoaded;
   }
 
   getViewerPanWidth(): number {
@@ -562,7 +567,6 @@ export default class Viewer {
         }
         break;
     }
-
     return Promise.all([this.setPanX(viewportX), this.setPanY(viewportY)]);
   }
 
@@ -740,7 +744,7 @@ export default class Viewer {
       }
       if (this.zoomResolve) {
         this.zoomResolve();
-        delete this.panYResolver;
+        delete this.zoomResolve;
       }
       this.disbleScrollEvent = false;
     });
