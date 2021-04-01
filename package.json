@@ -1,6 +1,6 @@
 {
   "name": "db-viewer-component",
-  "version": "4.4.5",
+  "version": "4.4.6",
   "description": "A web component for showing db schemas",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "test": "mochapack \"test/**/*.ts\" --mode development --webpack-config=./webpack.config/webpack.test.config.ts  -r jsdom-global/register",
     "test:watch": "yarn run test --watch",
     "test:debug": "webpack serve --config webpack.config/webpack.test.debug.config.ts --hot --inline",
-    "e2e": "yarn run e2e-chromium",
+    "e2e": "yarn e2e-chromium && yarn e2e-firefox && yarn webkit",
     "e2e-chromium": "BROWSER_TYPE=chromium jasmine-ts --config=e2e/jasmine.json",
     "e2e-firefox": "BROWSER_TYPE=firefox jasmine-ts --config=e2e/jasmine.json",
     "e2e-webkit": "BROWSER_TYPE=webkit jasmine-ts --config=e2e/jasmine.json",

@@ -627,9 +627,18 @@ export default class Viewer {
 
     this.viewportAddjustment();
 
-    this.disbleScrollEvent = true;
-    this.svgContainer.scrollLeft = this.viewBoxVals.x * zoom;
-    this.svgContainer.scrollTop = this.viewBoxVals.y * zoom;
+    const newScrollLeft = this.viewBoxVals.x * zoom;
+    const newScrollTop = this.viewBoxVals.y * zoom;
+    if (
+      this.svgContainer.scrollLeft !== newScrollLeft ||
+      this.svgContainer.scrollTop !== newScrollTop
+    ) {
+      this.disbleScrollEvent = true;
+      this.svgContainer.scrollLeft = newScrollLeft;
+      this.svgContainer.scrollTop = newScrollTop;
+    } else {
+      this.disbleScrollEvent = false;
+    }
 
     this.minimap.setMinimapViewPoint(this.viewBoxVals);
 
@@ -640,7 +649,11 @@ export default class Viewer {
     }
     this.zoom = zoom;
 
-    return new Promise((resolve) => (this.zoomResolve = resolve));
+    if (this.disbleScrollEvent) {
+      return new Promise((resolve) => (this.zoomResolve = resolve));
+    } else {
+      return Promise.resolve();
+    }
   }
 
   private noneTableAndMinmapEvent(event: Event): boolean {

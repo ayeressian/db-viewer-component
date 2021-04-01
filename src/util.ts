@@ -26,6 +26,9 @@ export const isTouchEvent = (event: MouseEvent | TouchEvent): boolean => {
   );
 };
 
+export const wait = (time?: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, time));
+
 export function normalizeEvent(
   event: MouseEvent | TouchEvent
 ): {
