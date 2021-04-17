@@ -27,7 +27,7 @@ export default class Minimap {
     this.reset();
   }
 
-  minimapPositionFromMouse(event: MouseEvent): void {
+  #minimapPositionFromMouse = (event: MouseEvent): void => {
     const minimapBoundingClientRect = this.minimap.getBoundingClientRect();
     const x = event.clientX - minimapBoundingClientRect.left;
     const y = event.clientY - minimapBoundingClientRect.top;
@@ -42,7 +42,7 @@ export default class Minimap {
 
     void this.viewer.setPanX(xCord);
     void this.viewer.setPanY(yCord);
-  }
+  };
 
   removeTables(): void {
     this.tableMinimap = new Map<Table, SVGGraphicsElement>();
@@ -97,32 +97,43 @@ export default class Minimap {
     minimapTableElem.setAttributeNS(null, "y", deltaY.toString());
   }
 
+  #mouseDown = (event: MouseEvent): void => {
+    if (event.button === 0) {
+      this.#minimapPositionFromMouse(event);
+      this.minimap.addEventListener(
+        "mousemove",
+        this.#minimapPositionFromMouse as CommonEventListener
+      );
+    }
+  };
+
+  cleanup(): void {
+    this.btnZoomIn.removeEventListener("click", this.viewer.zoomIn);
+    this.btnZoomOut.removeEventListener("click", this.viewer.zoomOut);
+    this.minimap.removeEventListener(
+      "mousedown",
+      this.#mouseDown as CommonEventListener
+    );
+
+    this.minimap.removeEventListener(
+      "mousemove",
+      this.#minimapPositionFromMouse as CommonEventListener
+    );
+  }
+
   private setUpEvents(): void {
-    this.btnZoomIn.addEventListener(
-      "click",
-      this.viewer.zoomIn.bind(this.viewer)
-    );
-    this.btnZoomOut.addEventListener(
-      "click",
-      this.viewer.zoomOut.bind(this.viewer)
-    );
+    this.btnZoomIn.addEventListener("click", this.viewer.zoomIn);
+    this.btnZoomOut.addEventListener("click", this.viewer.zoomOut);
 
-    const minimapMouseMove = this.minimapPositionFromMouse.bind(this);
-
-    this.minimap.addEventListener("mousedown", ((event: MouseEvent) => {
-      if (event.button === 0) {
-        minimapMouseMove(event);
-        this.minimap.addEventListener(
-          "mousemove",
-          minimapMouseMove as CommonEventListener
-        );
-      }
-    }) as CommonEventListener);
+    this.minimap.addEventListener(
+      "mousedown",
+      this.#mouseDown as CommonEventListener
+    );
 
     this.onContainerMouseLeave = (): void => {
       this.minimap.removeEventListener(
         "mousemove",
-        minimapMouseMove as CommonEventListener
+        this.#minimapPositionFromMouse as CommonEventListener
       );
     };
 

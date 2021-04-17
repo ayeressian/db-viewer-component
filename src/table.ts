@@ -264,18 +264,57 @@ export default class Table {
       });
   }
 
+  cleanup = (): void => {
+    this.elem.removeEventListener("dblclick", this.#onDoubleClick);
+    this.elem.removeEventListener("click", this.#onClick);
+    this.elem.removeEventListener("touch", this.#onClick);
+    this.elem.removeEventListener("contextmenu", this.#onContextMenu);
+
+    document.removeEventListener(
+      "mousemove",
+      this.#onMouseMove as CommonEventListener
+    );
+    document.removeEventListener(
+      "touchmove",
+      this.#onMouseMove as CommonEventListener
+    );
+
+    document.removeEventListener(
+      "mouseup",
+      this.#mouseUp as CommonEventListener
+    );
+    document.removeEventListener(
+      "touchend",
+      this.#mouseUp as CommonEventListener
+    );
+
+    this.elem.removeEventListener(
+      "mousedown",
+      this.#onMouseDown as CommonEventListener
+    );
+    this.elem.removeEventListener(
+      "touchstart",
+      this.#onMouseDown as CommonEventListener
+    );
+  };
+
+  #onDoubleClick = (): void => {
+    this.viewer.tableDblClick(this.data());
+  };
+
+  #onClick = (): void => {
+    this.viewer.tableClick(this.data());
+  };
+
+  #onContextMenu = (): void => {
+    this.viewer.tableContextMenu(this.data());
+  };
+
   private clickEvents(): void {
-    this.elem.addEventListener("dblclick", () => {
-      this.viewer.tableDblClick(this.data());
-    });
-    const onClick = (): void => {
-      this.viewer.tableClick(this.data());
-    };
-    this.elem.addEventListener("click", onClick);
-    this.elem.addEventListener("touch", onClick);
-    this.elem.addEventListener("contextmenu", () => {
-      this.viewer.tableContextMenu(this.data());
-    });
+    this.elem.addEventListener("dblclick", this.#onDoubleClick);
+    this.elem.addEventListener("click", this.#onClick);
+    this.elem.addEventListener("touch", this.#onClick);
+    this.elem.addEventListener("contextmenu", this.#onContextMenu);
   }
 
   private notAllowOutOfBound(x: number, y: number): Point {
@@ -300,92 +339,107 @@ export default class Table {
     }
   }
 
+  #mouseDownInitialElemX!: number;
+  #mouseDownInitialElemY!: number;
+
+  #onMouseMove = (event: MouseEvent | TouchEvent): void => {
+    if (!this.viewer.getGestureStart()) {
+      const mousePos = this.viewer.getMousePosRelativeContainer(event);
+
+      const normalizedClientX =
+        mousePos.x / this.viewer.getZoom()! +
+        this.viewer.getPan().x / this.viewer.getZoom()!;
+      const normalizedClientY =
+        mousePos.y / this.viewer.getZoom()! +
+        this.viewer.getPan().y / this.viewer.getZoom()!;
+      const x = normalizedClientX - this.#mouseDownInitialElemX;
+      const y = normalizedClientY - this.#mouseDownInitialElemY;
+
+      this.setTablePos(x, y);
+      const pos = this.posValue as Point;
+      if (this.onMove) this.onMove(this, pos.x, pos.y, true);
+    }
+  };
+
+  #mouseUp = (mouseUpEvent: MouseEvent): void => {
+    if (
+      this.onMoveEnd &&
+      (this.initialClientX !== mouseUpEvent.clientX ||
+        this.initialClientY !== mouseUpEvent.clientY)
+    ) {
+      this.onMoveEnd(this);
+    }
+    this.table.classList.remove("move");
+    document.removeEventListener(
+      "mouseup",
+      this.#mouseUp as CommonEventListener
+    );
+    document.removeEventListener(
+      "touchend",
+      this.#mouseUp as CommonEventListener
+    );
+    document.removeEventListener(
+      "mousemove",
+      this.#onMouseMove as CommonEventListener
+    );
+    document.removeEventListener(
+      "touchmove",
+      this.#onMouseMove as CommonEventListener
+    );
+  };
+
+  #onMouseDown = (event: MouseEvent | TouchEvent): void => {
+    const touchEvent = isTouchEvent(event);
+    if (
+      ((!touchEvent &&
+        ((event as MouseEvent).button === 0 ||
+          (event as MouseEvent).button == null)) ||
+        touchEvent) &&
+      this.disableMovementValue === false
+    ) {
+      const eventVal = normalizeEvent(event);
+      this.table.classList.add("move");
+      const boundingRect = this.elem.getBoundingClientRect();
+      const zoom = this.viewer.getZoom()!;
+      this.#mouseDownInitialElemX =
+        (eventVal.clientX - boundingRect.left) / zoom;
+      this.#mouseDownInitialElemY =
+        (eventVal.clientY - boundingRect.top) / zoom;
+
+      this.initialClientX = eventVal.clientX;
+      this.initialClientY = eventVal.clientY;
+
+      document.addEventListener(
+        "mousemove",
+        this.#onMouseMove as CommonEventListener
+      );
+      document.addEventListener(
+        "touchmove",
+        this.#onMouseMove as CommonEventListener
+      );
+
+      this.moveToTop();
+
+      document.addEventListener(
+        "mouseup",
+        this.#mouseUp as CommonEventListener
+      );
+      document.addEventListener(
+        "touchend",
+        this.#mouseUp as CommonEventListener
+      );
+    }
+  };
+
   private moveEvents(): void {
-    let mouseDownInitialElemX: number;
-    let mouseDownInitialElemY: number;
-
-    const mouseMove = (event: MouseEvent | TouchEvent): void => {
-      if (!this.viewer.getGestureStart()) {
-        const mousePos = this.viewer.getMousePosRelativeContainer(event);
-
-        const normalizedClientX =
-          mousePos.x / this.viewer.getZoom()! +
-          this.viewer.getPan().x / this.viewer.getZoom()!;
-        const normalizedClientY =
-          mousePos.y / this.viewer.getZoom()! +
-          this.viewer.getPan().y / this.viewer.getZoom()!;
-        const x = normalizedClientX - mouseDownInitialElemX;
-        const y = normalizedClientY - mouseDownInitialElemY;
-
-        this.setTablePos(x, y);
-        const pos = this.posValue as Point;
-        if (this.onMove) this.onMove(this, pos.x, pos.y, true);
-      }
-    };
-
-    const mouseDown = (event: MouseEvent | TouchEvent): void => {
-      const touchEvent = isTouchEvent(event);
-      if (
-        ((!touchEvent &&
-          ((event as MouseEvent).button === 0 ||
-            (event as MouseEvent).button == null)) ||
-          touchEvent) &&
-        this.disableMovementValue === false
-      ) {
-        const eventVal = normalizeEvent(event);
-        this.table.classList.add("move");
-        const boundingRect = this.elem.getBoundingClientRect();
-        const zoom = this.viewer.getZoom()!;
-        mouseDownInitialElemX = (eventVal.clientX - boundingRect.left) / zoom;
-        mouseDownInitialElemY = (eventVal.clientY - boundingRect.top) / zoom;
-
-        this.initialClientX = eventVal.clientX;
-        this.initialClientY = eventVal.clientY;
-
-        document.addEventListener(
-          "mousemove",
-          mouseMove as CommonEventListener
-        );
-        document.addEventListener(
-          "touchmove",
-          mouseMove as CommonEventListener
-        );
-
-        this.moveToTop();
-
-        const mouseUp = (mouseUpEvent: MouseEvent): void => {
-          if (
-            this.onMoveEnd &&
-            (this.initialClientX !== mouseUpEvent.clientX ||
-              this.initialClientY !== mouseUpEvent.clientY)
-          ) {
-            this.onMoveEnd(this);
-          }
-          this.table.classList.remove("move");
-          document.removeEventListener(
-            "mouseup",
-            mouseUp as CommonEventListener
-          );
-          document.removeEventListener(
-            "touchend",
-            mouseUp as CommonEventListener
-          );
-          document.removeEventListener(
-            "mousemove",
-            mouseMove as CommonEventListener
-          );
-          document.removeEventListener(
-            "touchmove",
-            mouseMove as CommonEventListener
-          );
-        };
-        document.addEventListener("mouseup", mouseUp as CommonEventListener);
-        document.addEventListener("touchend", mouseUp as CommonEventListener);
-      }
-    };
-
-    this.elem.addEventListener("mousedown", mouseDown as CommonEventListener);
-    this.elem.addEventListener("touchstart", mouseDown as CommonEventListener);
+    this.elem.addEventListener(
+      "mousedown",
+      this.#onMouseDown as CommonEventListener
+    );
+    this.elem.addEventListener(
+      "touchstart",
+      this.#onMouseDown as CommonEventListener
+    );
   }
 
   private createColumns(tbody: Element): void {

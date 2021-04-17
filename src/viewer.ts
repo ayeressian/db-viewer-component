@@ -238,13 +238,13 @@ export default class Viewer {
     }
   }
 
-  zoomIn(): void {
+  zoomIn = (): void => {
     this.setZoom(this.zoom * constant.ZOOM);
-  }
+  };
 
-  zoomOut(): void {
+  zoomOut = (): void => {
     this.setZoom(this.zoom / constant.ZOOM);
-  }
+  };
 
   getZoom(): number {
     return this.zoom;
@@ -502,6 +502,59 @@ export default class Viewer {
       const elems = relation.render();
       elems.forEach((elem) => this.svgElem.prepend(elem!));
     });
+  }
+
+  // TODO: call cleanup when appropriate
+  cleanup(): void {
+    this.minimap.cleanup();
+
+    this.mainElem.removeEventListener(
+      "mousemove",
+      this.onMouseMove as CommonEventListener
+    );
+
+    window.removeEventListener("resize", this.windowResizeEvent.bind(this));
+    this.mainElem.removeEventListener("touchmove", this.onTouchMove);
+    this.container.removeEventListener("mousedown", this.onMousedown);
+    this.mainElem.removeEventListener("mouseup", this.onMouseup);
+    this.container.removeEventListener(
+      "mouseleave",
+      this.minimap.onContainerMouseLeave!
+    );
+    this.container.removeEventListener(
+      "mouseup",
+      this.minimap.onContainerMouseUp!
+    );
+
+    this.tables.forEach((table) => {
+      table.cleanup();
+    });
+
+    this.svgContainer.removeEventListener("scroll", this.onScroll);
+    this.svgContainer.removeEventListener("click", this.onClick);
+    this.container.removeEventListener("wheel", this.onWheel);
+
+    if (isSafari) {
+      this.container.removeEventListener(
+        "gesturestart",
+        this.onGesturestart as CommonEventListener
+      );
+      this.container.removeEventListener(
+        "gesturechange",
+        this.onGesturechange as CommonEventListener,
+        true
+      );
+
+      this.container.removeEventListener("gestureend", this.onGestureend);
+    } else {
+      this.container.removeEventListener("pointerdown", this.onPointerdown);
+      this.container.removeEventListener("pointermove", this.onPointermove);
+
+      this.container.removeEventListener("pointerup", this.onPointer, true);
+      this.container.removeEventListener("pointercancel", this.onPointer, true);
+      this.container.removeEventListener("pointerout", this.onPointer, true);
+      this.container.removeEventListener("pointerleave", this.onPointer, true);
+    }
   }
 
   setViewport(type = Viewport.noChange): Promise<[void, void]> {

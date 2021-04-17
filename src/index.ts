@@ -124,7 +124,7 @@ class DbViewer extends HTMLElement {
     if (this.checkWindowLoaded()) {
       this.whenWindowLoaded();
     } else {
-      window.addEventListener("load", this.whenWindowLoaded.bind(this));
+      window.addEventListener("load", this.whenWindowLoaded);
     }
   }
 
@@ -204,12 +204,12 @@ class DbViewer extends HTMLElement {
         break;
     }
   }
-  private shadowDomLoaded(shadowDom: ShadowRoot): Promise<undefined> {
+  private shadowDomLoaded(shadowDom: ShadowRoot): Promise<void> {
     return new Promise((resolve) => {
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
           if (mutation.addedNodes) {
-            resolve(undefined);
+            resolve();
           }
         });
       });
@@ -217,7 +217,7 @@ class DbViewer extends HTMLElement {
     });
   }
 
-  private whenWindowLoaded(): void {
+  private whenWindowLoaded = (): void => {
     const shadowDom = this.attachShadow({
       mode: "open",
     });
@@ -244,7 +244,7 @@ class DbViewer extends HTMLElement {
         this.dispatchEvent(new ReadyEvent());
       });
     shadowDom.innerHTML = template;
-  }
+  };
 
   private checkWindowLoaded(): boolean {
     return document.readyState === "complete";
