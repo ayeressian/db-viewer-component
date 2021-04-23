@@ -7,6 +7,7 @@ import TableData from "./types/table-data";
 import Vertices from "./types/vertices";
 import Viewer from "./viewer";
 import { isTouchEvent, normalizeEvent } from "./util";
+import { createTableElem } from "./create-table-elem";
 
 const OUT_OF_VIEW_CORD = -1000;
 
@@ -31,9 +32,9 @@ export default class Table {
   private nameValue: string;
   private posValue: Point | string;
   private disableMovementValue: boolean;
-  private elem!: SVGGraphicsElement;
+  private gElem!: SVGGraphicsElement;
   private viewer!: Viewer;
-  private table!: HTMLElement;
+  private tableElem!: HTMLElement;
   private onMove!: OnMove;
   private initialClientX!: number;
   private initialClientY!: number;
@@ -86,10 +87,10 @@ export default class Table {
   }
 
   getCenter(): Point {
-    const bbox = this.elem.getBBox();
+    const bbox = this.gElem.getBBox();
 
-    const x = bbox.x + this.table.offsetWidth / 2;
-    const y = bbox.y + this.table.offsetHeight / 2;
+    const x = bbox.x + this.tableElem.offsetWidth / 2;
+    const y = bbox.y + this.tableElem.offsetHeight / 2;
     return {
       x,
       y,
@@ -97,60 +98,36 @@ export default class Table {
   }
 
   getVertices(): Vertices {
-    const bbox = this.elem.getBBox();
+    const bbox = this.gElem.getBBox();
     return {
       bottomLeft: {
         x: bbox.x,
-        y: bbox.y + this.table.offsetHeight,
+        y: bbox.y + this.tableElem.offsetHeight,
       },
       bottomRight: {
-        x: bbox.x + this.table.offsetWidth,
-        y: bbox.y + this.table.offsetHeight,
+        x: bbox.x + this.tableElem.offsetWidth,
+        y: bbox.y + this.tableElem.offsetHeight,
       },
       topLeft: {
         x: bbox.x,
         y: bbox.y,
       },
       topRight: {
-        x: bbox.x + this.table.offsetWidth,
+        x: bbox.x + this.tableElem.offsetWidth,
         y: bbox.y,
       },
     };
   }
 
   render(): SVGGraphicsElement {
-    this.elem = document.createElementNS(
-      constant.nsSvg,
-      "g"
-    ) as SVGGraphicsElement;
-    this.foreignObject = document.createElementNS(
-      constant.nsSvg,
-      "foreignObject"
+    const { table, g, foreignObject } = createTableElem(
+      this.name,
+      this.columns
     );
-    this.elem.appendChild(this.foreignObject);
+    this.tableElem = table;
+    this.gElem = g;
+    this.foreignObject = foreignObject;
 
-    this.table = document.createElementNS(
-      constant.nsHtml,
-      "table"
-    ) as HTMLElement;
-    this.table.className = "table";
-    const thead = document.createElementNS(constant.nsHtml, "thead");
-    const headingTr = document.createElementNS(constant.nsHtml, "tr");
-    const headingTh = document.createElementNS(constant.nsHtml, "th");
-    headingTh.setAttributeNS(null, "colspan", `${3}`);
-    headingTh.innerHTML = this.nameValue;
-    headingTr.appendChild(headingTh);
-    thead.appendChild(headingTr);
-
-    this.table.appendChild(thead);
-
-    this.foreignObject.appendChild(this.table);
-
-    const tbody = document.createElementNS(constant.nsHtml, "tbody");
-
-    this.createColumns(tbody);
-
-    this.table.appendChild(tbody);
     this.clickEvents();
     this.moveEvents();
 
@@ -164,11 +141,11 @@ export default class Table {
       }
     }
 
-    return this.elem;
+    return this.gElem;
   }
 
   addedToView(): void {
-    const computedStyle = getComputedStyle(this.table);
+    const computedStyle = getComputedStyle(this.tableElem);
     let borderWidth =
       parseInt(computedStyle.borderLeftWidth, 10) +
       parseInt(computedStyle.borderRightWidth, 10);
@@ -180,12 +157,12 @@ export default class Table {
     this.foreignObject.setAttributeNS(
       null,
       "width",
-      (this.table.scrollWidth + borderWidth).toString()
+      (this.tableElem.scrollWidth + borderWidth).toString()
     );
     this.foreignObject.setAttributeNS(
       null,
       "height",
-      (this.table.scrollHeight + borderHeight).toString()
+      (this.tableElem.scrollHeight + borderHeight).toString()
     );
   }
 
@@ -220,10 +197,10 @@ export default class Table {
 
   data(): TableData {
     return {
-      height: this.table.offsetHeight,
+      height: this.tableElem.offsetHeight,
       name: this.nameValue,
       pos: this.posValue as Point,
-      width: this.table.offsetWidth,
+      width: this.tableElem.offsetWidth,
     };
   }
 
@@ -252,23 +229,23 @@ export default class Table {
   }
 
   private moveToTop(): void {
-    const parentNode = this.elem.parentNode;
+    const parentNode = this.gElem.parentNode;
     // The reason for not using append of this.elem instead of remaining element prepend
     // is to keep event concistency. The following code is for making click and and double click to work.
     Array.from(parentNode!.children)
       .reverse()
       .forEach((childElem) => {
-        if (childElem !== this.elem) {
+        if (childElem !== this.gElem) {
           parentNode!.prepend(childElem);
         }
       });
   }
 
   cleanup = (): void => {
-    this.elem.removeEventListener("dblclick", this.#onDoubleClick);
-    this.elem.removeEventListener("click", this.#onClick);
-    this.elem.removeEventListener("touch", this.#onClick);
-    this.elem.removeEventListener("contextmenu", this.#onContextMenu);
+    this.gElem.removeEventListener("dblclick", this.#onDoubleClick);
+    this.gElem.removeEventListener("click", this.#onClick);
+    this.gElem.removeEventListener("touch", this.#onClick);
+    this.gElem.removeEventListener("contextmenu", this.#onContextMenu);
 
     document.removeEventListener(
       "mousemove",
@@ -288,11 +265,11 @@ export default class Table {
       this.#mouseUp as CommonEventListener
     );
 
-    this.elem.removeEventListener(
+    this.gElem.removeEventListener(
       "mousedown",
       this.#onMouseDown as CommonEventListener
     );
-    this.elem.removeEventListener(
+    this.gElem.removeEventListener(
       "touchstart",
       this.#onMouseDown as CommonEventListener
     );
@@ -311,20 +288,20 @@ export default class Table {
   };
 
   private clickEvents(): void {
-    this.elem.addEventListener("dblclick", this.#onDoubleClick);
-    this.elem.addEventListener("click", this.#onClick);
-    this.elem.addEventListener("touch", this.#onClick);
-    this.elem.addEventListener("contextmenu", this.#onContextMenu);
+    this.gElem.addEventListener("dblclick", this.#onDoubleClick);
+    this.gElem.addEventListener("click", this.#onClick);
+    this.gElem.addEventListener("touch", this.#onClick);
+    this.gElem.addEventListener("contextmenu", this.#onContextMenu);
   }
 
   private notAllowOutOfBound(x: number, y: number): Point {
     if (x < 0) x = 0;
     if (y < 0) y = 0;
-    if (x + this.table.offsetWidth > this.viewer.getViewerPanWidth()) {
-      x = this.viewer.getViewerPanWidth() - this.table.offsetWidth;
+    if (x + this.tableElem.offsetWidth > this.viewer.getViewerPanWidth()) {
+      x = this.viewer.getViewerPanWidth() - this.tableElem.offsetWidth;
     }
-    if (y + this.table.offsetHeight > this.viewer.getViewerPanHeight()) {
-      y = this.viewer.getViewerPanHeight() - this.table.offsetHeight;
+    if (y + this.tableElem.offsetHeight > this.viewer.getViewerPanHeight()) {
+      y = this.viewer.getViewerPanHeight() - this.tableElem.offsetHeight;
     }
     return { x, y };
   }
@@ -369,7 +346,7 @@ export default class Table {
     ) {
       this.onMoveEnd(this);
     }
-    this.table.classList.remove("move");
+    this.tableElem.classList.remove("move");
     document.removeEventListener(
       "mouseup",
       this.#mouseUp as CommonEventListener
@@ -398,8 +375,8 @@ export default class Table {
       this.disableMovementValue === false
     ) {
       const eventVal = normalizeEvent(event);
-      this.table.classList.add("move");
-      const boundingRect = this.elem.getBoundingClientRect();
+      this.tableElem.classList.add("move");
+      const boundingRect = this.gElem.getBoundingClientRect();
       const zoom = this.viewer.getZoom()!;
       this.#mouseDownInitialElemX =
         (eventVal.clientX - boundingRect.left) / zoom;
@@ -432,51 +409,14 @@ export default class Table {
   };
 
   private moveEvents(): void {
-    this.elem.addEventListener(
+    this.gElem.addEventListener(
       "mousedown",
       this.#onMouseDown as CommonEventListener
     );
-    this.elem.addEventListener(
+    this.gElem.addEventListener(
       "touchstart",
       this.#onMouseDown as CommonEventListener
     );
-  }
-
-  private createColumns(tbody: Element): void {
-    this.columns.forEach((column) => {
-      const columnTr = document.createElementNS(
-        constant.nsHtml,
-        "tr"
-      ) as HTMLTableRowElement;
-      column.elem = columnTr;
-
-      const columnStatusTd = document.createElementNS(constant.nsHtml, "td");
-      if (column.pk) {
-        const pdDiv = document.createElementNS(constant.nsHtml, "div");
-        pdDiv.classList.add("pk");
-        columnStatusTd.appendChild(pdDiv);
-        columnStatusTd.classList.add("status");
-      } else if ((column as ColumnFk).fk) {
-        const fkDiv = document.createElementNS(constant.nsHtml, "div");
-        fkDiv.classList.add("fk");
-        columnStatusTd.appendChild(fkDiv);
-        columnStatusTd.classList.add("status");
-      }
-      columnTr.appendChild(columnStatusTd);
-
-      const columnNameTd = document.createElementNS(constant.nsHtml, "td");
-      columnNameTd.innerHTML = column.name;
-      columnTr.appendChild(columnNameTd);
-
-      const columnTypeTd = document.createElementNS(constant.nsHtml, "td");
-      if (isColumnFk(column)) {
-        columnTypeTd.innerHTML = column.fk!.column.type;
-      } else {
-        columnTypeTd.innerHTML = column.type;
-      }
-      columnTr.appendChild(columnTypeTd);
-      tbody.appendChild(columnTr);
-    });
   }
 
   private center(): void {
@@ -484,11 +424,11 @@ export default class Table {
     const x =
       viewport.x +
       viewport.width / 2 -
-      this.table.offsetWidth / this.viewer.getZoom()! / 2;
+      this.tableElem.offsetWidth / this.viewer.getZoom()! / 2;
     const y =
       viewport.y +
       viewport.height / 2 -
-      this.table.offsetHeight / this.viewer.getZoom()! / 2;
+      this.tableElem.offsetHeight / this.viewer.getZoom()! / 2;
     this.setTablePos(x, y);
   }
 }
