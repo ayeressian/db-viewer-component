@@ -1,4 +1,14 @@
 {
+  "annotations": [
+    {
+      "title": "TITLE",
+      "text": "TEST TEST TEST TEST TEST",
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
   "tables": [
     {
       "name": "school",

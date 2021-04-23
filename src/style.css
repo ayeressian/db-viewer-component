@@ -103,6 +103,18 @@
   border-right: 2px solid var(--table-boarder-color);
 }
 
+.annotation {
+  font-size: 12px;
+  padding: 10px;
+  background-color: white;
+  min-width: 100px;
+  min-height: 100px;
+  border: 2px solid black;
+}
+.annotation p {
+  font-size: 1em;
+}
+
 .table.move {
   cursor: move;
 }

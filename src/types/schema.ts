@@ -26,8 +26,18 @@ export interface TableSchema {
   columns: ColumnSchema[];
 }
 
+export interface AnnotationSchema {
+  pos: Point;
+  title?: string;
+  text?: string;
+  color?: string;
+  width: number;
+  height: number;
+}
+
 export interface Schema {
   tables: TableSchema[];
+  annotations?: AnnotationSchema[];
   arrangement?: TableArrang;
   viewport?: Viewport;
   viewWidth?: number;

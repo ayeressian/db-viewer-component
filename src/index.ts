@@ -25,6 +25,7 @@ import {
 import Point from "./types/point";
 import { RelationData } from "./realtion/relation";
 import { RelationContextMenuEvent } from "./events";
+import Annotation from "./annotation";
 
 const NO_TABLE = new Error("No table exist with the given name.");
 const INVALID_SCHEMA = new Error("Invalid schema.");
@@ -62,8 +63,11 @@ class DbViewer extends HTMLElement {
       this.notParsedSchema = cloneDeep(schema);
       const schemaObj = cloneDeep(schema);
       this.tables = schemaParser(schemaObj);
+      this.createAnnotations();
+
       this.viewer.load(
         this.tables,
+        this.#annotations,
         this.viewport ?? schemaObj.viewport,
         schemaObj.arrangement ?? TableArrang.default,
         schemaObj.viewWidth,
@@ -115,6 +119,7 @@ class DbViewer extends HTMLElement {
   private srcVal!: string;
   private viewportVal!: Viewport;
   private notParsedSchema!: Schema;
+  #annotations!: Annotation[];
 
   constructor() {
     super();
@@ -156,6 +161,13 @@ class DbViewer extends HTMLElement {
     table.setTablePos(xCord, yCord);
   }
 
+  private createAnnotations() {
+    this.#annotations =
+      this.schema?.annotations?.map(
+        (annotationSchema) => new Annotation(annotationSchema)
+      ) ?? [];
+  }
+
   attributeChangedCallback(
     name: string,
     _oldValue: string,
@@ -173,9 +185,11 @@ class DbViewer extends HTMLElement {
               }
               this.notParsedSchema = cloneDeep<Schema>(response);
               this.tables = schemaParser(response);
+              this.createAnnotations();
 
               return this.viewer.load(
                 this.tables,
+                this.#annotations,
                 this.viewport ?? (response as Schema).viewport,
                 this.notParsedSchema.arrangement ?? TableArrang.default,
                 this.notParsedSchema.viewWidth,

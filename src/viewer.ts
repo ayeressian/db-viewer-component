@@ -13,6 +13,7 @@ import Point from "./types/point";
 import { normalizeEvent, isSafari } from "./util";
 import { TableArrang, Viewport } from "./types/schema";
 import { center, distance } from "./math-util";
+import Annotation from "./annotation";
 
 interface SideAndCount {
   side: Orientation;
@@ -27,6 +28,7 @@ interface GestureEvent extends MouseEvent {
 export default class Viewer {
   isTableMovementDisabled = false;
   tables: Table[] = [];
+  annotations: Annotation[] = [];
   private container: HTMLElement;
   private svgElem: SVGGraphicsElement;
   private svgContainer: HTMLElement;
@@ -92,6 +94,7 @@ export default class Viewer {
 
   async load(
     tables: Table[],
+    annotations: Annotation[],
     viewport: Viewport = Viewport.centerByTables,
     tableArrang: TableArrang = TableArrang.default,
     viewWidth = constant.VIEW_WIDTH,
@@ -100,6 +103,7 @@ export default class Viewer {
     this.relationInfos = [];
     this.svgElem.innerHTML = "";
     this.tables = tables;
+    this.annotations = annotations;
     tables.forEach((table) => {
       table.setVeiwer(this);
       table.setMoveListener(this.onTableMove.bind(this));
@@ -146,8 +150,13 @@ export default class Viewer {
 
     this.minimap.removeTables();
 
-    let i = 0;
-    for (const table of this.tables) {
+    for (const annotation of this.annotations) {
+      const annotationElem = annotation.render();
+      this.svgElem.appendChild(annotationElem);
+      annotation.addedToView();
+    }
+
+    for (const [i, table] of this.tables.entries()) {
       this.minimap.createTable(table);
 
       const tableElm = table.render();
@@ -195,7 +204,6 @@ export default class Viewer {
       if (bottomY > maxY) {
         maxY = bottomY;
       }
-      ++i;
     }
 
     if (this.tableArrang === TableArrang.spiral) {
@@ -384,34 +392,34 @@ export default class Viewer {
         relation.calcPathTableSides()
       );
 
-      const leftRelations = tableRelations.filter(
-        (r) =>
-          ((r.toTable === table && r.toTablePathSide === Orientation.Left) ||
-            (r.fromTable === table &&
-              r.fromTablePathSide === Orientation.Left)) &&
-          !r.sameTableRelation()
-      );
-      const rightRelations = tableRelations.filter(
-        (r) =>
-          ((r.toTable === table && r.toTablePathSide === Orientation.Right) ||
-            (r.fromTable === table &&
-              r.fromTablePathSide === Orientation.Right)) &&
-          !r.sameTableRelation()
-      );
-      const topRelations = tableRelations.filter(
-        (r) =>
-          ((r.toTable === table && r.toTablePathSide === Orientation.Top) ||
-            (r.fromTable === table &&
-              r.fromTablePathSide === Orientation.Top)) &&
-          !r.sameTableRelation()
-      );
-      const bottomRelations = tableRelations.filter(
-        (r) =>
-          ((r.toTable === table && r.toTablePathSide === Orientation.Bottom) ||
-            (r.fromTable === table &&
-              r.fromTablePathSide === Orientation.Bottom)) &&
-          !r.sameTableRelation()
-      );
+      const leftRelations = [] as Relation[],
+        rightRelations = [] as Relation[],
+        topRelations = [] as Relation[],
+        bottomRelations = [] as Relation[];
+
+      for (const tableRelation of tableRelations) {
+        let pathSide: Orientation | undefined;
+        if (tableRelation.sameTableRelation()) continue;
+        if (tableRelation.toTable === table) {
+          pathSide = tableRelation.toTablePathSide;
+        } else if (tableRelation.fromTable === table) {
+          pathSide = tableRelation.fromTablePathSide;
+        }
+        switch (pathSide) {
+          case Orientation.Left:
+            leftRelations.push(tableRelation);
+            break;
+          case Orientation.Right:
+            rightRelations.push(tableRelation);
+            break;
+          case Orientation.Top:
+            topRelations.push(tableRelation);
+            break;
+          case Orientation.Bottom:
+            bottomRelations.push(tableRelation);
+            break;
+        }
+      }
 
       Relation.ySort(leftRelations, table);
       Relation.ySort(rightRelations, table);
