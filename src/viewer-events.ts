@@ -245,6 +245,30 @@ class ViewerEvents {
     this.minimap.setMinimapViewPoint(this.viewBoxVals);
   }
 
+  private setUpTouchEvents(): void {
+    if (isSafari) {
+      this.container.addEventListener(
+        "gesturestart",
+        this.onGesturestart as CommonEventListener
+      );
+      this.container.addEventListener(
+        "gesturechange",
+        this.onGesturechange as CommonEventListener,
+        true
+      );
+
+      this.container.addEventListener("gestureend", this.onGestureend);
+    } else {
+      this.container.addEventListener("pointerdown", this.onPointerdown);
+      this.container.addEventListener("pointermove", this.onPointermove);
+
+      this.container.addEventListener("pointerup", this.onPointer, true);
+      this.container.addEventListener("pointercancel", this.onPointer, true);
+      this.container.addEventListener("pointerout", this.onPointer, true);
+      this.container.addEventListener("pointerleave", this.onPointer, true);
+    }
+  }
+
   setUpEvents(): void {
     window.addEventListener("resize", this.windowResizeEvent.bind(this));
 
@@ -283,32 +307,36 @@ class ViewerEvents {
 
     this.container.addEventListener("wheel", this.onWheel);
 
+    this.setUpTouchEvents();
+  }
+
+  cleanUpTouchEvents(): void {
     if (isSafari) {
-      this.container.addEventListener(
+      this.container.removeEventListener(
         "gesturestart",
         this.onGesturestart as CommonEventListener
       );
-      this.container.addEventListener(
+      this.container.removeEventListener(
         "gesturechange",
         this.onGesturechange as CommonEventListener,
         true
       );
 
-      this.container.addEventListener("gestureend", this.onGestureend);
+      this.container.removeEventListener("gestureend", this.onGestureend);
     } else {
-      this.container.addEventListener("pointerdown", this.onPointerdown);
-      this.container.addEventListener("pointermove", this.onPointermove);
+      this.container.removeEventListener("pointerdown", this.onPointerdown);
+      this.container.removeEventListener("pointermove", this.onPointermove);
 
-      this.container.addEventListener("pointerup", this.onPointer, true);
-      this.container.addEventListener("pointercancel", this.onPointer, true);
-      this.container.addEventListener("pointerout", this.onPointer, true);
-      this.container.addEventListener("pointerleave", this.onPointer, true);
+      this.container.removeEventListener("pointerup", this.onPointer, true);
+      this.container.removeEventListener("pointercancel", this.onPointer, true);
+      this.container.removeEventListener("pointerout", this.onPointer, true);
+      this.container.removeEventListener("pointerleave", this.onPointer, true);
     }
   }
 
   // TODO: call cleanup when appropriate
-  cleanup(): void {
-    this.minimap.cleanup();
+  cleanUp(): void {
+    this.minimap.cleanUp();
 
     this.mainElem.removeEventListener(
       "mousemove",
@@ -336,27 +364,7 @@ class ViewerEvents {
     this.svgContainer.removeEventListener("click", this.onClick);
     this.container.removeEventListener("wheel", this.onWheel);
 
-    if (isSafari) {
-      this.container.removeEventListener(
-        "gesturestart",
-        this.onGesturestart as CommonEventListener
-      );
-      this.container.removeEventListener(
-        "gesturechange",
-        this.onGesturechange as CommonEventListener,
-        true
-      );
-
-      this.container.removeEventListener("gestureend", this.onGestureend);
-    } else {
-      this.container.removeEventListener("pointerdown", this.onPointerdown);
-      this.container.removeEventListener("pointermove", this.onPointermove);
-
-      this.container.removeEventListener("pointerup", this.onPointer, true);
-      this.container.removeEventListener("pointercancel", this.onPointer, true);
-      this.container.removeEventListener("pointerout", this.onPointer, true);
-      this.container.removeEventListener("pointerleave", this.onPointer, true);
-    }
+    this.cleanUpTouchEvents();
   }
 }
 

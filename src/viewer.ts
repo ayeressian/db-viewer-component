@@ -13,11 +13,7 @@ import { normalizeEvent } from "./util";
 import { TableArrang, Viewport } from "./types/schema";
 import ViewerEvents from "./viewer-events";
 
-interface SideAndCount {
-  side: Orientation;
-  order: number;
-  count: number;
-}
+type SidesAndCount = { [K in Orientation]: number };
 
 export default class Viewer {
   isTableMovementDisabled = false;
@@ -358,13 +354,11 @@ export default class Viewer {
 
   private updatePathIndex(
     relations: Relation[],
-    side: Orientation,
-    sidesAndCount: SideAndCount[],
+    count: number,
     table: Table
   ): void {
     let pathIndex = 0;
     relations.forEach((relation) => {
-      const count = sidesAndCount.find((item) => item.side === side)!.count;
       if (relation.fromTable !== relation.toTable) {
         if (relation.fromTable === table) {
           relation.fromPathIndex = pathIndex;
@@ -384,122 +378,122 @@ export default class Viewer {
     });
   }
 
+  private getTableRelationsByOrientation(
+    table: Table,
+    tableRelations: Relation[]
+  ): {
+    leftRelations: Relation[];
+    rightRelations: Relation[];
+    topRelations: Relation[];
+    bottomRelations: Relation[];
+  } {
+    const leftRelations = [] as Relation[],
+      rightRelations = [] as Relation[],
+      topRelations = [] as Relation[],
+      bottomRelations = [] as Relation[];
+
+    for (const tableRelation of tableRelations) {
+      let pathSide: Orientation | undefined;
+      if (tableRelation.sameTableRelation()) continue;
+      if (tableRelation.toTable === table) {
+        pathSide = tableRelation.toTablePathSide;
+      } else if (tableRelation.fromTable === table) {
+        pathSide = tableRelation.fromTablePathSide;
+      }
+      switch (pathSide) {
+        case Orientation.Left:
+          leftRelations.push(tableRelation);
+          break;
+        case Orientation.Right:
+          rightRelations.push(tableRelation);
+          break;
+        case Orientation.Top:
+          topRelations.push(tableRelation);
+          break;
+        case Orientation.Bottom:
+          bottomRelations.push(tableRelation);
+          break;
+      }
+    }
+
+    Relation.ySort(leftRelations, table);
+    Relation.ySort(rightRelations, table);
+    Relation.xSort(topRelations, table);
+    Relation.xSort(bottomRelations, table);
+
+    return { leftRelations, rightRelations, topRelations, bottomRelations };
+  }
+
+  private minSide(sidesAndCount: SidesAndCount): Orientation {
+    const [side] = Object.entries(sidesAndCount).reduce(
+      (
+        [minOrientation, minCount],
+        [orientationString, count]
+      ): [Orientation, number] => {
+        const orientation = parseInt(orientationString) as Orientation;
+        if (count < minCount) return [orientation, count];
+        return [minOrientation, minCount];
+      },
+      [Orientation.Left, Number.MAX_SAFE_INTEGER] as [Orientation, number]
+    );
+    return side;
+  }
+
   private drawRelations(): void {
     this.tables.forEach((table) => {
       const tableRelations = this.getTableRelations(table);
-
       const pendingSelfRelations = tableRelations.filter((relation) =>
         relation.calcPathTableSides()
       );
+      const {
+        leftRelations,
+        rightRelations,
+        topRelations,
+        bottomRelations,
+      } = this.getTableRelationsByOrientation(table, tableRelations);
 
-      const leftRelations = [] as Relation[],
-        rightRelations = [] as Relation[],
-        topRelations = [] as Relation[],
-        bottomRelations = [] as Relation[];
-
-      for (const tableRelation of tableRelations) {
-        let pathSide: Orientation | undefined;
-        if (tableRelation.sameTableRelation()) continue;
-        if (tableRelation.toTable === table) {
-          pathSide = tableRelation.toTablePathSide;
-        } else if (tableRelation.fromTable === table) {
-          pathSide = tableRelation.fromTablePathSide;
-        }
-        switch (pathSide) {
-          case Orientation.Left:
-            leftRelations.push(tableRelation);
-            break;
-          case Orientation.Right:
-            rightRelations.push(tableRelation);
-            break;
-          case Orientation.Top:
-            topRelations.push(tableRelation);
-            break;
-          case Orientation.Bottom:
-            bottomRelations.push(tableRelation);
-            break;
-        }
-      }
-
-      Relation.ySort(leftRelations, table);
-      Relation.ySort(rightRelations, table);
-      Relation.xSort(topRelations, table);
-      Relation.xSort(bottomRelations, table);
-
-      const sidesAndCount: SideAndCount[] = [
-        {
-          count: leftRelations.length,
-          order: 1,
-          side: Orientation.Left,
-        },
-        {
-          count: rightRelations.length,
-          order: 2,
-          side: Orientation.Right,
-        },
-        {
-          count: topRelations.length,
-          order: 3,
-          side: Orientation.Top,
-        },
-        {
-          count: bottomRelations.length,
-          order: 4,
-          side: Orientation.Bottom,
-        },
-      ];
+      const sidesAndCount: SidesAndCount = {
+        [Orientation.Left]: leftRelations.length,
+        [Orientation.Right]: rightRelations.length,
+        [Orientation.Top]: topRelations.length,
+        [Orientation.Bottom]: bottomRelations.length,
+      };
 
       pendingSelfRelations.forEach((pendingSelfRelation) => {
-        const minPathSideCount = sidesAndCount.sort((item1, item2) => {
-          const result = item1.count - item2.count;
-          if (result === 0) {
-            return item1.order - item2.order;
-          }
-          return result;
-        })[0];
+        const minSide = this.minSide(sidesAndCount);
 
-        switch (minPathSideCount.side) {
+        switch (minSide) {
           case Orientation.Left:
             leftRelations.push(pendingSelfRelation);
-            pendingSelfRelation.fromTablePathSide = Orientation.Left;
-            pendingSelfRelation.toTablePathSide = Orientation.Left;
             break;
           case Orientation.Right:
             rightRelations.push(pendingSelfRelation);
-            pendingSelfRelation.fromTablePathSide = Orientation.Right;
-            pendingSelfRelation.toTablePathSide = Orientation.Right;
             break;
           case Orientation.Top:
             topRelations.push(pendingSelfRelation);
-            pendingSelfRelation.fromTablePathSide = Orientation.Top;
-            pendingSelfRelation.toTablePathSide = Orientation.Top;
             break;
           case Orientation.Bottom:
             bottomRelations.push(pendingSelfRelation);
-            pendingSelfRelation.fromTablePathSide = Orientation.Bottom;
-            pendingSelfRelation.toTablePathSide = Orientation.Bottom;
             break;
         }
-        minPathSideCount.count += 2;
+        pendingSelfRelation.fromTablePathSide = minSide;
+        pendingSelfRelation.toTablePathSide = minSide;
+        sidesAndCount[minSide] += 2;
       });
-
       this.updatePathIndex(
         leftRelations,
-        Orientation.Left,
-        sidesAndCount,
+        sidesAndCount[Orientation.Left],
         table
       );
       this.updatePathIndex(
         rightRelations,
-        Orientation.Right,
-        sidesAndCount,
+        sidesAndCount[Orientation.Right],
         table
       );
-      this.updatePathIndex(topRelations, Orientation.Top, sidesAndCount, table);
+      this.updatePathIndex(topRelations, sidesAndCount[Orientation.Top], table);
       this.updatePathIndex(
         bottomRelations,
-        Orientation.Bottom,
-        sidesAndCount,
+        sidesAndCount[Orientation.Bottom],
         table
       );
     });
