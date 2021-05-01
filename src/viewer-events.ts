@@ -6,7 +6,6 @@ import Callbacks from "./types/callbacks";
 import CommonEventListener from "./types/common-event-listener";
 import ViewBoxVals from "./types/view-box-vals";
 import { isSafari } from "./util";
-import Viewer from "./viewer";
 
 interface GestureEvent extends MouseEvent {
   scale: number;
@@ -23,7 +22,6 @@ class ViewerEvents {
   constructor(
     private svgContainer: HTMLElement,
     private viewBoxVals: ViewBoxVals,
-    private viewer: Viewer,
     private minimap: Minimap,
     private svgElem: SVGGraphicsElement,
     private mainElem: ShadowRoot,
@@ -35,12 +33,8 @@ class ViewerEvents {
       targetX: number,
       targetY: number
     ) => Promise<void>,
-    private onTableMove: (
-      table: Table,
-      deltaX: number,
-      deltaY: number,
-      cordinatesChanged: boolean
-    ) => void
+    private getZoom: () => number,
+    private viewportAddjustment: () => void
   ) {
     this.setUpEvents();
   }
@@ -73,7 +67,7 @@ class ViewerEvents {
 
   private onScroll = () => {
     if (!this.disbleScrollEvent) {
-      const zoom = this.viewer.getZoom();
+      const zoom = this.getZoom();
       this.viewBoxVals.x = this.svgContainer.scrollLeft / zoom;
       this.viewBoxVals.y = this.svgContainer.scrollTop / zoom;
       this.minimap.setMinimapViewPoint(this.viewBoxVals);
@@ -99,8 +93,7 @@ class ViewerEvents {
       const targetX = event.clientX - clientRect.left;
       const targetY = event.clientY - clientRect.top;
       this.setZoom(
-        this.viewer.getZoom() -
-          event.deltaY * constant.SCROLL_TO_ZOOM_MULTIPLIER,
+        this.getZoom() - event.deltaY * constant.SCROLL_TO_ZOOM_MULTIPLIER,
         targetX,
         targetY
       );
@@ -127,7 +120,7 @@ class ViewerEvents {
     const targetX = event.clientX - clientRect.left;
     const targetY = event.clientY - clientRect.top;
     const scaleChange = event.scale - this.safariScale;
-    this.setZoom(this.viewer.getZoom() + scaleChange, targetX, targetY);
+    this.setZoom(this.getZoom() + scaleChange, targetX, targetY);
     this.safariScale = event.scale;
   };
 
@@ -204,7 +197,7 @@ class ViewerEvents {
         const delta = curDiff - this.prevDiff;
         event.preventDefault();
         this.setZoom(
-          this.viewer.getZoom() + delta * constant.PINCH_TO_ZOOM_MULTIPLIER,
+          this.getZoom() + delta * constant.PINCH_TO_ZOOM_MULTIPLIER,
           centerPoint.x,
           centerPoint.y
         );
@@ -229,18 +222,18 @@ class ViewerEvents {
   };
 
   private onClick = (event: MouseEvent) => {
-    const zoom = this.viewer.getZoom();
+    const zoom = this.getZoom();
     const x = event.offsetX / zoom;
     const y = event.offsetY / zoom;
     this.callbacks?.viewportClick(x, y);
   };
 
   private windowResizeEvent(): void {
-    const zoom = this.viewer.getZoom();
+    const zoom = this.getZoom();
     this.viewBoxVals.width = this.svgContainer.clientWidth / zoom;
     this.viewBoxVals.height = this.svgContainer.clientHeight / zoom;
 
-    this.viewer.viewportAddjustment();
+    this.viewportAddjustment();
 
     this.minimap.setMinimapViewPoint(this.viewBoxVals);
   }
@@ -294,12 +287,6 @@ class ViewerEvents {
       "mouseup",
       this.minimap.onContainerMouseUp!
     );
-
-    if (this.tables) {
-      this.tables.forEach((table) => {
-        table.setMoveListener(this.onTableMove);
-      });
-    }
 
     this.svgContainer.addEventListener("scroll", this.onScroll);
 

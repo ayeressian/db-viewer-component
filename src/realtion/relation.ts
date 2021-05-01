@@ -13,7 +13,6 @@ import selfRelationRight from "./self-relation-right";
 import selfRelationTop from "./self-relation-top";
 import threeLinePathVert from "./three-line-path-vert";
 import selfRelationBottom from "./self-relation-bottom";
-import Viewer from "../viewer";
 
 enum Axis {
   x = "x",
@@ -26,6 +25,12 @@ interface BasicRelation {
   toColumn: Column;
   toTable: Table;
 }
+
+type ViewerCallbacks = {
+  relationClick: (relationData: RelationData) => void;
+  relationDblClick: (relationData: RelationData) => void;
+  relationContextMenu: (relationData: RelationData) => void;
+};
 
 export class RelationData {
   constructor(
@@ -81,7 +86,7 @@ export default class Relation {
 
   constructor(
     { fromColumn, fromTable, toColumn, toTable }: BasicRelation,
-    private viewer: Viewer
+    private viewerCallbacks: ViewerCallbacks
   ) {
     this.fromColumn = fromColumn;
     this.fromTable = fromTable;
@@ -438,15 +443,15 @@ export default class Relation {
   }
 
   private onClick = (): void => {
-    this.viewer.relationClick(this.createRelationInfo());
+    this.viewerCallbacks.relationClick(this.createRelationInfo());
   };
 
   private onDblClick = (): void => {
-    this.viewer.relationDblClick(this.createRelationInfo());
+    this.viewerCallbacks.relationDblClick(this.createRelationInfo());
   };
 
   private onContextMenu = (): void => {
-    this.viewer.relationContextMenu(this.createRelationInfo());
+    this.viewerCallbacks.relationContextMenu(this.createRelationInfo());
   };
 
   private setElems(

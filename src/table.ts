@@ -1,24 +1,31 @@
-import constant from "./const";
-import { Column, ColumnFk, isColumnFk } from "./types/column";
+import { Column } from "./types/column";
 import CommonEventListener from "./types/common-event-listener";
 import Point from "./types/point";
 import { TableSchema, TableArrang } from "./types/schema";
 import TableData from "./types/table-data";
 import Vertices from "./types/vertices";
-import Viewer from "./viewer";
 import { isTouchEvent, normalizeEvent } from "./util";
 import { createTableElem } from "./create-table-elem";
+import Viewer from "./viewer";
 
 const OUT_OF_VIEW_CORD = -1000;
 
-type OnMove = (
+type TableMove = (
   table: Table,
   x: number,
   y: number,
   cordinatesChanged: boolean
 ) => void;
 
-type OnMoveEnd = (table: Table) => void;
+type TableMoveEnd = (table: Table) => void;
+
+type ViewerCallbacks = {
+  tableDblClick: (data: TableData) => void;
+  tableClick: (data: TableData) => void;
+  tableContextMenu: (data: TableData) => void;
+  tableMove: TableMove;
+  tableMoveEnd: TableMoveEnd;
+};
 
 export default class Table {
   get pos(): string | Point {
@@ -33,12 +40,9 @@ export default class Table {
   private posValue: Point | string;
   private disableMovementValue: boolean;
   private gElem!: SVGGraphicsElement;
-  private viewer!: Viewer;
   private tableElem!: HTMLElement;
-  private onMove!: OnMove;
   private initialClientX!: number;
   private initialClientY!: number;
-  private onMoveEnd!: OnMoveEnd;
   private foreignObject!: Element;
   private penddingCenter!: boolean;
   private tablesArrangement?: TableArrang;
@@ -62,6 +66,14 @@ export default class Table {
     this.tablesArrangement = arrangement;
   }
 
+  private viewerCallbacks!: ViewerCallbacks;
+  private viewer!: Viewer;
+
+  setViewer(viewer: Viewer, viewCallbacks: ViewerCallbacks): void {
+    this.viewer = viewer;
+    this.viewerCallbacks = viewCallbacks;
+  }
+
   getColumns(): Column[] {
     return this.columns;
   }
@@ -76,14 +88,6 @@ export default class Table {
 
   addColumn(column: Column): void {
     this.columns.push(column);
-  }
-
-  setMoveListener(onMove: OnMove): void {
-    this.onMove = onMove;
-  }
-
-  setMoveEndListener(onMoveEnd: OnMoveEnd): void {
-    this.onMoveEnd = onMoveEnd;
   }
 
   getCenter(): Point {
@@ -192,7 +196,7 @@ export default class Table {
     };
     this.foreignObject.setAttributeNS(null, "x", x.toString());
     this.foreignObject.setAttributeNS(null, "y", y.toString());
-    if (this.onMove) this.onMove(this, x, y, cordinatesChanged);
+    this.viewerCallbacks.tableMove(this, x, y, cordinatesChanged);
   };
 
   data(): TableData {
@@ -202,10 +206,6 @@ export default class Table {
       pos: this.posValue as Point,
       width: this.tableElem.offsetWidth,
     };
-  }
-
-  setVeiwer(veiwer: Viewer): void {
-    this.viewer = veiwer;
   }
 
   highlightFrom(column: Column): void {
@@ -276,15 +276,15 @@ export default class Table {
   };
 
   #onDoubleClick = (): void => {
-    this.viewer.tableDblClick(this.data());
+    this.viewerCallbacks.tableDblClick(this.data());
   };
 
   #onClick = (): void => {
-    this.viewer.tableClick(this.data());
+    this.viewerCallbacks.tableClick(this.data());
   };
 
   #onContextMenu = (): void => {
-    this.viewer.tableContextMenu(this.data());
+    this.viewerCallbacks.tableContextMenu(this.data());
   };
 
   private clickEvents(): void {
@@ -334,17 +334,16 @@ export default class Table {
 
       this.setTablePos(x, y);
       const pos = this.posValue as Point;
-      if (this.onMove) this.onMove(this, pos.x, pos.y, true);
+      this.viewerCallbacks.tableMove(this, pos.x, pos.y, true);
     }
   };
 
   #mouseUp = (mouseUpEvent: MouseEvent): void => {
     if (
-      this.onMoveEnd &&
-      (this.initialClientX !== mouseUpEvent.clientX ||
-        this.initialClientY !== mouseUpEvent.clientY)
+      this.initialClientX !== mouseUpEvent.clientX ||
+      this.initialClientY !== mouseUpEvent.clientY
     ) {
-      this.onMoveEnd(this);
+      this.viewerCallbacks.tableMoveEnd(this);
     }
     this.tableElem.classList.remove("move");
     document.removeEventListener(

@@ -16,8 +16,8 @@ import ViewerEvents from "./viewer-events";
 type SidesAndCount = { [K in Orientation]: number };
 
 export default class Viewer {
-  isTableMovementDisabled = false;
-  tables: Table[] = [];
+  private isTableMovementDisabled = false;
+  private tables: Table[] = [];
   private container: HTMLElement;
   private svgElem: SVGGraphicsElement;
   private svgContainer: HTMLElement;
@@ -60,7 +60,6 @@ export default class Viewer {
     this.viewerEvents = new ViewerEvents(
       this.svgContainer,
       this.viewBoxVals,
-      this,
       this.minimap,
       this.svgElem,
       this.mainElem,
@@ -68,7 +67,8 @@ export default class Viewer {
       this.tables,
       this.callbacks,
       this.setZoom.bind(this),
-      this.onTableMove
+      this.getZoom.bind(this),
+      this.viewportAddjustment.bind(this)
     );
 
     this.minimap.setMinimapViewPoint(this.viewBoxVals);
@@ -76,6 +76,10 @@ export default class Viewer {
     this.viewLoaded = this.reset().then(() => {
       void this.setViewport(Viewport.center);
     });
+  }
+
+  getTableMovementDisabled(): boolean {
+    return this.isTableMovementDisabled;
   }
 
   getViewLoaded(): Promise<void> {
@@ -101,9 +105,13 @@ export default class Viewer {
     this.svgElem.innerHTML = "";
     this.tables = tables;
     tables.forEach((table) => {
-      table.setVeiwer(this);
-      table.setMoveListener(this.onTableMove);
-      table.setMoveEndListener(this.onTableMoveEnd);
+      table.setViewer(this, {
+        tableDblClick: this.tableDblClick,
+        tableClick: this.tableClick,
+        tableContextMenu: this.tableContextMenu,
+        tableMove: this.tableMove,
+        tableMoveEnd: this.tableMoveEnd,
+      });
       table.disableMovement(this.isTableMovementDisabled);
     });
     this.tableArrang = tableArrang;
@@ -120,7 +128,7 @@ export default class Viewer {
     }
   }
 
-  private onTableMove = (
+  private tableMove = (
     table: Table,
     deltaX: number,
     deltaY: number,
@@ -133,7 +141,7 @@ export default class Viewer {
     if (cordinatesChanged) this.callbacks?.tableMove(table.data());
   };
 
-  onTableMoveEnd = (table: Table): void => {
+  private tableMoveEnd = (table: Table): void => {
     this.callbacks?.tableMoveEnd(table.data());
   };
 
@@ -171,7 +179,11 @@ export default class Viewer {
             toColumn: column,
             toTable: table,
           };
-          const relation = new Relation(relationInfo, this);
+          const relation = new Relation(relationInfo, {
+            relationClick: this.relationClick,
+            relationContextMenu: this.relationContextMenu,
+            relationDblClick: this.relationContextMenu,
+          });
           this.relationInfos.push(relation);
         }
       });
@@ -216,7 +228,7 @@ export default class Viewer {
     };
   }
 
-  viewportAddjustment(): void {
+  private viewportAddjustment(): void {
     if (this.viewBoxVals.x < 0) {
       this.viewBoxVals.x = 0;
     } else {
@@ -307,29 +319,29 @@ export default class Viewer {
     this.callbacks = callbacks;
   }
 
-  tableDblClick(table: TableData): void {
+  private tableDblClick = (table: TableData): void => {
     this.callbacks?.tableDblClick(table);
-  }
+  };
 
-  tableClick(table: TableData): void {
+  private tableClick = (table: TableData): void => {
     this.callbacks?.tableClick(table);
-  }
+  };
 
-  tableContextMenu(table: TableData): void {
+  private tableContextMenu = (table: TableData): void => {
     this.callbacks?.tableContextMenu(table);
-  }
+  };
 
-  relationClick(relationData: RelationData): void {
+  private relationClick = (relationData: RelationData): void => {
     this.callbacks?.relationClick(relationData);
-  }
+  };
 
-  relationDblClick(relationData: RelationData): void {
+  private relationDblClick = (relationData: RelationData): void => {
     this.callbacks?.relationDblClick(relationData);
-  }
+  };
 
-  relationContextMenu(relationData: RelationData): void {
+  private relationContextMenu = (relationData: RelationData): void => {
     this.callbacks?.relationContextMenu(relationData);
-  }
+  };
 
   disableTableMovement(value: boolean): void {
     this.isTableMovementDisabled = value;
