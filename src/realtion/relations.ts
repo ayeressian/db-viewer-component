@@ -3,6 +3,7 @@ import Orientation from "../types/orientation";
 import Relation from "./relation";
 
 type SidesAndCount = { [K in Orientation]: number };
+type OrientationAndRelations = { [K in Orientation]: Relation[] };
 
 class Relations {
   private relations: Relation[] = [];
@@ -22,16 +23,13 @@ class Relations {
   private static getTableRelationsByOrientation(
     table: Table,
     tableRelations: Relation[]
-  ): {
-    leftRelations: Relation[];
-    rightRelations: Relation[];
-    topRelations: Relation[];
-    bottomRelations: Relation[];
-  } {
-    const leftRelations = [] as Relation[],
-      rightRelations = [] as Relation[],
-      topRelations = [] as Relation[],
-      bottomRelations = [] as Relation[];
+  ): OrientationAndRelations {
+    const result: OrientationAndRelations = {
+      [Orientation.Left]: [],
+      [Orientation.Right]: [],
+      [Orientation.Top]: [],
+      [Orientation.Bottom]: [],
+    };
 
     for (const tableRelation of tableRelations) {
       let pathSide: Orientation | undefined;
@@ -41,28 +39,15 @@ class Relations {
       } else if (tableRelation.fromTable === table) {
         pathSide = tableRelation.fromTablePathSide;
       }
-      switch (pathSide) {
-        case Orientation.Left:
-          leftRelations.push(tableRelation);
-          break;
-        case Orientation.Right:
-          rightRelations.push(tableRelation);
-          break;
-        case Orientation.Top:
-          topRelations.push(tableRelation);
-          break;
-        case Orientation.Bottom:
-          bottomRelations.push(tableRelation);
-          break;
-      }
+      if (pathSide != null) result[pathSide].push(tableRelation);
     }
 
-    Relation.ySort(leftRelations, table);
-    Relation.ySort(rightRelations, table);
-    Relation.xSort(topRelations, table);
-    Relation.xSort(bottomRelations, table);
+    Relation.ySort(result[Orientation.Left], table);
+    Relation.ySort(result[Orientation.Right], table);
+    Relation.xSort(result[Orientation.Top], table);
+    Relation.xSort(result[Orientation.Bottom], table);
 
-    return { leftRelations, rightRelations, topRelations, bottomRelations };
+    return result;
   }
 
   private static minSide(sidesAndCount: SidesAndCount): Orientation {
@@ -91,68 +76,54 @@ class Relations {
     });
   }
 
-  draw(tables: Table[]): void {
-    tables.forEach((table) => {
-      const tableRelations = this.getTableRelations(table);
-      const pendingSelfRelations = tableRelations.filter((relation) =>
-        relation.calcPathTableSides()
-      );
-      const {
-        leftRelations,
-        rightRelations,
-        topRelations,
-        bottomRelations,
-      } = Relations.getTableRelationsByOrientation(table, tableRelations);
+  private itterateOrientation(func: (orientation: Orientation) => void): void {
+    func(Orientation.Left);
+    func(Orientation.Right);
+    func(Orientation.Top);
+    func(Orientation.Bottom);
+  }
 
-      const sidesAndCount: SidesAndCount = {
-        [Orientation.Left]: leftRelations.length,
-        [Orientation.Right]: rightRelations.length,
-        [Orientation.Top]: topRelations.length,
-        [Orientation.Bottom]: bottomRelations.length,
-      };
+  private createSidesAndCount(
+    relationsByOrientation: OrientationAndRelations
+  ): SidesAndCount {
+    return {
+      [Orientation.Left]: relationsByOrientation[Orientation.Left].length,
+      [Orientation.Right]: relationsByOrientation[Orientation.Right].length,
+      [Orientation.Top]: relationsByOrientation[Orientation.Top].length,
+      [Orientation.Bottom]: relationsByOrientation[Orientation.Bottom].length,
+    };
+  }
 
-      pendingSelfRelations.forEach((pendingSelfRelation) => {
-        const minSide = Relations.minSide(sidesAndCount);
+  private drawTableRelations(table: Table) {
+    const tableRelations = this.getTableRelations(table);
+    const pendingSelfRelations = tableRelations.filter((relation) =>
+      relation.calcPathTableSides()
+    );
+    const relationsByOrientation = Relations.getTableRelationsByOrientation(
+      table,
+      tableRelations
+    );
 
-        switch (minSide) {
-          case Orientation.Left:
-            leftRelations.push(pendingSelfRelation);
-            break;
-          case Orientation.Right:
-            rightRelations.push(pendingSelfRelation);
-            break;
-          case Orientation.Top:
-            topRelations.push(pendingSelfRelation);
-            break;
-          case Orientation.Bottom:
-            bottomRelations.push(pendingSelfRelation);
-            break;
-        }
-        pendingSelfRelation.fromTablePathSide = minSide;
-        pendingSelfRelation.toTablePathSide = minSide;
-        sidesAndCount[minSide] += 2;
-      });
+    const sidesAndCount = this.createSidesAndCount(relationsByOrientation);
+
+    pendingSelfRelations.forEach((pendingSelfRelation) => {
+      const minSide = Relations.minSide(sidesAndCount);
+      relationsByOrientation[minSide].push(pendingSelfRelation);
+      pendingSelfRelation.fromTablePathSide = minSide;
+      pendingSelfRelation.toTablePathSide = minSide;
+      sidesAndCount[minSide] += 2;
+    });
+    this.itterateOrientation((orientation: Orientation) => {
       Relations.updatePathIndex(
-        leftRelations,
-        sidesAndCount[Orientation.Left],
-        table
-      );
-      Relations.updatePathIndex(
-        rightRelations,
-        sidesAndCount[Orientation.Right],
-        table
-      );
-      Relations.updatePathIndex(
-        topRelations,
-        sidesAndCount[Orientation.Top],
-        table
-      );
-      Relations.updatePathIndex(
-        bottomRelations,
-        sidesAndCount[Orientation.Bottom],
+        relationsByOrientation[orientation],
+        sidesAndCount[orientation],
         table
       );
     });
+  }
+
+  draw(tables: Table[]): void {
+    tables.forEach((table) => this.drawTableRelations(table));
 
     this.relations.forEach((relation: Relation) => {
       relation.removeHoverEffect();
