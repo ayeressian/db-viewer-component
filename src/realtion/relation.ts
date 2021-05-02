@@ -75,11 +75,11 @@ export default class Relation {
   private toIntersectPoint?: Point;
   private highlightTrigger?: SVGGraphicsElement;
 
-  fromPathCount?: number;
-  fromPathIndex?: number;
+  private fromPathCount?: number;
+  private fromPathIndex?: number;
+  private toPathCount?: number;
+  private toPathIndex?: number;
   fromTable: Table;
-  toPathCount?: number;
-  toPathIndex?: number;
   toTable: Table;
   fromTablePathSide?: Orientation;
   toTablePathSide?: Orientation;
@@ -469,6 +469,26 @@ export default class Relation {
     highlightTrigger.addEventListener("touch", this.onClick);
   }
 
+  setPathIndex(table: Table, count: number, pathIndex: number): number {
+    if (this.fromTable !== this.toTable) {
+      if (this.fromTable === table) {
+        this.fromPathIndex = pathIndex;
+        this.fromPathCount = count;
+      } else {
+        this.toPathIndex = pathIndex;
+        this.toPathCount = count;
+      }
+      pathIndex++;
+    } else {
+      this.fromPathCount = count;
+      this.toPathCount = count;
+      this.fromPathIndex = pathIndex;
+      this.toPathIndex = pathIndex + 1;
+      pathIndex += 2;
+    }
+    return pathIndex;
+  }
+
   private createHighlightTrigger(d: string): SVGGraphicsElement {
     const path = document.createElementNS(
       constant.nsSvg,
@@ -489,5 +509,10 @@ export default class Relation {
     path.setAttributeNS(null, "d", d);
 
     return path;
+  }
+
+  remove(): void {
+    this.highlightTrigger?.parentNode?.removeChild(this.highlightTrigger);
+    this.pathElem?.parentNode?.removeChild(this.pathElem);
   }
 }

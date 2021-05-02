@@ -5,15 +5,13 @@ import spiralArrange from "./spiral-arrange";
 import Table from "./table";
 import { isColumnFk } from "./types/column";
 import Callbacks from "./types/callbacks";
-import Orientation from "./types/orientation";
 import TableData from "./types/table-data";
 import ViewBoxVals from "./types/view-box-vals";
 import Point from "./types/point";
 import { normalizeEvent } from "./util";
 import { TableArrang, Viewport } from "./types/schema";
 import ViewerEvents from "./viewer-events";
-
-type SidesAndCount = { [K in Orientation]: number };
+import Relations from "./realtion/relations";
 
 export default class Viewer {
   private isTableMovementDisabled = false;
@@ -26,7 +24,6 @@ export default class Viewer {
   private viewBoxVals: ViewBoxVals;
   private zoom!: number;
   private callbacks!: Callbacks;
-  private relationInfos!: Relation[];
   private tablesLoaded = false;
   private viewLoaded: Promise<void>;
   private viewerEvents: ViewerEvents;
@@ -78,6 +75,12 @@ export default class Viewer {
     });
   }
 
+  private addToViewer = (elem: SVGElement): void => {
+    this.svgElem.prepend(elem);
+  };
+
+  private relations = new Relations(this.addToViewer);
+
   getTableMovementDisabled(): boolean {
     return this.isTableMovementDisabled;
   }
@@ -101,7 +104,7 @@ export default class Viewer {
     viewWidth = constant.VIEW_WIDTH,
     viewHeight = constant.VIEW_HEIGHT
   ): Promise<void> {
-    this.relationInfos = [];
+    this.relations.removeAll();
     this.svgElem.innerHTML = "";
     this.tables = tables;
     tables.forEach((table) => {
@@ -134,7 +137,7 @@ export default class Viewer {
     deltaY: number,
     cordinatesChanged: boolean
   ): void => {
-    if (this.tablesLoaded) this.drawRelations();
+    if (this.tablesLoaded) this.relations.draw(this.tables);
 
     this.minimap.onTableMove(table, deltaX, deltaY);
 
@@ -182,9 +185,9 @@ export default class Viewer {
           const relation = new Relation(relationInfo, {
             relationClick: this.relationClick,
             relationContextMenu: this.relationContextMenu,
-            relationDblClick: this.relationContextMenu,
+            relationDblClick: this.relationDblClick,
           });
-          this.relationInfos.push(relation);
+          this.relations.addRelation(relation);
         }
       });
 
@@ -214,7 +217,7 @@ export default class Viewer {
       spiralArrange(this.tables, this.viewWidth, this.viewHeight);
     }
 
-    this.drawRelations();
+    this.relations.draw(this.tables);
     await this.setViewport(viewport);
     this.tables.forEach((table) => table.postDraw());
     this.tablesLoaded = true;
@@ -361,161 +364,7 @@ export default class Viewer {
   private async reset(): Promise<void> {
     this.resetViewBox();
     await this.setZoom(1);
-    this.relationInfos = [];
-  }
-
-  private updatePathIndex(
-    relations: Relation[],
-    count: number,
-    table: Table
-  ): void {
-    let pathIndex = 0;
-    relations.forEach((relation) => {
-      if (relation.fromTable !== relation.toTable) {
-        if (relation.fromTable === table) {
-          relation.fromPathIndex = pathIndex;
-          relation.fromPathCount = count;
-        } else {
-          relation.toPathIndex = pathIndex;
-          relation.toPathCount = count;
-        }
-        pathIndex++;
-      } else {
-        relation.fromPathCount = count;
-        relation.toPathCount = count;
-        relation.fromPathIndex = pathIndex;
-        relation.toPathIndex = pathIndex + 1;
-        pathIndex += 2;
-      }
-    });
-  }
-
-  private getTableRelationsByOrientation(
-    table: Table,
-    tableRelations: Relation[]
-  ): {
-    leftRelations: Relation[];
-    rightRelations: Relation[];
-    topRelations: Relation[];
-    bottomRelations: Relation[];
-  } {
-    const leftRelations = [] as Relation[],
-      rightRelations = [] as Relation[],
-      topRelations = [] as Relation[],
-      bottomRelations = [] as Relation[];
-
-    for (const tableRelation of tableRelations) {
-      let pathSide: Orientation | undefined;
-      if (tableRelation.sameTableRelation()) continue;
-      if (tableRelation.toTable === table) {
-        pathSide = tableRelation.toTablePathSide;
-      } else if (tableRelation.fromTable === table) {
-        pathSide = tableRelation.fromTablePathSide;
-      }
-      switch (pathSide) {
-        case Orientation.Left:
-          leftRelations.push(tableRelation);
-          break;
-        case Orientation.Right:
-          rightRelations.push(tableRelation);
-          break;
-        case Orientation.Top:
-          topRelations.push(tableRelation);
-          break;
-        case Orientation.Bottom:
-          bottomRelations.push(tableRelation);
-          break;
-      }
-    }
-
-    Relation.ySort(leftRelations, table);
-    Relation.ySort(rightRelations, table);
-    Relation.xSort(topRelations, table);
-    Relation.xSort(bottomRelations, table);
-
-    return { leftRelations, rightRelations, topRelations, bottomRelations };
-  }
-
-  private minSide(sidesAndCount: SidesAndCount): Orientation {
-    const [side] = Object.entries(sidesAndCount).reduce(
-      (
-        [minOrientation, minCount],
-        [orientationString, count]
-      ): [Orientation, number] => {
-        const orientation = parseInt(orientationString) as Orientation;
-        if (count < minCount) return [orientation, count];
-        return [minOrientation, minCount];
-      },
-      [Orientation.Left, Number.MAX_SAFE_INTEGER] as [Orientation, number]
-    );
-    return side;
-  }
-
-  private drawRelations(): void {
-    this.tables.forEach((table) => {
-      const tableRelations = this.getTableRelations(table);
-      const pendingSelfRelations = tableRelations.filter((relation) =>
-        relation.calcPathTableSides()
-      );
-      const {
-        leftRelations,
-        rightRelations,
-        topRelations,
-        bottomRelations,
-      } = this.getTableRelationsByOrientation(table, tableRelations);
-
-      const sidesAndCount: SidesAndCount = {
-        [Orientation.Left]: leftRelations.length,
-        [Orientation.Right]: rightRelations.length,
-        [Orientation.Top]: topRelations.length,
-        [Orientation.Bottom]: bottomRelations.length,
-      };
-
-      pendingSelfRelations.forEach((pendingSelfRelation) => {
-        const minSide = this.minSide(sidesAndCount);
-
-        switch (minSide) {
-          case Orientation.Left:
-            leftRelations.push(pendingSelfRelation);
-            break;
-          case Orientation.Right:
-            rightRelations.push(pendingSelfRelation);
-            break;
-          case Orientation.Top:
-            topRelations.push(pendingSelfRelation);
-            break;
-          case Orientation.Bottom:
-            bottomRelations.push(pendingSelfRelation);
-            break;
-        }
-        pendingSelfRelation.fromTablePathSide = minSide;
-        pendingSelfRelation.toTablePathSide = minSide;
-        sidesAndCount[minSide] += 2;
-      });
-      this.updatePathIndex(
-        leftRelations,
-        sidesAndCount[Orientation.Left],
-        table
-      );
-      this.updatePathIndex(
-        rightRelations,
-        sidesAndCount[Orientation.Right],
-        table
-      );
-      this.updatePathIndex(topRelations, sidesAndCount[Orientation.Top], table);
-      this.updatePathIndex(
-        bottomRelations,
-        sidesAndCount[Orientation.Bottom],
-        table
-      );
-    });
-
-    this.relationInfos.forEach((relation: Relation) => {
-      relation.removeHoverEffect();
-      relation.getElems().forEach((elem) => this.svgElem.removeChild(elem));
-      const elems = relation.render();
-      elems.forEach((elem) => this.svgElem.prepend(elem!));
-    });
+    this.relations.removeAll();
   }
 
   private setViewportCenterByTableWeight(): {
@@ -595,12 +444,6 @@ export default class Viewer {
         break;
     }
     return Promise.all([this.setPanX(viewportX), this.setPanY(viewportY)]);
-  }
-
-  private getTableRelations(table: Table): Relation[] {
-    return this.relationInfos.filter((relations) => {
-      return relations.fromTable === table || relations.toTable === table;
-    });
   }
 
   private async setZoom(
