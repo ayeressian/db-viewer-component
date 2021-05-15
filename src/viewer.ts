@@ -12,10 +12,12 @@ import { normalizeEvent } from "./util";
 import { TableArrang, Viewport } from "./types/schema";
 import ViewerEvents from "./viewer-events";
 import Relations from "./realtion/relations";
+import Annotation from "./annotation";
 
 export default class Viewer {
   private isTableMovementDisabled = false;
   private tables: Table[] = [];
+  private annotations: Annotation[] = [];
   private container: HTMLElement;
   private svgElem: SVGGraphicsElement;
   private svgContainer: HTMLElement;
@@ -99,6 +101,7 @@ export default class Viewer {
 
   async load(
     tables: Table[],
+    annotations: Annotation[],
     viewport: Viewport = Viewport.centerByTables,
     tableArrang: TableArrang = TableArrang.default,
     viewWidth = constant.VIEW_WIDTH,
@@ -107,6 +110,7 @@ export default class Viewer {
     this.relations.removeAll();
     this.svgElem.innerHTML = "";
     this.tables = tables;
+    this.annotations = annotations;
     tables.forEach((table) => {
       table.setViewer(this, {
         tableDblClick: this.tableDblClick,
@@ -158,6 +162,12 @@ export default class Viewer {
     this.minimap.removeTables();
 
     let i = 0;
+
+    for (const annotation of this.annotations) {
+      const annotationElem = annotation.render();
+      this.svgElem.appendChild(annotationElem);
+    }
+
     for (const table of this.tables) {
       this.minimap.createTable(table);
 

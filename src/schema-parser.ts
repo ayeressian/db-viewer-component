@@ -1,3 +1,4 @@
+import Annotation from "./annotation";
 import Table from "./table";
 import { ColumnFk } from "./types/column";
 import {
@@ -5,12 +6,23 @@ import {
   TableSchema,
   Schema,
   ColumnSchema,
+  TableArrang,
+  AnnotationSchema,
 } from "./types/schema";
 
-export default function schemaParser(schema: Schema): Table[] {
+function parseAnnotations(annotationSchemas: AnnotationSchema[]): Annotation[] {
+  return annotationSchemas.map((annotationSchema) => {
+    return new Annotation(annotationSchema);
+  });
+}
+
+function parseTables(
+  tableSchemas: TableSchema[],
+  arrangement?: TableArrang
+): Table[] {
   const tablesFk = new Map<TableSchema, ColumnSchema[]>();
   const tables: Table[] = [];
-  schema.tables.forEach((table: TableSchema) => {
+  tableSchemas.forEach((table: TableSchema) => {
     const fks = table.columns.filter((column) => (column as ColumnFkSchema).fk);
     tablesFk.set(table, fks);
     for (let i = 0; i < table.columns.length; ) {
@@ -20,10 +32,10 @@ export default function schemaParser(schema: Schema): Table[] {
         ++i;
       }
     }
-    tables.push(new Table(table, schema.arrangement));
+    tables.push(new Table(table, arrangement));
   });
 
-  schema.tables.forEach((sTable) => {
+  tableSchemas.forEach((sTable) => {
     const fks = tablesFk.get(sTable)!;
     fks.forEach((sFkColumn: ColumnFkSchema) => {
       const fkTable = tables.find(
@@ -46,4 +58,13 @@ export default function schemaParser(schema: Schema): Table[] {
   });
 
   return tables;
+}
+
+export default function schemaParser(
+  schema: Schema
+): { tables: Table[]; annotations: Annotation[] } {
+  return {
+    tables: parseTables(schema.tables, schema.arrangement),
+    annotations: parseAnnotations(schema.annotations ?? []),
+  };
 }
