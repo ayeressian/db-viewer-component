@@ -32,46 +32,6 @@
       "type": "integer",
       "default": 5000
     },
-    "annotations": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "pos": {
-            "type": "object",
-            "properties": {
-              "x": {
-                "type": "integer",
-                "default": 0
-              },
-              "y": {
-                "type": "integer",
-                "default": 0
-              }
-            }
-          },
-          "width": {
-            "type": "integer"
-          },
-          "height": {
-            "type": "integer"
-          },
-          "color": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "width",
-          "height"
-        ]
-      }
-    },
     "tables": {
       "type": "array",
       "items": {

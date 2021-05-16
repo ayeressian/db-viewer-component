@@ -26,22 +26,12 @@ export interface TableSchema {
   columns: ColumnSchema[];
 }
 
-export interface AnnotationSchema {
-  title?: string;
-  description?: string;
-  pos?: Point;
-  color?: string;
-  width: number;
-  height: number;
-}
-
 export interface Schema {
   tables: TableSchema[];
   arrangement?: TableArrang;
   viewport?: Viewport;
   viewWidth?: number;
   viewHeight?: number;
-  annotations?: AnnotationSchema[];
 }
 
 export const enum Viewport {

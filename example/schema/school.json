@@ -1,10 +1,4 @@
 {
-  "annotations": [
-    {
-      "width": 200,
-      "height": 200
-    }
-  ],
   "tables": [
     {
       "name": "school",

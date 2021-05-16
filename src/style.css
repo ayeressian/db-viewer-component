@@ -89,12 +89,6 @@
   cursor: grabbing;
 }
 
-.annotation {
-  fill: white;
-  stroke-width: 1px;
-  stroke: black;
-}
-
 .tableGroup {
   stroke: #707070;
 }

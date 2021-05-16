@@ -17,7 +17,7 @@ describe("spiralArrange", () => {
         .fill(null)
         .map((_val, i) => ({ name: `${i}`, columns: [] })),
     };
-    let { tables } = schemaParser(schema);
+    let tables = schemaParser(schema);
     tables.forEach((table) => (table.setTablePos = sinon.fake()));
     tables = spiralArrange(tables, 5000, 5000);
 

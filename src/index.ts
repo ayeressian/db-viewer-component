@@ -25,7 +25,6 @@ import {
 import Point from "./types/point";
 import { RelationData } from "./realtion/relation";
 import { RelationContextMenuEvent } from "./events";
-import Annotation from "./annotation";
 
 const NO_TABLE = new Error("No table exist with the given name.");
 const INVALID_SCHEMA = new Error("Invalid schema.");
@@ -62,12 +61,9 @@ class DbViewer extends HTMLElement {
       }
       this.notParsedSchema = cloneDeep(schema);
       const schemaObj = cloneDeep(schema);
-      ({ tables: this.tables, annotations: this.annotations } = schemaParser(
-        schemaObj
-      ));
+      this.tables = schemaParser(schemaObj);
       this.viewer.load(
         this.tables,
-        this.annotations,
         this.viewport ?? schemaObj.viewport,
         schemaObj.arrangement ?? TableArrang.default,
         schemaObj.viewWidth,
@@ -116,7 +112,6 @@ class DbViewer extends HTMLElement {
   private readyPromiseResolve!: (value: PromiseLike<null> | null) => void;
   private viewer!: Viewer;
   private tables!: Table[];
-  private annotations!: Annotation[];
   private srcVal!: string;
   private viewportVal!: Viewport;
   private notParsedSchema!: Schema;
@@ -177,14 +172,10 @@ class DbViewer extends HTMLElement {
                 throw INVALID_SCHEMA;
               }
               this.notParsedSchema = cloneDeep<Schema>(response);
-              ({
-                tables: this.tables,
-                annotations: this.annotations,
-              } = schemaParser(response));
+              this.tables = schemaParser(response);
 
               return this.viewer.load(
                 this.tables,
-                this.annotations,
                 this.viewport ?? (response as Schema).viewport,
                 this.notParsedSchema.arrangement ?? TableArrang.default,
                 this.notParsedSchema.viewWidth,
