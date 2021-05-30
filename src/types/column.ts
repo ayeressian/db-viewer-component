@@ -1,4 +1,4 @@
-import Table from "../table";
+import Table from "../table/table";
 
 export interface Fk {
   table: Table;

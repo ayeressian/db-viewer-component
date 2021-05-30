@@ -1,19 +1,30 @@
 import constant from "./const";
+import MoveEvents from "./move-events";
 import { AnnotationSchema } from "./types/schema";
+import Viewer from "./viewer";
 
 class Annotation {
   #annotationSchema: AnnotationSchema;
-  #elem!: SVGGraphicsElement;
+  #gElem!: SVGGraphicsElement;
   #foreignObject!: Element;
   #containerElement!: HTMLDivElement;
+  #viewer!: Viewer;
 
   constructor(annotationSchema: AnnotationSchema) {
     this.#annotationSchema = annotationSchema;
     this.render();
   }
 
+  private onMove = () => {
+    //TODO
+  };
+
+  private onMoveEnd = () => {
+    //TODO
+  };
+
   render(): SVGGraphicsElement {
-    this.#elem = document.createElementNS(
+    this.#gElem = document.createElementNS(
       constant.nsSvg,
       "g"
     ) as SVGGraphicsElement;
@@ -21,7 +32,7 @@ class Annotation {
       constant.nsSvg,
       "foreignObject"
     );
-    this.#elem.appendChild(this.#foreignObject);
+    this.#gElem.appendChild(this.#foreignObject);
 
     this.#containerElement = document.createElementNS(
       constant.nsHtml,
@@ -45,7 +56,27 @@ class Annotation {
       textPar.innerHTML = this.#annotationSchema.text;
       this.#containerElement.appendChild(textPar);
     }
-    return this.#elem;
+
+    new MoveEvents(
+      this.#viewer,
+      this,
+      this.#containerElement,
+      {
+        x: 0,
+        y: 0,
+      },
+      this.#foreignObject,
+      false,
+      this.#gElem,
+      this.onMove,
+      this.onMoveEnd
+    );
+
+    return this.#gElem;
+  }
+
+  setVeiwer(veiwer: Viewer): void {
+    this.#viewer = veiwer;
   }
 
   addedToView(): void {

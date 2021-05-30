@@ -1,6 +1,6 @@
 import constant from "../const";
 import { segmentIntersection } from "../math-util";
-import Table from "../table";
+import Table from "../table/table";
 import { Column } from "../types/column";
 import Orientation from "../types/orientation";
 import Vertices from "../types/vertices";

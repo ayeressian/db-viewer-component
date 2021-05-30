@@ -1,13 +1,14 @@
-import constant from "./const";
-import { Column, ColumnFk, isColumnFk } from "./types/column";
-import CommonEventListener from "./types/common-event-listener";
-import Point from "./types/point";
-import { TableSchema, TableArrang } from "./types/schema";
-import TableData from "./types/table-data";
-import Vertices from "./types/vertices";
-import Viewer from "./viewer";
-import { isTouchEvent, normalizeEvent } from "./util";
+import { Column } from "../types/column";
+import Point from "../types/point";
+import { TableSchema, TableArrang } from "../types/schema";
+import TableData from "../types/table-data";
+import Vertices from "../types/vertices";
+import Viewer from "../viewer";
 import { createTableElem } from "./create-table-elem";
+import MoveEvents, {
+  OnMove as OnMoveEvent,
+  OnMoveEnd as OnMoveEndEvent,
+} from "../move-events";
 
 const OUT_OF_VIEW_CORD = -1000;
 
@@ -36,8 +37,6 @@ export default class Table {
   private viewer!: Viewer;
   private tableElem!: HTMLElement;
   private onMove!: OnMove;
-  private initialClientX!: number;
-  private initialClientY!: number;
   private onMoveEnd!: OnMoveEnd;
   private foreignObject!: Element;
   private penddingCenter!: boolean;
@@ -129,7 +128,17 @@ export default class Table {
     this.foreignObject = foreignObject;
 
     this.clickEvents();
-    this.moveEvents();
+    new MoveEvents(
+      this.viewer,
+      this,
+      this.tableElem,
+      this.posValue,
+      this.foreignObject,
+      this.disableMovementValue,
+      this.gElem,
+      this.onMove as OnMoveEvent,
+      this.onMoveEnd as OnMoveEndEvent
+    );
 
     if (this.tablesArrangement == null) {
       if (this.posValue === "center-viewport") {
@@ -204,8 +213,8 @@ export default class Table {
     };
   }
 
-  setVeiwer(veiwer: Viewer): void {
-    this.viewer = veiwer;
+  setViewer(viewer: Viewer): void {
+    this.viewer = viewer;
   }
 
   highlightFrom(column: Column): void {
@@ -228,51 +237,11 @@ export default class Table {
     this.disableMovementValue = value;
   }
 
-  private moveToTop(): void {
-    const parentNode = this.gElem.parentNode;
-    // The reason for not using append of this.elem instead of remaining element prepend
-    // is to keep event concistency. The following code is for making click and and double click to work.
-    Array.from(parentNode!.children)
-      .reverse()
-      .forEach((childElem) => {
-        if (childElem !== this.gElem) {
-          parentNode!.prepend(childElem);
-        }
-      });
-  }
-
   cleanup = (): void => {
     this.gElem.removeEventListener("dblclick", this.#onDoubleClick);
     this.gElem.removeEventListener("click", this.#onClick);
     this.gElem.removeEventListener("touch", this.#onClick);
     this.gElem.removeEventListener("contextmenu", this.#onContextMenu);
-
-    document.removeEventListener(
-      "mousemove",
-      this.#onMouseMove as CommonEventListener
-    );
-    document.removeEventListener(
-      "touchmove",
-      this.#onMouseMove as CommonEventListener
-    );
-
-    document.removeEventListener(
-      "mouseup",
-      this.#mouseUp as CommonEventListener
-    );
-    document.removeEventListener(
-      "touchend",
-      this.#mouseUp as CommonEventListener
-    );
-
-    this.gElem.removeEventListener(
-      "mousedown",
-      this.#onMouseDown as CommonEventListener
-    );
-    this.gElem.removeEventListener(
-      "touchstart",
-      this.#onMouseDown as CommonEventListener
-    );
   };
 
   #onDoubleClick = (): void => {
@@ -314,109 +283,6 @@ export default class Table {
     if (this.isPoint(this.posValue)) {
       this.setTablePos(this.posValue.x, this.posValue.y);
     }
-  }
-
-  #mouseDownInitialElemX!: number;
-  #mouseDownInitialElemY!: number;
-
-  #onMouseMove = (event: MouseEvent | TouchEvent): void => {
-    if (!this.viewer.getGestureStart()) {
-      const mousePos = this.viewer.getMousePosRelativeContainer(event);
-
-      const normalizedClientX =
-        mousePos.x / this.viewer.getZoom()! +
-        this.viewer.getPan().x / this.viewer.getZoom()!;
-      const normalizedClientY =
-        mousePos.y / this.viewer.getZoom()! +
-        this.viewer.getPan().y / this.viewer.getZoom()!;
-      const x = normalizedClientX - this.#mouseDownInitialElemX;
-      const y = normalizedClientY - this.#mouseDownInitialElemY;
-
-      this.setTablePos(x, y);
-      const pos = this.posValue as Point;
-      if (this.onMove) this.onMove(this, pos.x, pos.y, true);
-    }
-  };
-
-  #mouseUp = (mouseUpEvent: MouseEvent): void => {
-    if (
-      this.onMoveEnd &&
-      (this.initialClientX !== mouseUpEvent.clientX ||
-        this.initialClientY !== mouseUpEvent.clientY)
-    ) {
-      this.onMoveEnd(this);
-    }
-    this.tableElem.classList.remove("move");
-    document.removeEventListener(
-      "mouseup",
-      this.#mouseUp as CommonEventListener
-    );
-    document.removeEventListener(
-      "touchend",
-      this.#mouseUp as CommonEventListener
-    );
-    document.removeEventListener(
-      "mousemove",
-      this.#onMouseMove as CommonEventListener
-    );
-    document.removeEventListener(
-      "touchmove",
-      this.#onMouseMove as CommonEventListener
-    );
-  };
-
-  #onMouseDown = (event: MouseEvent | TouchEvent): void => {
-    const touchEvent = isTouchEvent(event);
-    if (
-      ((!touchEvent &&
-        ((event as MouseEvent).button === 0 ||
-          (event as MouseEvent).button == null)) ||
-        touchEvent) &&
-      this.disableMovementValue === false
-    ) {
-      const eventVal = normalizeEvent(event);
-      this.tableElem.classList.add("move");
-      const boundingRect = this.gElem.getBoundingClientRect();
-      const zoom = this.viewer.getZoom()!;
-      this.#mouseDownInitialElemX =
-        (eventVal.clientX - boundingRect.left) / zoom;
-      this.#mouseDownInitialElemY =
-        (eventVal.clientY - boundingRect.top) / zoom;
-
-      this.initialClientX = eventVal.clientX;
-      this.initialClientY = eventVal.clientY;
-
-      document.addEventListener(
-        "mousemove",
-        this.#onMouseMove as CommonEventListener
-      );
-      document.addEventListener(
-        "touchmove",
-        this.#onMouseMove as CommonEventListener
-      );
-
-      this.moveToTop();
-
-      document.addEventListener(
-        "mouseup",
-        this.#mouseUp as CommonEventListener
-      );
-      document.addEventListener(
-        "touchend",
-        this.#mouseUp as CommonEventListener
-      );
-    }
-  };
-
-  private moveEvents(): void {
-    this.gElem.addEventListener(
-      "mousedown",
-      this.#onMouseDown as CommonEventListener
-    );
-    this.gElem.addEventListener(
-      "touchstart",
-      this.#onMouseDown as CommonEventListener
-    );
   }
 
   private center(): void {

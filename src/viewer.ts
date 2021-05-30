@@ -2,7 +2,7 @@ import constant from "./const";
 import Minimap from "./minimap";
 import Relation, { RelationData } from "./realtion/relation";
 import spiralArrange from "./spiral-arrange";
-import Table from "./table";
+import Table from "./table/table";
 import { isColumnFk } from "./types/column";
 import CommonEventListener from "./types/common-event-listener";
 import Callbacks from "./types/callbacks";
@@ -104,14 +104,17 @@ export default class Viewer {
     this.svgElem.innerHTML = "";
     this.tables = tables;
     this.annotations = annotations;
+    annotations.forEach((annotation) => {
+      annotation.setVeiwer(this);
+    });
     tables.forEach((table) => {
-      table.setVeiwer(this);
+      table.setViewer(this);
       table.setMoveListener(this.onTableMove.bind(this));
       table.setMoveEndListener(this.onTableMoveEnd.bind(this));
       table.disableMovement(this.isTableMovementDisabled);
     });
     this.tableArrang = tableArrang;
-    await this.draw(viewport);
+    await this.render(viewport);
 
     if (this.viewWidth !== viewWidth || this.viewHeight !== viewHeight) {
       this.viewWidth = viewWidth;
@@ -130,7 +133,7 @@ export default class Viewer {
     deltaY: number,
     cordinatesChanged: boolean
   ): void {
-    if (this.tablesLoaded) this.drawRelations();
+    if (this.tablesLoaded) this.renderRelations();
 
     this.minimap.onTableMove(table, deltaX, deltaY);
 
@@ -141,7 +144,7 @@ export default class Viewer {
     this.callbacks?.tableMoveEnd(table.data());
   }
 
-  async draw(viewport: Viewport): Promise<void> {
+  async render(viewport: Viewport): Promise<void> {
     this.tablesLoaded = false;
     let minX = Number.MAX_SAFE_INTEGER;
     let maxX = Number.MIN_SAFE_INTEGER;
@@ -210,7 +213,7 @@ export default class Viewer {
       spiralArrange(this.tables, this.viewWidth, this.viewHeight);
     }
 
-    this.drawRelations();
+    this.renderRelations();
     await this.setViewport(viewport);
     this.tables.forEach((table) => table.postDraw());
     this.tablesLoaded = true;
@@ -384,7 +387,7 @@ export default class Viewer {
     });
   }
 
-  private drawRelations(): void {
+  private renderRelations(): void {
     this.tables.forEach((table) => {
       const tableRelations = this.getTableRelations(table);
 
@@ -717,12 +720,13 @@ export default class Viewer {
     }
   }
 
-  private noneTableAndMinmapEvent(event: Event): boolean {
+  private noneBlockingEvent(event: Event): boolean {
     return !event.composedPath().some((item) => {
       const htmlElement = item as HTMLElement;
       return (
         htmlElement.id === "minimap-container" ||
-        htmlElement.classList?.contains("table")
+        htmlElement.classList?.contains("table") ||
+        htmlElement.classList?.contains("annotation")
       );
     });
   }
@@ -764,7 +768,7 @@ export default class Viewer {
 
   private onTouchMove = (event: Event) => {
     // Don't move viewport when table is being moved
-    if (!this.noneTableAndMinmapEvent(event)) event.preventDefault();
+    if (!this.noneBlockingEvent(event)) event.preventDefault();
   };
 
   private onGesturestart = (event: GestureEvent) => {
@@ -794,7 +798,7 @@ export default class Viewer {
 
   private onMouseMove = (event: MouseEvent) => {
     event.preventDefault();
-    if (this.noneTableAndMinmapEvent(event)) {
+    if (this.noneBlockingEvent(event)) {
       const deltaX = event.clientX - this.prevMouseCordX;
       const deltaY = event.clientY - this.prevMouseCordY;
       this.prevMouseCordY = event.clientY;
@@ -814,7 +818,7 @@ export default class Viewer {
   };
 
   private onMousedown = (event: MouseEvent) => {
-    if (event.button === 0 && this.noneTableAndMinmapEvent(event)) {
+    if (event.button === 0 && this.noneBlockingEvent(event)) {
       this.svgElem.classList.add("pan");
       this.prevMouseCordX = event.clientX;
       this.prevMouseCordY = event.clientY;

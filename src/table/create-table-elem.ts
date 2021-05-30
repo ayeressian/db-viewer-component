@@ -1,6 +1,6 @@
-import constant from "./const";
-import gWithFo from "./create-g-with-fo";
-import { Column, ColumnFk, isColumnFk } from "./types/column";
+import constant from "../const";
+import gWithFo from "../create-g-with-fo";
+import { Column, ColumnFk, isColumnFk } from "../types/column";
 
 function createTable(): HTMLTableElement {
   const table = document.createElementNS(

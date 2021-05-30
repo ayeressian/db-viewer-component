@@ -1,5 +1,5 @@
 import constant from "./const";
-import Table from "./table";
+import Table from "./table/table";
 
 export default function spiralArrange(
   tables: Table[],
