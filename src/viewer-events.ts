@@ -2,7 +2,6 @@ import constant from "./const";
 import { center, distance } from "./math-util";
 import Minimap from "./minimap";
 import Table from "./table";
-import Callbacks from "./types/callbacks";
 import CommonEventListener from "./types/common-event-listener";
 import ViewBoxVals from "./types/view-box-vals";
 import { isSafari } from "./util";
@@ -27,7 +26,7 @@ class ViewerEvents {
     private mainElem: ShadowRoot,
     private container: HTMLElement,
     private tables: Table[],
-    private callbacks: Callbacks,
+    private viewportClick: (x: number, y: number) => void,
     private setZoom: (
       zoom: number,
       targetX: number,
@@ -225,7 +224,7 @@ class ViewerEvents {
     const zoom = this.getZoom();
     const x = event.offsetX / zoom;
     const y = event.offsetY / zoom;
-    this.callbacks?.viewportClick(x, y);
+    this.viewportClick(x, y);
   };
 
   private windowResizeEvent(): void {

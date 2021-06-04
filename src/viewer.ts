@@ -62,7 +62,7 @@ export default class Viewer {
       this.mainElem,
       this.container,
       this.tables,
-      this.callbacks,
+      (x: number, y: number) => this.callbacks.viewportClick(x, y),
       this.setZoom.bind(this),
       this.getZoom.bind(this),
       this.viewportAddjustment.bind(this)
