@@ -97,7 +97,7 @@ class DbViewer extends HTMLElement {
   }
 
   get disableTableMovement(): boolean {
-    return this.viewer.isTableMovementDisabled;
+    return this.viewer.getTableMovementDisabled();
   }
 
   set viewport(value: Viewport | undefined) {

@@ -5,21 +5,26 @@ import TableData from "../types/table-data";
 import Vertices from "../types/vertices";
 import Viewer from "../viewer";
 import { createTableElem } from "./create-table-elem";
-import MoveEvents, {
-  OnMove as OnMoveEvent,
-  OnMoveEnd as OnMoveEndEvent,
-} from "../move-events";
+import MoveEvents from "../move-events";
 
 const OUT_OF_VIEW_CORD = -1000;
 
-type OnMove = (
+type TableMove = (
   table: Table,
   x: number,
   y: number,
   cordinatesChanged: boolean
 ) => void;
 
-type OnMoveEnd = (table: Table) => void;
+type TableMoveEnd = (table: Table) => void;
+
+type ViewerCallbacks = {
+  tableDblClick: (data: TableData) => void;
+  tableClick: (data: TableData) => void;
+  tableContextMenu: (data: TableData) => void;
+  tableMove: TableMove;
+  tableMoveEnd: TableMoveEnd;
+};
 
 export default class Table {
   get pos(): string | Point {
@@ -31,16 +36,14 @@ export default class Table {
   }
   private columns: Column[];
   private nameValue: string;
-  private posValue: Point | string;
   private disableMovementValue: boolean;
   private gElem!: SVGGraphicsElement;
-  private viewer!: Viewer;
   private tableElem!: HTMLElement;
-  private onMove!: OnMove;
-  private onMoveEnd!: OnMoveEnd;
   private foreignObject!: Element;
   private penddingCenter!: boolean;
   private tablesArrangement?: TableArrang;
+  private moveEvents?: MoveEvents;
+  private posValue: string | Point;
 
   constructor(
     {
@@ -61,6 +64,14 @@ export default class Table {
     this.tablesArrangement = arrangement;
   }
 
+  private viewerCallbacks!: ViewerCallbacks;
+  private viewer!: Viewer;
+
+  setViewer(viewer: Viewer, viewCallbacks: ViewerCallbacks): void {
+    this.viewer = viewer;
+    this.viewerCallbacks = viewCallbacks;
+  }
+
   getColumns(): Column[] {
     return this.columns;
   }
@@ -75,14 +86,6 @@ export default class Table {
 
   addColumn(column: Column): void {
     this.columns.push(column);
-  }
-
-  setMoveListener(onMove: OnMove): void {
-    this.onMove = onMove;
-  }
-
-  setMoveEndListener(onMoveEnd: OnMoveEnd): void {
-    this.onMoveEnd = onMoveEnd;
   }
 
   getCenter(): Point {
@@ -128,25 +131,30 @@ export default class Table {
     this.foreignObject = foreignObject;
 
     this.clickEvents();
-    new MoveEvents(
+    this.moveEvents = new MoveEvents(
       this.viewer,
       this,
       this.tableElem,
-      this.posValue,
       this.foreignObject,
       this.disableMovementValue,
       this.gElem,
-      this.onMove as OnMoveEvent,
-      this.onMoveEnd as OnMoveEndEvent
+      (_, x, y) => {
+        this.viewerCallbacks.tableMove(this, x, y, false);
+      },
+      () => {
+        this.viewerCallbacks.tableMoveEnd(this);
+      },
+      this.#setPosValue,
+      () => this.posValue as Point
     );
 
     if (this.tablesArrangement == null) {
       if (this.posValue === "center-viewport") {
-        this.setTablePos(OUT_OF_VIEW_CORD, OUT_OF_VIEW_CORD, true);
+        this.moveEvents.setPos(OUT_OF_VIEW_CORD, OUT_OF_VIEW_CORD, true);
         this.penddingCenter = true;
       } else {
         const point = this.posValue as Point;
-        this.setTablePos(point.x, point.y);
+        this.moveEvents.setPos(point.x, point.y);
       }
     }
 
@@ -181,29 +189,6 @@ export default class Table {
     }
   }
 
-  setTablePos = (
-    x: number,
-    y: number,
-    disableOutOfBoundCheck = false
-  ): void => {
-    if (!disableOutOfBoundCheck) {
-      const result = this.notAllowOutOfBound(x, y);
-      x = result.x;
-      y = result.y;
-    }
-    const cordinatesChanged =
-      this.isPoint(this.posValue) &&
-      (this.posValue.x !== x || this.posValue.y !== y);
-
-    this.posValue = {
-      x,
-      y,
-    };
-    this.foreignObject.setAttributeNS(null, "x", x.toString());
-    this.foreignObject.setAttributeNS(null, "y", y.toString());
-    if (this.onMove) this.onMove(this, x, y, cordinatesChanged);
-  };
-
   data(): TableData {
     return {
       height: this.tableElem.offsetHeight,
@@ -211,10 +196,6 @@ export default class Table {
       pos: this.posValue as Point,
       width: this.tableElem.offsetWidth,
     };
-  }
-
-  setViewer(viewer: Viewer): void {
-    this.viewer = viewer;
   }
 
   highlightFrom(column: Column): void {
@@ -245,15 +226,19 @@ export default class Table {
   };
 
   #onDoubleClick = (): void => {
-    this.viewer.tableDblClick(this.data());
+    this.viewerCallbacks.tableDblClick(this.data());
   };
 
   #onClick = (): void => {
-    this.viewer.tableClick(this.data());
+    this.viewerCallbacks.tableClick(this.data());
   };
 
   #onContextMenu = (): void => {
-    this.viewer.tableContextMenu(this.data());
+    this.viewerCallbacks.tableContextMenu(this.data());
+  };
+
+  #setPosValue = (posValue: Point): void => {
+    this.posValue = posValue;
   };
 
   private clickEvents(): void {
@@ -263,25 +248,13 @@ export default class Table {
     this.gElem.addEventListener("contextmenu", this.#onContextMenu);
   }
 
-  private notAllowOutOfBound(x: number, y: number): Point {
-    if (x < 0) x = 0;
-    if (y < 0) y = 0;
-    if (x + this.tableElem.offsetWidth > this.viewer.getViewerPanWidth()) {
-      x = this.viewer.getViewerPanWidth() - this.tableElem.offsetWidth;
-    }
-    if (y + this.tableElem.offsetHeight > this.viewer.getViewerPanHeight()) {
-      y = this.viewer.getViewerPanHeight() - this.tableElem.offsetHeight;
-    }
-    return { x, y };
-  }
-
   private isPoint(pos: Point | string): pos is Point {
     return (pos as Point).x !== undefined;
   }
 
   keepInView(): void {
     if (this.isPoint(this.posValue)) {
-      this.setTablePos(this.posValue.x, this.posValue.y);
+      this.moveEvents?.setPos(this.posValue.x, this.posValue.y);
     }
   }
 
@@ -295,6 +268,10 @@ export default class Table {
       viewport.y +
       viewport.height / 2 -
       this.tableElem.offsetHeight / this.viewer.getZoom()! / 2;
-    this.setTablePos(x, y);
+    this.moveEvents?.setPos(x, y);
+  }
+
+  setTablePos(x: number, y: number): void {
+    this.moveEvents?.setPos(x, y);
   }
 }

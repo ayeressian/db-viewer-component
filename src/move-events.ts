@@ -21,12 +21,13 @@ export default class MoveEvents {
     private viewer: Viewer,
     private target: Target,
     private elem: HTMLElement,
-    private posValue: Point | string,
     private foreignObject: Element,
     private disableMovementValue: boolean,
     private gElem: SVGGraphicsElement,
     private onMove: OnMove,
-    private onMoveEnd: OnMoveEnd
+    private onMoveEnd: OnMoveEnd,
+    private setPosValue: (point: Point) => void,
+    private getPosValue: () => Point
   ) {
     this.gElem.addEventListener(
       "mousedown",
@@ -79,13 +80,13 @@ export default class MoveEvents {
       y = result.y;
     }
     const cordinatesChanged =
-      this.isPoint(this.posValue) &&
-      (this.posValue.x !== x || this.posValue.y !== y);
+      this.isPoint(this.getPosValue()) &&
+      (this.getPosValue().x !== x || this.getPosValue().y !== y);
 
-    this.posValue = {
+    this.setPosValue({
       x,
       y,
-    };
+    });
     this.foreignObject.setAttributeNS(null, "x", x.toString());
     this.foreignObject.setAttributeNS(null, "y", y.toString());
     if (this.onMove) this.onMove(this.target, x, y, cordinatesChanged);
@@ -105,7 +106,7 @@ export default class MoveEvents {
       const y = normalizedClientY - this.#mouseDownInitialElemY;
 
       this.setPos(x, y);
-      const pos = this.posValue as Point;
+      const pos = this.getPosValue();
       if (this.onMove) this.onMove(this.target, pos.x, pos.y, true);
     }
   };

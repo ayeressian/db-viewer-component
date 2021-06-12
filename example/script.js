@@ -82,6 +82,9 @@ const schoolDbSetup = () => {
   dbViewerSchoolElem.addEventListener("scroll", (event) =>
     console.log("scroll", event.detail)
   );
+  dbViewerSchoolElem.addEventListener("viewportClick", (event) => {
+    console.log("viewportClick", event.detail);
+  });
 
   zoomIn.addEventListener("click", () => {
     dbViewerSchoolElem.zoomIn();

@@ -1,5 +1,6 @@
 import constant from "./const";
 import MoveEvents from "./move-events";
+import Point from "./types/point";
 import { AnnotationSchema } from "./types/schema";
 import Viewer from "./viewer";
 
@@ -21,6 +22,11 @@ class Annotation {
 
   private onMoveEnd = () => {
     //TODO
+  };
+
+  private posValue: Point = {
+    x: 0,
+    y: 0,
   };
 
   render(): SVGGraphicsElement {
@@ -61,15 +67,13 @@ class Annotation {
       this.#viewer,
       this,
       this.#containerElement,
-      {
-        x: 0,
-        y: 0,
-      },
       this.#foreignObject,
       false,
       this.#gElem,
       this.onMove,
-      this.onMoveEnd
+      this.onMoveEnd,
+      (posValue: Point) => (this.posValue = posValue),
+      () => this.posValue as Point
     );
 
     return this.#gElem;

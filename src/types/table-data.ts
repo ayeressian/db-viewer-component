@@ -1,8 +1,9 @@
 import Point from "./point";
-export default interface TableData {
+type TableData = {
   name: string;
   pos: Point;
   width: number;
   height: number;
-  // eslint-disable-next-line semi
-}
+};
+
+export default TableData;

@@ -107,7 +107,7 @@ export default class Minimap {
     }
   };
 
-  cleanup(): void {
+  cleanUp(): void {
     this.btnZoomIn.removeEventListener("click", this.viewer.zoomIn);
     this.btnZoomOut.removeEventListener("click", this.viewer.zoomOut);
     this.minimap.removeEventListener(

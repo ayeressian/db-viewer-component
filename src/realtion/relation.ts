@@ -13,7 +13,6 @@ import selfRelationRight from "./self-relation-right";
 import selfRelationTop from "./self-relation-top";
 import threeLinePathVert from "./three-line-path-vert";
 import selfRelationBottom from "./self-relation-bottom";
-import Viewer from "../viewer";
 
 enum Axis {
   x = "x",
@@ -26,6 +25,12 @@ interface BasicRelation {
   toColumn: Column;
   toTable: Table;
 }
+
+type ViewerCallbacks = {
+  relationClick: (relationData: RelationData) => void;
+  relationDblClick: (relationData: RelationData) => void;
+  relationContextMenu: (relationData: RelationData) => void;
+};
 
 export class RelationData {
   constructor(
@@ -70,18 +75,18 @@ export default class Relation {
   private toIntersectPoint?: Point;
   private highlightTrigger?: SVGGraphicsElement;
 
-  fromPathCount?: number;
-  fromPathIndex?: number;
+  private fromPathCount?: number;
+  private fromPathIndex?: number;
+  private toPathCount?: number;
+  private toPathIndex?: number;
   fromTable: Table;
-  toPathCount?: number;
-  toPathIndex?: number;
   toTable: Table;
   fromTablePathSide?: Orientation;
   toTablePathSide?: Orientation;
 
   constructor(
     { fromColumn, fromTable, toColumn, toTable }: BasicRelation,
-    private viewer: Viewer
+    private viewerCallbacks: ViewerCallbacks
   ) {
     this.fromColumn = fromColumn;
     this.fromTable = fromTable;
@@ -438,15 +443,15 @@ export default class Relation {
   }
 
   private onClick = (): void => {
-    this.viewer.relationClick(this.createRelationInfo());
+    this.viewerCallbacks.relationClick(this.createRelationInfo());
   };
 
   private onDblClick = (): void => {
-    this.viewer.relationDblClick(this.createRelationInfo());
+    this.viewerCallbacks.relationDblClick(this.createRelationInfo());
   };
 
   private onContextMenu = (): void => {
-    this.viewer.relationContextMenu(this.createRelationInfo());
+    this.viewerCallbacks.relationContextMenu(this.createRelationInfo());
   };
 
   private setElems(
@@ -462,6 +467,26 @@ export default class Relation {
     highlightTrigger.addEventListener("dblclick", this.onDblClick);
     highlightTrigger.addEventListener("click", this.onClick);
     highlightTrigger.addEventListener("touch", this.onClick);
+  }
+
+  setPathIndex(table: Table, count: number, pathIndex: number): number {
+    if (this.fromTable !== this.toTable) {
+      if (this.fromTable === table) {
+        this.fromPathIndex = pathIndex;
+        this.fromPathCount = count;
+      } else {
+        this.toPathIndex = pathIndex;
+        this.toPathCount = count;
+      }
+      pathIndex++;
+    } else {
+      this.fromPathCount = count;
+      this.toPathCount = count;
+      this.fromPathIndex = pathIndex;
+      this.toPathIndex = pathIndex + 1;
+      pathIndex += 2;
+    }
+    return pathIndex;
   }
 
   private createHighlightTrigger(d: string): SVGGraphicsElement {
@@ -484,5 +509,10 @@ export default class Relation {
     path.setAttributeNS(null, "d", d);
 
     return path;
+  }
+
+  remove(): void {
+    this.highlightTrigger?.parentNode?.removeChild(this.highlightTrigger);
+    this.pathElem?.parentNode?.removeChild(this.pathElem);
   }
 }
