@@ -1,7 +1,12 @@
 import schemaParser from "./schema-parser";
 import Table from "./table/table";
 import template from "./template";
-import { Schema, TableArrang, Viewport } from "./types/schema";
+import {
+  AnnotationSchema,
+  Schema,
+  TableArrang,
+  Viewport,
+} from "./types/schema";
 import TableData from "./types/table-data";
 import validateJson from "./validate-schema";
 import Viewer from "./viewer";
@@ -21,6 +26,7 @@ import {
   DbViewerEventMap,
   RelationClickEvent,
   RelationDblClickEvent,
+  AnnotationMoveEvent,
 } from "./events";
 import Point from "./types/point";
 import { RelationData } from "./realtion/relation";
@@ -163,9 +169,10 @@ class DbViewer extends HTMLElement {
 
   private createAnnotations() {
     this.#annotations =
-      this.schema?.annotations?.map(
-        (annotationSchema) => new Annotation(annotationSchema)
-      ) ?? [];
+      this.schema?.annotations?.map((annotationSchema) => {
+        console.log(annotationSchema);
+        return new Annotation(annotationSchema);
+      }) ?? [];
   }
 
   attributeChangedCallback(
@@ -239,6 +246,7 @@ class DbViewer extends HTMLElement {
       .then(() => {
         this.viewer = new Viewer(shadowDom);
         this.viewer.setCallbacks({
+          annotationMove: this.onAnnotationMove,
           tableClick: this.onTableClick,
           tableContextMenu: this.onTableContextMenu,
           tableDblClick: this.onTableDblClick,
@@ -263,6 +271,10 @@ class DbViewer extends HTMLElement {
   private checkWindowLoaded(): boolean {
     return document.readyState === "complete";
   }
+
+  private onAnnotationMove = (annotationData: AnnotationSchema): void => {
+    this.dispatchEvent(new AnnotationMoveEvent(annotationData));
+  };
 
   private onViewportClick = (x: number, y: number): void => {
     this.dispatchEvent(new ViewportClickEvent({ x, y }));

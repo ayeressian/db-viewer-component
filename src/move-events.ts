@@ -2,7 +2,7 @@ import Annotation from "./annotation";
 import Table from "./table/table";
 import CommonEventListener from "./types/common-event-listener";
 import Point from "./types/point";
-import { isTouchEvent, normalizeEvent } from "./util";
+import { elementIndex, isTouchEvent, normalizeEvent } from "./util";
 import Viewer from "./viewer";
 
 type Target = Table | Annotation;
@@ -44,17 +44,44 @@ export default class MoveEvents {
   #initialClientX!: number;
   #initialClientY!: number;
 
-  private moveToTop(): void {
+  // The reason for not using append of this.elem instead of remaining element prepend
+  // is to keep event concistency. The following code is for making click and and double click to work.
+  private moveToTopAnnotation(): void {
     const parentNode = this.gElem.parentNode;
-    // The reason for not using append of this.elem instead of remaining element prepend
-    // is to keep event concistency. The following code is for making click and and double click to work.
-    Array.from(parentNode!.children)
-      .reverse()
-      .forEach((childElem) => {
-        if (childElem !== this.gElem) {
-          parentNode!.prepend(childElem);
-        }
-      });
+    const gElemIndex = elementIndex(this.gElem);
+    const children = parentNode!.childNodes;
+    const firstTable = parentNode!.querySelector(".table");
+    const firstPath = parentNode!.querySelector("path");
+    let iterateUntil: number;
+    if (firstPath) {
+      iterateUntil = Array.from(parentNode!.childNodes).indexOf(firstPath);
+    } else if (firstTable) {
+      iterateUntil = Array.from(parentNode!.childNodes).indexOf(firstTable);
+    } else {
+      iterateUntil = children.length - 1;
+    }
+    for (let i = gElemIndex + 1; i < iterateUntil; ++i) {
+      parentNode?.insertBefore(children[i], this.gElem);
+    }
+  }
+
+  // The reason for not using append of this.elem instead of remaining element prepend
+  // is to keep event concistency. The following code is for making click and and double click to work.
+  private moveTopTable(): void {
+    const parentNode = this.gElem.parentNode;
+    const children = parentNode!.childNodes;
+    const gElemIndex = elementIndex(this.gElem);
+    for (let i = gElemIndex + 1; i < children.length; ++i) {
+      parentNode?.insertBefore(children[i], this.gElem);
+    }
+  }
+
+  private moveToTop(): void {
+    if (this.gElem.classList.contains("table")) {
+      this.moveTopTable();
+    } else {
+      this.moveToTopAnnotation();
+    }
   }
 
   private notAllowOutOfBound(x: number, y: number): Point {

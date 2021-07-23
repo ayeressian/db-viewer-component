@@ -1,6 +1,7 @@
 import Point from "./types/point";
 import TableData from "./types/table-data";
 import { RelationData } from "./realtion/relation";
+import { AnnotationSchema } from "./types/schema";
 
 export class ViewportClickEvent extends CustomEvent<Point> {
   constructor(point: Point) {
@@ -29,6 +30,12 @@ export class TableContextMenuEvent extends CustomEvent<TableData> {
 export class TableMoveEvent extends CustomEvent<TableData> {
   constructor(tableData: TableData) {
     super("tableMove", { detail: tableData });
+  }
+}
+
+export class AnnotationMoveEvent extends CustomEvent<AnnotationSchema> {
+  constructor(annotationData: AnnotationSchema) {
+    super("tableMove", { detail: annotationData });
   }
 }
 

@@ -1,3 +1,4 @@
+import Annotation from "./annotation";
 import constant from "./const";
 import Table from "./table/table";
 import CommonEventListener from "./types/common-event-listener";
@@ -13,6 +14,7 @@ export default class Minimap {
   private btnZoomIn: Element;
   private btnZoomOut: Element;
   private tableMinimap!: Map<Table, SVGGraphicsElement>;
+  private annotationMinimap!: Map<Annotation, SVGGraphicsElement>;
 
   constructor(
     private mainElem: ShadowRoot,
@@ -46,6 +48,7 @@ export default class Minimap {
 
   removeTables(): void {
     this.tableMinimap = new Map<Table, SVGGraphicsElement>();
+    this.annotationMinimap = new Map<Annotation, SVGGraphicsElement>();
     this.minimap
       .querySelectorAll(".mini_table")
       .forEach((miniTable) => miniTable.remove());
@@ -79,15 +82,48 @@ export default class Minimap {
       constant.nsSvg,
       "rect"
     ) as SVGGraphicsElement;
-    tableMini.setAttributeNS(null, "class", "mini_table");
+    tableMini.classList.add("mini_table");
     this.tableMinimap.set(table, tableMini);
     this.minimap.appendChild(tableMini);
+  }
+
+  createAnnotation(annotation: Annotation): void {
+    const annotationMini = document.createElementNS(
+      constant.nsSvg,
+      "rect"
+    ) as SVGGraphicsElement;
+    annotationMini.classList.add("mini_annotation");
+    this.minimap.appendChild(annotationMini);
+
+    this.annotationMinimap.set(annotation, annotationMini);
+  }
+
+  setAnnotationDim(
+    annotation: Annotation,
+    width: number,
+    height: number
+  ): void {
+    const annotationMini = this.annotationMinimap.get(annotation)!;
+    annotationMini.setAttributeNS(null, "width", width.toString());
+    annotationMini.setAttributeNS(null, "height", height.toString());
   }
 
   setTableDim(table: Table, x: number, y: number): void {
     const miniTable = this.tableMinimap.get(table)!;
     miniTable.setAttributeNS(null, "width", x.toString());
     miniTable.setAttributeNS(null, "height", y.toString());
+  }
+
+  onAnnotationMove(
+    annotation: Annotation,
+    deltaX: number,
+    deltaY: number
+  ): void {
+    const minimapAnnotationElem = this.annotationMinimap.get(annotation)!;
+    if (minimapAnnotationElem) {
+      minimapAnnotationElem.setAttributeNS(null, "x", deltaX.toString());
+      minimapAnnotationElem.setAttributeNS(null, "y", deltaY.toString());
+    }
   }
 
   onTableMove(table: Table, deltaX: number, deltaY: number): void {

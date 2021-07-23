@@ -8,7 +8,7 @@ import Callbacks from "./types/callbacks";
 import TableData from "./types/table-data";
 import ViewBoxVals from "./types/view-box-vals";
 import Point from "./types/point";
-import { normalizeEvent } from "./util";
+import { insertAfter, normalizeEvent } from "./util";
 import { TableArrang, Viewport } from "./types/schema";
 import Annotation from "./annotation";
 import Relations from "./realtion/relations";
@@ -78,7 +78,10 @@ export default class Viewer {
   }
 
   private addToViewer = (elem: SVGElement): void => {
-    this.svgElem.prepend(elem);
+    const annotations = this.svgElem.querySelectorAll("g.annotation");
+    const lastAnnotation = annotations[annotations.length - 1];
+    if (lastAnnotation) insertAfter(elem, lastAnnotation);
+    else this.svgElem.prepend(elem);
   };
 
   private relations = new Relations(this.addToViewer);
@@ -112,7 +115,7 @@ export default class Viewer {
     this.tables = tables;
     this.annotations = annotations;
     annotations.forEach((annotation) => {
-      annotation.setVeiwer(this);
+      annotation.setViewer(this, this.annotationMove);
     });
     tables.forEach((table) => {
       table.setViewer(this, {
@@ -151,6 +154,16 @@ export default class Viewer {
     if (cordinatesChanged) this.callbacks?.tableMove(table.data());
   };
 
+  private annotationMove = (
+    annotation: Annotation,
+    deltaX: number,
+    deltaY: number,
+    cordinatesChanged: boolean
+  ): void => {
+    this.minimap.onAnnotationMove(annotation, deltaX, deltaY);
+    if (cordinatesChanged) this.callbacks?.annotationMove(annotation.data());
+  };
+
   private tableMoveEnd = (table: Table): void => {
     this.callbacks?.tableMoveEnd(table.data());
   };
@@ -165,9 +178,18 @@ export default class Viewer {
     this.minimap.removeTables();
 
     for (const annotation of this.annotations) {
+      this.minimap.createAnnotation(annotation);
       const annotationElem = annotation.render();
+
       this.svgElem.appendChild(annotationElem);
-      annotation.addedToView();
+
+      const vertices = annotation.getVertices();
+
+      this.minimap.setAnnotationDim(
+        annotation,
+        vertices.topRight.x - vertices.topLeft.x,
+        vertices.bottomLeft.y - vertices.topLeft.y
+      );
     }
 
     for (const [i, table] of this.tables.entries()) {
@@ -441,7 +463,6 @@ export default class Viewer {
     let viewportX;
     let viewportY;
     console.log(type);
-    debugger;
 
     switch (type) {
       case Viewport.noChange:

@@ -61,3 +61,11 @@ export function normalizeEvent(
   }
   return result;
 }
+
+export function insertAfter(newChild: Node, refChild: Node): void {
+  refChild.parentNode!.insertBefore(newChild, refChild.nextSibling);
+}
+
+export function elementIndex(elem: ChildNode): number {
+  return Array.from(elem.parentNode!.childNodes).indexOf(elem);
+}

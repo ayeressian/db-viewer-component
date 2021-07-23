@@ -6,6 +6,8 @@ const constant = {
   SPIRAL_ARRANGE_DIST_Y: 200,
   VIEW_HEIGHT: 5000,
   VIEW_WIDTH: 5000,
+  ANNOTATION_MIN_WIDTH: 100,
+  ANNOTATION_MIN_HEIGHT: 100,
   ZOOM: 1.2,
   nsHtml: "http://www.w3.org/1999/xhtml",
   nsSvg: "http://www.w3.org/2000/svg",

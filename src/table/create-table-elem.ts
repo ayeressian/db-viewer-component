@@ -98,6 +98,7 @@ export function createTableElem(
   foreignObject: SVGForeignObjectElement;
 } {
   const { g, foreignObject } = gWithFo();
+  g.classList.add("table");
   const table = createTable();
   const thead = createTableHead(name);
 

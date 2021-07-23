@@ -57,9 +57,11 @@ class ViewerEvents {
   private static noneTableAndMinmapEvent(event: Event): boolean {
     return !event.composedPath().some((item) => {
       const htmlElement = item as HTMLElement;
+      const classList = htmlElement.classList;
       return (
         htmlElement.id === "minimap-container" ||
-        htmlElement.classList?.contains("table")
+        classList?.contains("table") ||
+        classList?.contains("annotation")
       );
     });
   }

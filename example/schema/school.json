@@ -1,13 +1,23 @@
 {
   "annotations": [
     {
-      "title": "TITLE",
-      "text": "TEST TEST TEST TEST TEST",
+      "title": "Annotation 1",
+      "text": "Description 1",
+      "width": 800,
+      "height": 600,
+      "pos": {
+        "x": 1200,
+        "y": 1200
+      }
+    },
+    {
+      "title": "Annotation 2",
+      "text": "Description 2",
       "width": 300,
       "height": 200,
       "pos": {
-        "x": 0,
-        "y": 0
+        "x": 1400,
+        "y": 1100
       }
     }
   ],
