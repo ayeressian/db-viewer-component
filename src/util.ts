@@ -1,8 +1,7 @@
-export const isSafari = /^((?!chrome|android).)*safari/i.test(
-  navigator.userAgent
-);
+export const isSafari = (): boolean =>
+  /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-export const isChrome =
+export const isChrome = (): boolean =>
   navigator.userAgent.includes("Chrome") &&
   navigator.vendor.includes("Google Inc");
 
