@@ -143,12 +143,14 @@ class DbViewer extends HTMLElement {
     return this.viewer.getZoom()!;
   }
 
-  zoomIn(): void {
-    this.readyPromise.then(() => this.viewer.zoomIn());
+  async zoomIn(): Promise<void> {
+    await this.readyPromise;
+    this.viewer.zoomIn();
   }
 
-  zoomOut(): void {
-    this.readyPromise.then(() => this.viewer.zoomOut());
+  async zoomOut(): Promise<void> {
+    await this.readyPromise;
+    this.viewer.zoomOut();
   }
 
   getTableInfo(name: string): TableData {
@@ -175,48 +177,41 @@ class DbViewer extends HTMLElement {
       }) ?? [];
   }
 
-  attributeChangedCallback(
+  async attributeChangedCallback(
     name: string,
     _oldValue: string,
     newValue: string
-  ): void {
+  ): Promise<void> {
     switch (name) {
-      case "src":
+      case "src": {
         this.srcVal = newValue;
-        void this.readyPromise.then(() => {
-          void fetch(this.srcVal)
-            .then((response) => response.json())
-            .then((response) => {
-              if (!validateJson(response)) {
-                throw INVALID_SCHEMA;
-              }
-              this.notParsedSchema = cloneDeep<Schema>(response);
-              this.tables = schemaParser(response);
-              this.createAnnotations();
+        await this.readyPromise;
+        const response = await fetch(this.srcVal);
+        const responseJson = (await response.json()) as Schema;
+        if (!validateJson(responseJson)) {
+          throw INVALID_SCHEMA;
+        }
+        this.notParsedSchema = cloneDeep<Schema>(responseJson);
+        this.tables = schemaParser(responseJson);
 
-              return this.viewer.load(
-                this.tables,
-                this.#annotations,
-                this.viewport ?? (response as Schema).viewport,
-                this.notParsedSchema.arrangement ?? TableArrang.default,
-                this.notParsedSchema.viewWidth,
-                this.notParsedSchema.viewHeight
-              );
-            })
-            .then(() => {
-              this.dispatchEvent(new LoadEvent());
-            });
-        });
+        await this.viewer.load(
+          this.tables,
+          this.#annotations,
+          this.viewport ?? responseJson.viewport,
+          this.notParsedSchema.arrangement ?? TableArrang.default,
+          this.notParsedSchema.viewWidth,
+          this.notParsedSchema.viewHeight
+        );
+        this.dispatchEvent(new LoadEvent());
         break;
+      }
       case "disable-table-movement":
         if (this.hasAttribute("disable-table-movement")) {
-          void this.readyPromise.then(() =>
-            this.viewer.disableTableMovement(true)
-          );
+          await this.readyPromise;
+          this.viewer.disableTableMovement(true);
         } else {
-          void this.readyPromise.then(() =>
-            this.viewer.disableTableMovement(false)
-          );
+          await this.readyPromise;
+          this.viewer.disableTableMovement(false);
         }
         break;
       case "viewport":
@@ -242,29 +237,28 @@ class DbViewer extends HTMLElement {
     const shadowDom = this.attachShadow({
       mode: "open",
     });
-    void this.shadowDomLoaded(shadowDom)
-      .then(() => {
-        this.viewer = new Viewer(shadowDom);
-        this.viewer.setCallbacks({
-          annotationMove: this.onAnnotationMove,
-          tableClick: this.onTableClick,
-          tableContextMenu: this.onTableContextMenu,
-          tableDblClick: this.onTableDblClick,
-          tableMove: this.onTableMove,
-          tableMoveEnd: this.onTableMoveEnd,
-          relationClick: this.onRelationClick,
-          relationDblClick: this.onRelationDblClick,
-          relationContextMenu: this.onRelationContextMenu,
-          viewportClick: this.onViewportClick,
-          zoomIn: this.onZoomIn.bind(this),
-          zoomOut: this.onZoomOut.bind(this),
-        });
-        return this.viewer.getViewLoaded();
-      })
-      .then(() => {
-        this.readyPromiseResolve(null);
-        this.dispatchEvent(new ReadyEvent());
+    (async () => {
+      await this.shadowDomLoaded(shadowDom);
+      this.viewer = new Viewer(shadowDom);
+      this.viewer.setCallbacks({
+        annotationMove: this.onAnnotationMove,
+        tableClick: this.onTableClick,
+        tableContextMenu: this.onTableContextMenu,
+        tableDblClick: this.onTableDblClick,
+        tableMove: this.onTableMove,
+        tableMoveEnd: this.onTableMoveEnd,
+        relationClick: this.onRelationClick,
+        relationDblClick: this.onRelationDblClick,
+        relationContextMenu: this.onRelationContextMenu,
+        viewportClick: this.onViewportClick,
+        zoomIn: this.onZoomIn.bind(this),
+        zoomOut: this.onZoomOut.bind(this),
       });
+      await this.viewer.getViewLoaded();
+      this.readyPromiseResolve(null);
+      this.dispatchEvent(new ReadyEvent());
+    })();
+
     shadowDom.innerHTML = template;
   };
 

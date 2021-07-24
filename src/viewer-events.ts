@@ -240,7 +240,7 @@ class ViewerEvents {
   }
 
   private setUpTouchEvents(): void {
-    if (isSafari) {
+    if (isSafari()) {
       this.container.addEventListener(
         "gesturestart",
         this.onGesturestart as CommonEventListener
@@ -299,7 +299,7 @@ class ViewerEvents {
   }
 
   cleanUpTouchEvents(): void {
-    if (isSafari) {
+    if (isSafari()) {
       this.container.removeEventListener(
         "gesturestart",
         this.onGesturestart as CommonEventListener

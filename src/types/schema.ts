@@ -44,14 +44,14 @@ export interface Schema {
   viewHeight?: number;
 }
 
-export const enum Viewport {
+export enum Viewport {
   noChange = "noChange",
   centerByTablesWeight = "centerByTablesWeight",
   center = "center",
   centerByTables = "centerByTables",
 }
 
-export const enum TableArrang {
+export enum TableArrang {
   spiral = "spiral",
   default = "default",
 }
