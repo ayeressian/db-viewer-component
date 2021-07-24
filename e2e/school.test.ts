@@ -1,17 +1,13 @@
-// example.spec.ts
 import { test, expect } from "@playwright/test";
 import { Schema } from "../src/types/schema";
 import schoolSchema from "../example/schema/school.json";
 import Point from "../src/types/point";
-import { getNumberOfRelations, getNumberOfTables } from "./util";
+import { getNumberOfRelations, getNumberOfTables, initTest } from "./util";
 
 const { describe, beforeEach } = test;
 
 describe("school example", () => {
-  beforeEach(async ({ page }) => {
-    await page.goto("http://localhost:9998");
-    await page.waitForLoadState("domcontentloaded");
-  });
+  initTest();
 
   describe("relations", () => {
     test("it should show correct number of relations", async ({ page }) => {
@@ -21,19 +17,63 @@ describe("school example", () => {
   });
 
   describe("annotations", () => {
+    const schemaAnnots = schoolSchema.annotations;
+    const firstSchAnnot = schemaAnnots[0];
     test("it should render correct number of annotations", async ({ page }) => {
       const annotations = await page.$$("#school-db g.annotation");
-      expect(annotations.length).toBe(schoolSchema.annotations.length);
+      expect(annotations.length).toBe(schemaAnnots.length);
     });
 
     test("should have correct title", async ({ page }) => {
       const h1 = await page.$("#school-db g.annotation h1");
-      expect(await h1?.innerText()).toBe(schoolSchema.annotations[0].title);
+      expect(await h1?.innerText()).toBe(firstSchAnnot.title);
     });
 
     test("should have correct text", async ({ page }) => {
       const p = await page.$("#school-db g.annotation p");
-      expect(await p?.innerText()).toBe(schoolSchema.annotations[0].text);
+      expect(await p?.innerText()).toBe(firstSchAnnot.text);
+    });
+
+    test("should have correct pos", async ({ page }) => {
+      const fo = await page.$("#school-db g.annotation foreignObject");
+      const x = (await fo?.getAttribute("x"))!;
+      const xNum = parseInt(x);
+      const y = (await fo?.getAttribute("y"))!;
+      const yNum = parseInt(y);
+      expect(xNum).toBe(firstSchAnnot.pos.x);
+      expect(yNum).toBe(firstSchAnnot.pos.y);
+    });
+
+    test("should have correct size", async ({ page }) => {
+      const fo = await page.$("#school-db g.annotation foreignObject");
+      const width = (await fo?.getAttribute("width"))!;
+      const widthNum = parseInt(width);
+      const height = (await fo?.getAttribute("height"))!;
+      const heightNum = parseInt(height);
+      expect(widthNum).toBe(firstSchAnnot.width);
+      expect(heightNum).toBe(firstSchAnnot.height);
+    });
+
+    describe("when table is moved", () => {
+      test.fixme();
+      beforeEach(async ({ page }) => {
+        const annotation = await page.$("#school-db g.annotation .annotation");
+        await annotation?.hover();
+        await page.mouse.down();
+        await page.mouse.move(100, 200);
+        await page.mouse.up();
+      });
+
+      test("should have correct pos", async ({ page }) => {
+        const fos = await page.$$("#school-db g.annotation foreignObject");
+        const fo = fos[fos.length - 1];
+        const x = (await fo?.getAttribute("x"))!;
+        const xNum = parseInt(x);
+        const y = (await fo?.getAttribute("y"))!;
+        const yNum = parseInt(y);
+        expect(xNum).toBe(firstSchAnnot.pos.x);
+        expect(yNum).toBe(firstSchAnnot.pos.y);
+      });
     });
   });
 

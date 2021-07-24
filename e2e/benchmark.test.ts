@@ -1,14 +1,11 @@
 import { test, expect } from "@playwright/test";
 import benchmarkSchema from "../example/schema/benchmark.json";
-import { getNumberOfTables } from "./util";
+import { getNumberOfTables, initTest } from "./util";
 
-const { describe, beforeEach } = test;
+const { describe } = test;
 
 describe("benchmark db-viewer", () => {
-  beforeEach(async ({ page }) => {
-    await page.goto("http://localhost:9998");
-    await page.waitForLoadState("domcontentloaded");
-  });
+  initTest();
   test("should show correct number of tables", async ({ page }) => {
     const tables = await page.$$("#benchmark table");
     expect(tables.length).toBe(getNumberOfTables(benchmarkSchema));
