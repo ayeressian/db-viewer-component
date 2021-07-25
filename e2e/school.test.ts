@@ -54,14 +54,41 @@ describe("school example", () => {
       expect(heightNum).toBe(firstSchAnnot.height);
     });
 
-    describe("when table is moved", () => {
-      test.fixme();
+    describe("when clicked", () => {
       beforeEach(async ({ page }) => {
         const annotation = await page.$("#school-db g.annotation .annotation");
-        await annotation?.hover();
-        await page.mouse.down();
-        await page.mouse.move(100, 200);
-        await page.mouse.up();
+        await annotation?.click();
+      });
+      test("it should come to foreground but below tables and paths", async ({
+        page,
+      }) => {
+        const h1 = (await page.$$("#school-db g.annotation h1"))[1];
+        expect(await h1?.innerText()).toBe(firstSchAnnot.title);
+      });
+    });
+
+    describe("when moved", () => {
+      const intX = 150;
+      const intY = 160;
+      const moveX = 300;
+      const moveY = 300;
+      beforeEach(async ({ page }) => {
+        const annotation = await page.$("#school-db g.annotation .annotation");
+        await annotation?.dispatchEvent("mousedown", {
+          type: "mousedown",
+          clientX: intX,
+          clientY: intY,
+          pageX: intX,
+          pageY: intY,
+          button: 0,
+        });
+
+        await annotation?.dispatchEvent("mousemove", {
+          clientX: moveX,
+          clientY: moveY,
+        });
+
+        await annotation?.dispatchEvent("mouseup", {});
       });
 
       test("should have correct pos", async ({ page }) => {
@@ -71,8 +98,8 @@ describe("school example", () => {
         const xNum = parseInt(x);
         const y = (await fo?.getAttribute("y"))!;
         const yNum = parseInt(y);
-        expect(xNum).toBe(firstSchAnnot.pos.x);
-        expect(yNum).toBe(firstSchAnnot.pos.y);
+        expect(xNum).toBe(firstSchAnnot.pos.x + moveX - intX);
+        expect(yNum).toBe(firstSchAnnot.pos.y + moveY - intY);
       });
     });
   });
@@ -108,6 +135,57 @@ describe("school example", () => {
         const yAttr = await foreignObject!.getAttribute("y");
         expect(Number(xAttr)).toBe(pos.x);
         expect(Number(yAttr)).toBe(pos.y);
+      });
+
+      describe("when clicked", () => {
+        beforeEach(async ({ page }) => {
+          const table = await page.$("#school-db g.table");
+          await table?.dispatchEvent("mousedown", {});
+          await table?.dispatchEvent("mouseup", {});
+        });
+        test("it should come to foreground of all the elements", async ({
+          page,
+        }) => {
+          const gs = await page.$$("#school-db g");
+          const table = gs[gs.length - 1];
+          expect(await table?.getAttribute("id")).toBe("0table");
+        });
+      });
+    });
+
+    describe("when moved", () => {
+      const intX = 550;
+      const intY = 450;
+      const moveX = 600;
+      const moveY = 500;
+      beforeEach(async ({ page }) => {
+        const table = await page.$("#school-db g.table table");
+        await table?.dispatchEvent("mousedown", {
+          type: "mousedown",
+          clientX: intX,
+          clientY: intY,
+          pageX: intX,
+          pageY: intY,
+          button: 0,
+        });
+
+        await table?.dispatchEvent("mousemove", {
+          clientX: moveX,
+          clientY: moveY,
+        });
+
+        await table?.dispatchEvent("mouseup", {});
+      });
+
+      test("should have correct pos", async ({ page }) => {
+        const fos = await page.$$("#school-db g.table foreignObject");
+        const fo = fos[fos.length - 1];
+        const x = (await fo?.getAttribute("x"))!;
+        const xNum = parseInt(x);
+        const y = (await fo?.getAttribute("y"))!;
+        const yNum = parseInt(y);
+        expect(xNum).toBe(schoolSchema.tables[0].pos.x + moveX - intX);
+        expect(yNum).toBe(schoolSchema.tables[0].pos.y + moveY - intY);
       });
     });
   });

@@ -120,6 +120,7 @@ export default class MoveEvents {
   };
 
   #onMouseMove = (event: MouseEvent | TouchEvent): void => {
+    console.log(event);
     if (!this.viewer.getGestureStart()) {
       const mousePos = this.viewer.getMousePosRelativeContainer(event);
 
@@ -166,6 +167,7 @@ export default class MoveEvents {
   };
 
   #onMouseDown = (event: MouseEvent | TouchEvent): void => {
+    console.log(event);
     const touchEvent = isTouchEvent(event);
     if (
       ((!touchEvent &&
