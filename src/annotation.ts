@@ -5,17 +5,26 @@ import { AnnotationSchema } from "./types/schema";
 import Vertices from "./types/vertices";
 import Viewer from "./viewer";
 
+type OnMoveCallback = (
+  annotation: Annotation,
+  deltaX: number,
+  deltaY: number,
+  cordinatesChanged: boolean
+) => void;
+
+type OnResizeCallback = (
+  annotation: Annotation,
+  width: number,
+  height: number
+) => void;
+
 class Annotation {
   #gElem!: SVGGraphicsElement;
   #foreignObject!: SVGForeignObjectElement;
   #annotationElement!: HTMLDivElement;
   #viewer!: Viewer;
-  #onMoveCallback!: (
-    annotation: Annotation,
-    deltaX: number,
-    deltaY: number,
-    cordinatesChanged: boolean
-  ) => void;
+  #onMoveCallback!: OnMoveCallback;
+  #onResizeCallback!: OnResizeCallback;
   #title?: string;
   #text?: string;
   #posValue: Point;
@@ -143,7 +152,11 @@ class Annotation {
   ): void => {
     const normalizedClientY = this.getNormlizeClient(event).clientY;
     const y = normalizedClientY - mouseDownInitialElemY;
-    if (this.safeHeightResize(height + y)) {
+    let newHeight = height + y;
+    if (this.#posValue.y + newHeight > this.#viewer.getViewerPanHeight()) {
+      newHeight = this.#viewer.getViewerPanHeight() - this.#posValue.y;
+    }
+    if (this.safeHeightResize(newHeight)) {
       this.setSize(this.#width, this.#height);
     }
   };
@@ -171,8 +184,14 @@ class Annotation {
     height: number
   ): void => {
     const normalizedClientY = this.getNormlizeClient(event).clientY;
-    const y = normalizedClientY - mouseDownInitialElemY;
-    if (this.safeHeightResize(height - y)) {
+    let y = normalizedClientY - mouseDownInitialElemY;
+    let newPosValue = initPosY + y;
+    if (newPosValue < 0) {
+      newPosValue = 0;
+      y = -initPosY;
+    }
+    const newHeight = height - y;
+    if (this.safeHeightResize(newHeight)) {
       this.setSize(this.#width, this.#height);
       this.#posValue.y = initPosY + y;
       this.#moveEvents.setPos(this.#posValue.x, this.#posValue.y);
@@ -204,7 +223,11 @@ class Annotation {
   ): void => {
     const normalizedClientX = this.getNormlizeClient(event).clientX;
     const x = normalizedClientX - mouseDownInitialElemX;
-    if (this.safeWidthResize(width + x)) {
+    let newWidth = width + x;
+    if (this.#posValue.x + newWidth > this.#viewer.getViewerPanWidth()) {
+      newWidth = this.#viewer.getViewerPanWidth() - this.#posValue.x;
+    }
+    if (this.safeWidthResize(newWidth)) {
       this.setSize(this.#width, this.#height);
     }
   };
@@ -232,8 +255,14 @@ class Annotation {
     width: number
   ): void => {
     const normalizedClientX = this.getNormlizeClient(event).clientX;
-    const x = normalizedClientX - mouseDownInitialElemX;
-    if (this.safeWidthResize(width - x)) {
+    let x = normalizedClientX - mouseDownInitialElemX;
+    let newPosValue = initPosX + x;
+    if (newPosValue < 0) {
+      newPosValue = 0;
+      x = -initPosX;
+    }
+    const newWidth = width - x;
+    if (this.safeWidthResize(newWidth)) {
       this.setSize(this.#width, this.#height);
       this.#posValue.x = initPosX + x;
       this.#moveEvents.setPos(this.#posValue.x, this.#posValue.y);
@@ -312,6 +341,7 @@ class Annotation {
   private setSize(width: number, height: number) {
     this.#foreignObject.setAttributeNS(null, "width", width.toString());
     this.#foreignObject.setAttributeNS(null, "height", height.toString());
+    this.#onResizeCallback(this, width, height);
   }
 
   render(): SVGGraphicsElement {
@@ -396,10 +426,12 @@ class Annotation {
       deltaX: number,
       deltaY: number,
       cordinatesChanged: boolean
-    ) => void
+    ) => void,
+    onResizeCallback: OnResizeCallback
   ): void {
     this.#viewer = viewer;
     this.#onMoveCallback = onMoveCallback;
+    this.#onResizeCallback = onResizeCallback;
   }
 }
 

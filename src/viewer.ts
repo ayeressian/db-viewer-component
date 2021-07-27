@@ -115,7 +115,7 @@ export default class Viewer {
     this.tables = tables;
     this.annotations = annotations;
     annotations.forEach((annotation) => {
-      annotation.setViewer(this, this.annotationMove);
+      annotation.setViewer(this, this.annotationMove, this.annotationResize);
     });
     tables.forEach((table) => {
       table.setViewer(this, {
@@ -162,6 +162,14 @@ export default class Viewer {
   ): void => {
     this.minimap.onAnnotationMove(annotation, deltaX, deltaY);
     if (cordinatesChanged) this.callbacks?.annotationMove(annotation.data());
+  };
+
+  private annotationResize = (
+    annotation: Annotation,
+    width: number,
+    height: number
+  ): void => {
+    this.minimap.setAnnotationDim(annotation, width, height);
   };
 
   private tableMoveEnd = (table: Table): void => {
