@@ -113,8 +113,8 @@ export default class Viewer {
     this.relations.removeAll();
     this.svgElem.innerHTML = "";
     this.tables = tables;
-    this.annotations = annotations;
-    annotations.forEach((annotation) => {
+    this.annotations = annotations || [];
+    this.annotations.forEach((annotation) => {
       annotation.setViewer(this, this.annotationMove, this.annotationResize);
     });
     tables.forEach((table) => {
